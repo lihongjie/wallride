@@ -1,7 +1,7 @@
 /*!
- * froala_editor v2.3.0 (https://www.froala.com/wysiwyg-editor)
+ * froala_editor v2.6.5 (https://www.froala.com/wysiwyg-editor)
  * License https://froala.com/wysiwyg-editor/terms/
- * Copyright 2014-2016 Froala Labs
+ * Copyright 2014-2017 Froala Labs
  */
 
 (function (factory) {
@@ -23,16 +23,15 @@
                     jQuery = require('jquery')(root);
                 }
             }
-            factory(jQuery);
-            return jQuery;
+            return factory(jQuery);
         };
     } else {
         // Browser globals
-        factory(jQuery);
+        factory(window.jQuery);
     }
 }(function ($) {
 
-  'use strict';
+  
 
   $.FE.PLUGINS.fullscreen = function (editor) {
     var old_scroll;
@@ -50,16 +49,19 @@
     var $placeholder;
     var height;
     var max_height;
+    var z_index;
+
     function _on () {
-      old_scroll = $(editor.o_win).scrollTop();
+      old_scroll = editor.helpers.scrollTop();
       editor.$box.toggleClass('fr-fullscreen');
-      $('body').toggleClass('fr-fullscreen');
+      $('body:first').toggleClass('fr-fullscreen');
       $placeholder = $('<div style="display: none;"></div>');
       editor.$box.after($placeholder);
 
       if (editor.helpers.isMobile()) {
         editor.$tb.data('parent', editor.$tb.parent());
         editor.$tb.prependTo(editor.$box);
+
         if (editor.$tb.data('sticky-dummy')) {
           editor.$tb.after(editor.$tb.data('sticky-dummy'));
         }
@@ -67,17 +69,23 @@
 
       height = editor.opts.height;
       max_height = editor.opts.heightMax;
+      z_index = editor.opts.zIndex;
 
       editor.opts.height = editor.o_win.innerHeight - (editor.opts.toolbarInline ? 0 : editor.$tb.outerHeight());
+      editor.opts.zIndex = 9990;
+      editor.opts.heightMax = null;
       editor.size.refresh();
 
       if (editor.opts.toolbarInline) editor.toolbar.showInline();
 
       var $parent_node = editor.$box.parent();
-      while (!$parent_node.is('body')) {
+
+      while (!$parent_node.is('body:first')) {
         $parent_node
           .data('z-index', $parent_node.css('z-index'))
-          .css('z-index', '9990');
+          .data('overflow', $parent_node.css('overflow'))
+          .css('z-index', '9990')
+          .css('overflow', 'visible');
         $parent_node = $parent_node.parent();
       }
 
@@ -90,15 +98,17 @@
      */
     function _off () {
       editor.$box.toggleClass('fr-fullscreen');
-      $('body').toggleClass('fr-fullscreen');
+      $('body:first').toggleClass('fr-fullscreen');
 
       editor.$tb.prependTo(editor.$tb.data('parent'));
+
       if (editor.$tb.data('sticky-dummy')) {
         editor.$tb.after(editor.$tb.data('sticky-dummy'));
       }
 
       editor.opts.height = height;
       editor.opts.heightMax = max_height;
+      editor.opts.zIndex = z_index;
       editor.size.refresh();
 
       $(editor.o_win).scrollTop(old_scroll)
@@ -123,13 +133,28 @@
       }
 
       var $parent_node = editor.$box.parent();
-      while (!$parent_node.is('body')) {
+
+      while (!$parent_node.is('body:first')) {
         if ($parent_node.data('z-index')) {
           $parent_node.css('z-index', '');
+
           if ($parent_node.css('z-index') != $parent_node.data('z-index')) {
             $parent_node.css('z-index', $parent_node.data('z-index'));
           }
           $parent_node.removeData('z-index');
+        }
+
+        if ($parent_node.data('overflow')) {
+          $parent_node.css('overflow', '');
+
+          if ($parent_node.css('overflow') != $parent_node.data('overflow')) {
+            $parent_node.css('overflow', $parent_node.data('overflow'));
+          }
+          $parent_node.removeData('overflow');
+        }
+        else {
+          $parent_node.css('overflow', '');
+          $parent_node.removeData('overflow');
         }
 
         $parent_node = $parent_node.parent();
@@ -155,8 +180,8 @@
     function refresh ($btn) {
       var active = isActive();
 
-      $btn.toggleClass('fr-active', active);
-      $btn.find('> *').replaceWith(!active ? editor.icon.create('fullscreen') : editor.icon.create('fullscreenCompress'));
+      $btn.toggleClass('fr-active', active).attr('aria-pressed', active);
+      $btn.find('> *:not(.fr-sr-only)').replaceWith(!active ? editor.icon.create('fullscreen') : editor.icon.create('fullscreenCompress'));
     }
 
     function _init () {
@@ -172,6 +197,14 @@
       editor.events.on('toolbar.hide', function () {
         if (isActive() && editor.helpers.isMobile()) return false;
       })
+
+      editor.events.on('destroy', function () {
+
+        // Exit full screen.
+        if (isActive()) {
+          _off();
+        }
+      }, true);
     }
 
     return {
@@ -187,7 +220,9 @@
     title: 'Fullscreen',
     undo: false,
     focus: false,
+    accessibilityFocus: true,
     forcedRefresh: true,
+    toggle: true,
     callback: function () {
       this.fullscreen.toggle();
     },

@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.wallride</groupId>
 		<artifactId>wallride</artifactId>
-		<version>1.0.0.M12</version>
+		<version>1.0.0.M17</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>wallride-core</artifactId>
@@ -84,7 +84,6 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>${hibernate.version}</version>
 		</dependency>
 
 		<dependency>
@@ -136,7 +135,17 @@
 		<!-- Lucene -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-queryparser</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>lucene-core</artifactId>
+					<groupId>org.apache.lucene</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
@@ -147,7 +156,7 @@
 		<dependency>
 			<groupId>jp.co.tagbangers</groupId>
 			<artifactId>jgroups-s3-client-ping</artifactId>
-			<version>1.0.0</version>
+			<version>1.1.0</version>
 		</dependency>
 
 		<!-- Thymeleaf -->
@@ -249,9 +258,9 @@
 
 		<!-- Commons -->
 		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.3</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-logging</artifactId>
