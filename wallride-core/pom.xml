@@ -151,6 +151,12 @@
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers-kuromoji</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-backward-codecs -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-backward-codecs</artifactId>
+			<version>5.4.0</version>
+		</dependency>
 
 		<!-- JGroups S3_CLIENT_PING -->
 		<dependency>

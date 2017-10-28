@@ -47,6 +47,7 @@ public class WallRideInitializer implements ApplicationListener<ApplicationStart
 		StandardEnvironment environment = new StandardEnvironment();
 
 		String home = environment.getProperty(WallRideProperties.HOME_PROPERTY);
+		home = "file:/home/lihongjie/lihongjie/wallride-tutorial/wallride-demo/";
 		if (!StringUtils.hasText(home)) {
 			throw new IllegalStateException(WallRideProperties.HOME_PROPERTY + " is empty");
 		}
