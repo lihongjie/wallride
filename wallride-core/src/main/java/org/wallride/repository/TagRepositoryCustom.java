@@ -23,5 +23,5 @@ import org.wallride.model.TagSearchRequest;
 
 public interface TagRepositoryCustom {
 
-	Page<Tag> search(TagSearchRequest request, Pageable pageable);
+//	Page<Tag> search(TagSearchRequest request, Pageable pageable);
 }

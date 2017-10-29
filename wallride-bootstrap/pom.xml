@@ -10,7 +10,7 @@
         <relativePath>../wallride-parent/pom.xml</relativePath>
     </parent>
     <artifactId>wallride-bootstrap</artifactId>
-    <packaging>${packaging.type}</packaging>
+    <packaging>jar</packaging>
     <name>WallRide Bootstrap</name>
     <description>CMS for developers of principles</description>
     <url>http://wallride.org/</url>

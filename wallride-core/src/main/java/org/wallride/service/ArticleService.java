@@ -66,9 +66,6 @@ import java.util.regex.Pattern;
 public class ArticleService {
 
 	@Resource
-	private BlogService blogService;
-
-	@Resource
 	private PostRepository postRepository;
 
 	@Resource
@@ -237,7 +234,7 @@ public class ArticleService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
 	public Article saveArticleAsDraft(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
-		postRepository.lock(request.getId());
+//		postRepository.lock(request.getId());
 		Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		if (!article.getStatus().equals(Post.Status.DRAFT)) {
 			Article draft = articleRepository.findOne(ArticleSpecifications.draft(article));
@@ -288,7 +285,7 @@ public class ArticleService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
 	public Article saveArticleAsPublished(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
-		postRepository.lock(request.getId());
+//		postRepository.lock(request.getId());
 		Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		publishArticle(article);
 		return saveArticle(request, authorizedUser);
@@ -307,7 +304,7 @@ public class ArticleService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
 	public Article saveArticleAsUnpublished(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
-		postRepository.lock(request.getId());
+//		postRepository.lock(request.getId());
 		Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		unpublishArticle(article);
 		return saveArticle(request, authorizedUser);
@@ -326,7 +323,7 @@ public class ArticleService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
 	public Article saveArticle(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
-		postRepository.lock(request.getId());
+//		postRepository.lock(request.getId());
 		Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		LocalDateTime now = LocalDateTime.now();
 
@@ -478,7 +475,7 @@ public class ArticleService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
 	public Article deleteArticle(ArticleDeleteRequest request, BindingResult result) throws BindException {
-		postRepository.lock(request.getId());
+//		postRepository.lock(request.getId());
 		Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		articleRepository.delete(article);
 		return article;
@@ -488,7 +485,7 @@ public class ArticleService {
 	public List<Article> bulkPublishArticle(ArticleBulkPublishRequest request, AuthorizedUser authorizedUser) {
 		List<Article> articles = new ArrayList<>();
 		for (long id : request.getIds()) {
-			postRepository.lock(id);
+//			postRepository.lock(id);
 			Article article = articleRepository.findOneByIdAndLanguage(id, request.getLanguage());
 			if (article.getStatus() != Post.Status.DRAFT && request.getDate() == null) {
 				continue;
@@ -534,7 +531,7 @@ public class ArticleService {
 	public List<Article> bulkUnpublishArticle(ArticleBulkUnpublishRequest request, AuthorizedUser authorizedUser) {
 		List<Article> articles = new ArrayList<>();
 		for (long id : request.getIds()) {
-			postRepository.lock(id);
+//			postRepository.lock(id);
 			Article article = articleRepository.findOneByIdAndLanguage(id, request.getLanguage());
 			if (article.getStatus() == Post.Status.DRAFT) {
 				continue;
@@ -588,7 +585,8 @@ public class ArticleService {
 	}
 
 	public List<Long> getArticleIds(ArticleSearchRequest request) {
-		return articleRepository.searchForId(request);
+//		return articleRepository.searchForId(request);
+		return null;
 	}
 
 	public Page<Article> getArticles(ArticleSearchRequest request) {
@@ -598,7 +596,8 @@ public class ArticleService {
 
 	@Cacheable(value = WallRideCacheConfiguration.ARTICLE_CACHE)
 	public Page<Article> getArticles(ArticleSearchRequest request, Pageable pageable) {
-		return articleRepository.search(request, pageable);
+//		return articleRepository.search(request, pageable);
+		return null;
 	}
 
 	public List<Article> getArticles(Collection<Long> ids) {
@@ -628,8 +627,9 @@ public class ArticleService {
 				.withStatus(status);
 
 		Pageable pageable = new PageRequest(0, size);
-		Page<Article> page = articleRepository.search(request, pageable);
-		return new TreeSet<>(page.getContent());
+//		Page<Article> page = articleRepository.search(request, pageable);
+//		return new TreeSet<>(page.getContent());
+		return null;
 	}
 
 	@Cacheable(value = WallRideCacheConfiguration.ARTICLE_CACHE)
@@ -639,8 +639,9 @@ public class ArticleService {
 				.withStatus(status);
 
 		Pageable pageable = new PageRequest(0, size);
-		Page<Article> page = articleRepository.search(request, pageable);
-		return new TreeSet<>(page.getContent());
+//		Page<Article> page = articleRepository.search(request, pageable);
+//		return new TreeSet<>(page.getContent());
+		return null;
 	}
 
 	public Article getArticleById(long id) {

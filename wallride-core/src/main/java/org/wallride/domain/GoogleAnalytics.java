@@ -16,8 +16,6 @@
 
 package org.wallride.domain;
 
-import org.hibernate.search.annotations.Field;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Lob;
@@ -27,23 +25,18 @@ import java.io.Serializable;
 public class GoogleAnalytics implements Serializable {
 
 	@Column(name = "ga_tracking_id", length = 100)
-	@Field
 	private String trackingId;
 
 	@Column(name = "ga_profile_id", length = 100)
-	@Field
 	private String profileId;
 
 	@Column(name = "ga_custom_dimension_index")
-	@Field
 	private int customDimensionIndex;
 
 	@Column(name = "ga_service_account_id", length = 300)
-	@Field
 	private String serviceAccountId;
 
 	@Column(name = "ga_service_account_p12_file_name", length = 300)
-	@Field
 	private String serviceAccountP12FileName;
 
 	@Lob

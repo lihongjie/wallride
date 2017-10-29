@@ -16,8 +16,6 @@
 
 package org.wallride.domain;
 
-import org.hibernate.search.annotations.Field;
-
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
@@ -25,10 +23,8 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class PersonalName implements Serializable {
 
-	@Field
 	private String firstName;
 
-	@Field
 	private String lastName;
 
 	public PersonalName() {}

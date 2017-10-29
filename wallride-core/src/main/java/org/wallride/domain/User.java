@@ -19,7 +19,6 @@ package org.wallride.domain;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SortNatural;
-import org.hibernate.search.annotations.*;
 import org.springframework.util.DigestUtils;
 
 import javax.persistence.*;
@@ -40,7 +39,6 @@ import java.util.TreeSet;
 @Table(name = "user")
 @DynamicInsert
 @DynamicUpdate
-@Indexed
 @SuppressWarnings("serial")
 public class User extends DomainObject<Long> {
 
@@ -56,12 +54,9 @@ public class User extends DomainObject<Long> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Field(name = "sortId", analyze = Analyze.NO, index = org.hibernate.search.annotations.Index.NO)
-	@SortableField(forField = "sortId")
 	private long id;
 
 	@Column(length = 100, nullable = false, unique = true)
-	@Field(analyze = Analyze.NO)
 	private String loginId;
 
 	@Column(length = 500, nullable = false)
@@ -72,11 +67,9 @@ public class User extends DomainObject<Long> {
 			@AttributeOverride(name = "firstName", column = @Column(name = "name_first", length = 50, nullable = false)),
 			@AttributeOverride(name = "lastName", column = @Column(name = "name_last", length = 50, nullable = false)),
 	})
-	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private PersonalName name = new PersonalName();
 
 	@Column(length = 500)
-	@Field
 	private String nickname;
 
 	@Column(length = 200, nullable = false, unique = true)

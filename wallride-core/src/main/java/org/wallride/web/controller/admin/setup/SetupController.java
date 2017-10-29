@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.admin.setup;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,9 +35,10 @@ import javax.validation.Valid;
 @RequestMapping("/setup")
 public class SetupController {
 
-	@Inject
+	@Autowired
 	private SetupService setupService;
-	@Inject
+
+	@Autowired
 	private BlogService blogService;
 
 	@ModelAttribute("form")
@@ -56,8 +58,7 @@ public class SetupController {
 	@RequestMapping(method = RequestMethod.POST)
 	public String save(
 			@Valid @ModelAttribute("form") SetupForm form,
-			BindingResult result,
-			RedirectAttributes redirectAttributes) {
+			BindingResult result, RedirectAttributes redirectAttributes) {
 		Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
 		if (blog != null) {
 			throw new HttpForbiddenException();

@@ -4,7 +4,6 @@ package org.wallride.domain;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.search.annotations.*;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -15,45 +14,34 @@ import java.time.LocalDateTime;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"post_id", "custom_field_id"}))
 @DynamicInsert
 @DynamicUpdate
-@Analyzer(definition = "synonyms")
-@Indexed
 @SuppressWarnings("serial")
 public class CustomFieldValue extends DomainObject<Long> implements Comparable<CustomFieldValue> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Field(name = "sortId", analyze = Analyze.NO, index = org.hibernate.search.annotations.Index.NO)
-	@SortableField(forField = "sortId")
 	private long id;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	@JoinColumn(name = "custom_field_id")
 	private CustomField customField;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-//	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Post post;
 
 	@Column(length = 300)
-	@Field
 	private String stringValue;
 
 	@Column
-	@Field
 	private Long numberValue;
 
 	@Column
 	@Lob
-	@Field
 	private String textValue;
 
 	@Column
-	@Field
 	private LocalDate dateValue;
 
 	@Column
-	@Field
 	private LocalDateTime datetimeValue;
 
 	@Override

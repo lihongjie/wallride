@@ -7,11 +7,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SortNatural;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.SortableField;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +23,6 @@ import java.util.TreeSet;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"code", "language"}))
 @DynamicInsert
 @DynamicUpdate
-@Indexed
-@SuppressWarnings("serial")
 public class CustomField extends DomainObject<Long> implements Comparable<CustomField> {
 
 	public static final String SHALLOW_GRAPH_NAME = "CUSTOM_FIELD_SHALLOW_GRAPH";
@@ -66,28 +59,20 @@ public class CustomField extends DomainObject<Long> implements Comparable<Custom
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Field(name = "sortId", analyze = Analyze.NO, index = org.hibernate.search.annotations.Index.NO)
-	@SortableField(forField = "sortId")
 	private long id;
 
 	@Column
-	@Field
-	@SortableField
 	private Integer idx;
 
 	@Column(length = 200)
-	@Field(analyze = Analyze.NO)
 	private String code;
 
 	@Column(length = 200)
-	@Field
 	private String name;
 
 	@Lob
-	@Field
 	private String description;
 
-	@Field
 	@Enumerated(EnumType.STRING)
 	@Column(length = 50, nullable = false)
 	private FieldType fieldType;
@@ -96,7 +81,6 @@ public class CustomField extends DomainObject<Long> implements Comparable<Custom
 	private String defaultValue;
 
 	@Column(length = 3, nullable = false)
-	@Field
 	private String language;
 
 	@OneToMany(mappedBy = "customField", cascade = CascadeType.ALL)

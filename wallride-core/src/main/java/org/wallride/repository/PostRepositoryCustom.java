@@ -23,7 +23,7 @@ import org.wallride.model.PostSearchRequest;
 
 public interface PostRepositoryCustom {
 
-	void lock(long id);
-
-	Page<Post> search(PostSearchRequest request, Pageable pageable);
+//	void lock(long id);
+//
+//	Page<Post> search(PostSearchRequest request, Pageable pageable);
 }

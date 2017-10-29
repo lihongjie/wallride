@@ -109,7 +109,8 @@ public class TagService {
 		// Get all articles that have tag for merging
 		ArticleSearchRequest searchRequest = new ArticleSearchRequest()
 				.withTagIds(request.getIds());
-		Page<Article> articles = articleRepository.search(searchRequest);
+//		Page<Article> articles = articleRepository.search(searchRequest);
+		Page<Article> articles = null;
 
 		// Delete old tag after merging
 		for (long id : request.getIds()) {
@@ -187,6 +188,7 @@ public class TagService {
 	}
 
 	public Page<Tag> getTags(TagSearchRequest request, Pageable pageable) {
-		return tagRepository.search(request, pageable);
+//		return tagRepository.search(request, pageable);
+		return null;
 	}
 }

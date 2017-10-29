@@ -20,8 +20,6 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SortNatural;
-import org.hibernate.search.annotations.*;
-import org.hibernate.search.annotations.Index;
 
 import javax.persistence.*;
 import java.util.SortedSet;
@@ -31,26 +29,18 @@ import java.util.TreeSet;
 @Table(name = "tag", uniqueConstraints = @UniqueConstraint(columnNames = {"name", "language"}))
 @DynamicInsert
 @DynamicUpdate
-@Indexed
 @SuppressWarnings("serial")
 public class Tag extends DomainObject<Long> implements Comparable<Tag> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Field(name = "sortId", analyze = Analyze.NO, index = Index.NO)
-	@SortableField(forField = "sortId")
+
 	private long id;
 
 	@Column(length = 200, nullable = false)
-	@Fields({
-			@Field,
-			@Field(name = "sortName", analyze = Analyze.NO, index = org.hibernate.search.annotations.Index.NO)
-	})
-	@SortableField(forField = "sortName")
 	private String name;
 
 	@Column(length = 3, nullable = false)
-	@Field
 	private String language;
 
 	@ManyToMany

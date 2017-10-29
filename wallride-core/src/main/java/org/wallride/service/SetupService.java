@@ -16,6 +16,7 @@
 
 package org.wallride.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,9 +28,6 @@ import org.wallride.domain.User;
 import org.wallride.model.SetupRequest;
 import org.wallride.repository.BlogRepository;
 import org.wallride.repository.UserRepository;
-
-import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,49 +35,37 @@ import java.util.Set;
 @Transactional(rollbackFor = Exception.class)
 public class SetupService {
 
-	@Resource
+	@Autowired
 	private UserRepository userRepository;
 
-	@Resource
+	@Autowired
 	private BlogRepository blogRepository;
 
 	@CacheEvict(value = {WallRideCacheConfiguration.USER_CACHE, WallRideCacheConfiguration.BLOG_CACHE}, allEntries = true)
 	public User setup(SetupRequest request) {
-		LocalDateTime now = LocalDateTime.now();
 
 		User user = new User();
 		user.setLoginId(request.getLoginId());
-
 		StandardPasswordEncoder passwordEncoder = new StandardPasswordEncoder();
 		user.setLoginPassword(passwordEncoder.encode(request.getLoginPassword()));
-
 		user.getName().setFirstName(request.getName().getFirstName());
 		user.getName().setLastName(request.getName().getLastName());
 		user.setEmail(request.getEmail());
-
 		user.getRoles().add(User.Role.ADMIN);
-
-		user.setCreatedAt(now);
-		user.setUpdatedAt(now);
-
 		user = userRepository.saveAndFlush(user);
 
+		String userName = user.toString();
 		Blog blog = new Blog();
 		blog.setCode("default");
 		blog.setDefaultLanguage(request.getDefaultLanguage());
-		blog.setCreatedAt(now);
 		blog.setCreatedBy(user.toString());
-		blog.setUpdatedAt(now);
 		blog.setUpdatedBy(user.toString());
-
 		BlogLanguage defaultLanguage = new BlogLanguage();
 		defaultLanguage.setBlog(blog);
 		defaultLanguage.setLanguage(request.getDefaultLanguage());
 		defaultLanguage.setTitle(request.getWebsiteTitle());
-		defaultLanguage.setCreatedAt(now);
-		defaultLanguage.setCreatedBy(user.toString());
-		defaultLanguage.setUpdatedAt(now);
-		defaultLanguage.setUpdatedBy(user.toString());
+		defaultLanguage.setCreatedBy(userName);
+		defaultLanguage.setUpdatedBy(userName);
 
 		Set<BlogLanguage> blogLanguages = new HashSet<>();
 		blogLanguages.add(defaultLanguage);
@@ -89,17 +75,13 @@ public class SetupService {
 			blogLanguage.setBlog(blog);
 			blogLanguage.setLanguage(language);
 			blogLanguage.setTitle(request.getWebsiteTitle());
-			blogLanguage.setCreatedAt(now);
-			blogLanguage.setCreatedBy(user.toString());
-			blogLanguage.setUpdatedAt(now);
-			blogLanguage.setUpdatedBy(user.toString());
+			blogLanguage.setCreatedBy(userName);
+			blogLanguage.setUpdatedBy(userName);
 
 			blogLanguages.add(blogLanguage);
 		}
 		blog.setLanguages(blogLanguages);
-
 		blogRepository.saveAndFlush(blog);
-
 		return user;
 	}
 }

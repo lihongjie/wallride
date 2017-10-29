@@ -302,7 +302,8 @@ public class PostService {
 	}
 
 	public Page<Post> getPosts(PostSearchRequest request, Pageable pageable) {
-		return postRepository.search(request, pageable);
+//		return postRepository.search(request, pageable);
+		return null;
 	}
 
 	/**

@@ -18,9 +18,6 @@ package org.wallride.domain;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Indexed;
-
 import javax.persistence.*;
 
 @Entity
@@ -50,9 +47,6 @@ import javax.persistence.*;
 @Table(name = "article")
 @DynamicInsert
 @DynamicUpdate
-@Analyzer(definition = "synonyms")
-@Indexed
-@SuppressWarnings("serial")
 public class Article extends Post implements Comparable<Article> {
 
 	public static final String SHALLOW_GRAPH_NAME = "ARTICLE_SHALLOW_GRAPH";

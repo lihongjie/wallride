@@ -17,9 +17,6 @@
 package org.wallride.domain;
 
 import org.hibernate.annotations.*;
-import org.hibernate.search.annotations.*;
-import org.hibernate.search.annotations.Index;
-import org.wallride.support.CustomFieldValuesBridge;
 
 import javax.persistence.CascadeType;
 import javax.persistence.*;
@@ -44,7 +41,6 @@ import java.util.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DynamicInsert
 @DynamicUpdate
-@Indexed
 public class Post extends DomainObject<Long> {
 
 	public static final String SHALLOW_GRAPH_NAME = "POST_SHALLOW_GRAPH";
@@ -56,54 +52,40 @@ public class Post extends DomainObject<Long> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Field(name = "sortId", analyze = Analyze.NO, index = Index.NO)
-	@SortableField(forField = "sortId")
 	private long id;
 
 	@Column(length = 200)
-	@Field(analyze = Analyze.NO)
 	private String code;
 
 	@Column(length = 3, nullable = false)
-	@Field
 	private String language;
 
 	@Column(length = 200)
-	@Field
 	private String title;
 
 	@ManyToOne
 	private Media cover;
 
 	@Lob
-	@Field
 	private String body;
 
 	@Embedded
-	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Seo seo = new Seo();
 
-	@Fields({
-			@Field,
-			@Field(name = "sortDate", analyze = Analyze.NO, index = Index.NO)
-	})
-	@SortableField(forField = "sortDate")
 	private LocalDateTime date;
 
 	@ManyToOne
-	@IndexedEmbedded(includeEmbeddedObjectId = true)
+
 	private User author;
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 50, nullable = false)
-	@Field
 	private Status status;
 
 	@Column(nullable = false)
 	private long views;
 
 	@ManyToOne
-	@IndexedEmbedded(includeEmbeddedObjectId = true, depth = 1, indexNullAs = Field.DEFAULT_NULL_TOKEN)
 	private Post drafted;
 
 	@Column(length = 200)
@@ -115,7 +97,6 @@ public class Post extends DomainObject<Long> {
 			joinColumns = {@JoinColumn(name = "post_id")},
 			inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id"))
 	@SortNatural
-	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private SortedSet<Category> categories = new TreeSet<>();
 
 	@ManyToMany
@@ -124,13 +105,10 @@ public class Post extends DomainObject<Long> {
 			joinColumns = {@JoinColumn(name = "post_id")},
 			inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
 	@SortNatural
-	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private SortedSet<Tag> tags = new TreeSet<>();
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
 	@SortNatural
-//	@IndexedEmbedded(includeEmbeddedObjectId = true)
-	@Field(bridge = @FieldBridge(impl = CustomFieldValuesBridge.class))
 	private SortedSet<CustomFieldValue> customFieldValues = new TreeSet<>();
 
 	@OneToMany(mappedBy = "drafted", cascade = CascadeType.ALL)
@@ -141,7 +119,6 @@ public class Post extends DomainObject<Long> {
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
 	@LazyCollection(LazyCollectionOption.EXTRA)
 	@SortNatural
-	@ContainedIn
 	private SortedSet<Comment> comments;
 
 	@ManyToMany
@@ -341,8 +318,4 @@ public class Post extends DomainObject<Long> {
 		return getTitle();
 	}
 
-//	@Override
-//	public String toString() {
-//		return getTitle();
-//	}
 }

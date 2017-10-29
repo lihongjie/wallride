@@ -9,7 +9,6 @@ import java.io.Serializable;
 
 
 @Embeddable
-@SuppressWarnings("serial")
 public class CustomFieldOption implements Serializable {
 
 	@Column(length = 200, nullable = false)

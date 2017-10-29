@@ -18,7 +18,6 @@ package org.wallride.domain;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -53,8 +52,6 @@ import java.util.List;
 @Table(name="page")
 @DynamicInsert
 @DynamicUpdate
-@Analyzer(definition="synonyms")
-@Indexed
 @SuppressWarnings("serial")
 public class Page extends Post implements Comparable<Page> {
 
@@ -62,19 +59,12 @@ public class Page extends Post implements Comparable<Page> {
 	public static final String DEEP_GRAPH_NAME = "PAGE_DEEP_GRAPH";
 
 	@Column(nullable=false)
-	@Fields({
-			@Field,
-			@Field(name = "sortLft", analyze = Analyze.NO, index = org.hibernate.search.annotations.Index.NO)
-	})
-	@SortableField(forField = "sortLft")
 	private int lft;
 
 	@Column(nullable=false)
-	@Field
 	private int rgt;
 
 	@ManyToOne
-//	@IndexedEmbedded(includeEmbeddedObjectId = true) //org.hibernate.search.SearchException: Circular reference.
 	private Page parent;
 
 	@OneToMany(mappedBy="parent", cascade=CascadeType.ALL)

@@ -109,7 +109,7 @@ public class CustomFieldService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.CUSTOM_FIELD_CACHE, allEntries = true)
 	public CustomField deleteCustomField(CustomFieldDeleteRequest request, BindingResult result) {
-		customFieldRepository.lock(request.getId());
+//		customFieldRepository.lock(request.getId());
 		CustomField customField = customFieldRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		customFieldRepository.delete(customField);
 		return customField;
@@ -164,7 +164,8 @@ public class CustomFieldService {
 	}
 
 	public Page<CustomField> getCustomFields(CustomFieldSearchRequest request, Pageable pageable) {
-		return customFieldRepository.search(request, pageable);
+//		return customFieldRepository.search(request, pageable);
+		return null;
 	}
 
 	public SortedSet<CustomField> getAllCustomFields() {

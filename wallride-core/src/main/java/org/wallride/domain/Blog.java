@@ -18,10 +18,6 @@ package org.wallride.domain;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.IndexedEmbedded;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,11 +42,9 @@ public class Blog extends DomainObject<Long> {
 	private long id;
 
 	@Column(length = 200, nullable = false, unique = true)
-	@Field(analyze = Analyze.NO)
 	private String code;
 
 	@Column(length = 3, nullable = false)
-	@Field
 	private String defaultLanguage;
 
 //	@Column(name = "media_url_prefix", length = 300, nullable = false)
@@ -62,11 +56,9 @@ public class Blog extends DomainObject<Long> {
 //	private String mediaPath;
 
 	@Embedded
-	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private GoogleAnalytics googleAnalytics;
 
 	@OneToMany(mappedBy = "blog", cascade = CascadeType.ALL)
-	@IndexedEmbedded(includeEmbeddedObjectId = true)
 	private Set<BlogLanguage> languages = new HashSet<>();
 
 	public Long getId() {

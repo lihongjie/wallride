@@ -250,7 +250,7 @@ public class PageService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
 	public Page savePageAsDraft(PageUpdateRequest request, AuthorizedUser authorizedUser) {
-		postRepository.lock(request.getId());
+//		postRepository.lock(request.getId());
 		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		if (!page.getStatus().equals(Post.Status.DRAFT)) {
 			Page draft = pageRepository.findOne(PageSpecifications.draft(page));
@@ -301,7 +301,7 @@ public class PageService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
 	public Page savePageAsPublished(PageUpdateRequest request, AuthorizedUser authorizedUser) {
-		postRepository.lock(request.getId());
+//		postRepository.lock(request.getId());
 		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		Page deleteTarget = getDraftById(page.getId());
 		if (deleteTarget != null) {
@@ -315,7 +315,7 @@ public class PageService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
 	public Page savePageAsUnpublished(PageUpdateRequest request, AuthorizedUser authorizedUser) {
-		postRepository.lock(request.getId());
+//		postRepository.lock(request.getId());
 		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		Page deleteTarget = getDraftById(page.getId());
 		if (deleteTarget != null) {
@@ -330,7 +330,7 @@ public class PageService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
 	public Page savePage(PageUpdateRequest request, AuthorizedUser authorizedUser) {
-		postRepository.lock(request.getId());
+//		postRepository.lock(request.getId());
 		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		LocalDateTime now = LocalDateTime.now();
 
@@ -507,7 +507,7 @@ public class PageService {
 		for (int i = 0; i < data.size(); i++) {
 			Map<String, Object> map = data.get(i);
 			if (map.get("item_id") != null) {
-				postRepository.lock(Long.parseLong((String) map.get("item_id")));
+//				postRepository.lock(Long.parseLong((String) map.get("item_id")));
 				Page page = pageRepository.findOneByIdAndLanguage(Long.parseLong((String) map.get("item_id")), language);
 				if (page != null) {
 					Page parent = null;
@@ -527,7 +527,7 @@ public class PageService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
 	public Page deletePage(PageDeleteRequest request, BindingResult result) throws BindException {
-		postRepository.lock(request.getId());
+//		postRepository.lock(request.getId());
 		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		Page parent = page.getParent();
 		for (Page child : page.getChildren()) {
@@ -547,7 +547,7 @@ public class PageService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
 	public Page deletePage(long id, String language) {
-		postRepository.lock(id);
+//		postRepository.lock(id);
 		Page page = pageRepository.findOneByIdAndLanguage(id, language);
 		Page parent = page.getParent();
 		for (Page child : page.getChildren()) {
@@ -601,7 +601,8 @@ public class PageService {
 	}
 
 	public List<Long> getPageIds(PageSearchRequest request) {
-		return pageRepository.searchForId(request);
+//		return pageRepository.searchForId(request);
+		return null;
 	}
 
 	@Cacheable(value = WallRideCacheConfiguration.PAGE_CACHE)
@@ -611,7 +612,8 @@ public class PageService {
 
 	@Cacheable(value = WallRideCacheConfiguration.PAGE_CACHE)
 	public org.springframework.data.domain.Page<Page> getPages(PageSearchRequest request, Pageable pageable) {
-		return pageRepository.search(request, pageable);
+//		return pageRepository.search(request, pageable);
+		return null;
 	}
 
 	@Cacheable(value = WallRideCacheConfiguration.PAGE_CACHE)

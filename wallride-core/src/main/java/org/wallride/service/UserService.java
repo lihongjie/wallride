@@ -412,7 +412,8 @@ public class UserService {
 	}
 
 	public List<Long> getUserIds(UserSearchRequest request) {
-		return userRepository.searchForId(request);
+//		return userRepository.searchForId(request);
+		return null;
 	}
 
 	public Page<User> getUsers(UserSearchRequest request) {
@@ -421,7 +422,8 @@ public class UserService {
 	}
 
 	public Page<User> getUsers(UserSearchRequest request, Pageable pageable) {
-		return userRepository.search(request, pageable);
+//		return userRepository.search(request, pageable);
+		return null;
 	}
 
 	private List<User> getUsers(Collection<Long> ids) {

@@ -168,6 +168,7 @@ public class CommentService {
 	}
 
 	public Page<Comment> getComments(CommentSearchRequest request, Pageable pageable) {
-		return commentRepository.search(request, pageable);
+//		return commentRepository.search(request, pageable);
+		return null;
 	}
 }

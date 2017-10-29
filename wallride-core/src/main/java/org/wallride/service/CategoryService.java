@@ -90,7 +90,7 @@ public class CategoryService {
 
 	@CacheEvict(value = {WallRideCacheConfiguration.ARTICLE_CACHE, WallRideCacheConfiguration.PAGE_CACHE}, allEntries = true)
 	public Category updateCategory(CategoryUpdateRequest request, AuthorizedUser authorizedUser) {
-		categoryRepository.lock(request.getId());
+//		categoryRepository.lock(request.getId());
 		Category category = categoryRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		Category parent = null;
 		if (request.getParentId() != null) {
@@ -138,7 +138,7 @@ public class CategoryService {
 		for (int i = 0; i < data.size(); i++) {
 			Map<String, Object> map = data.get(i);
 			if (map.get("item_id") != null) {
-				categoryRepository.lock(Long.parseLong((String) map.get("item_id")));
+//				categoryRepository.lock(Long.parseLong((String) map.get("item_id")));
 				Category category = categoryRepository.findOneByIdAndLanguage(Long.parseLong((String) map.get("item_id")), language);
 				if (category != null) {
 					Category parent = null;
@@ -156,7 +156,7 @@ public class CategoryService {
 
 	@CacheEvict(value = {WallRideCacheConfiguration.ARTICLE_CACHE, WallRideCacheConfiguration.PAGE_CACHE}, allEntries = true)
 	public Category deleteCategory(long id, String language) {
-		categoryRepository.lock(id);
+//		categoryRepository.lock(id);
 		Category category = categoryRepository.findOneByIdAndLanguage(id, language);
 		Category parent = category.getParent();
 		for (Category child : category.getChildren()) {
@@ -200,6 +200,7 @@ public class CategoryService {
 	}
 
 	public Page<Category> getCategories(CategorySearchRequest request, Pageable pageable) {
-		return categoryRepository.search(request, pageable);
+//		return categoryRepository.search(request, pageable);
+		return null;
 	}
 }

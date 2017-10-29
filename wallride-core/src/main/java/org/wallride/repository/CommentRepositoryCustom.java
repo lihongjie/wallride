@@ -23,5 +23,6 @@ import org.wallride.model.CommentSearchRequest;
 
 public interface CommentRepositoryCustom {
 
-	Page<Comment> search(CommentSearchRequest request, Pageable pageable);
+//	Page<Comment> search(CommentSearchRequest request, Pageable pageable);
 }
+

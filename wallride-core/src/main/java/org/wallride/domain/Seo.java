@@ -16,7 +16,6 @@
 
 package org.wallride.domain;
 
-import org.hibernate.search.annotations.Field;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -28,17 +27,14 @@ import java.io.Serializable;
 public class Seo implements Serializable {
 
 	@Column(name = "seo_title", length = 500)
-	@Field
 	private String title;
 
 	@Column(name = "seo_description")
 	@Lob
-	@Field
 	private String description;
 
 	@Column(name = "seo_keywords")
 	@Lob
-	@Field
 	private String keywords;
 
 	public String getTitle() {

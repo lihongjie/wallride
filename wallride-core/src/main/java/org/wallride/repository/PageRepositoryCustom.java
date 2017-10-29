@@ -24,7 +24,7 @@ import java.util.List;
 
 public interface PageRepositoryCustom {
 
-	org.springframework.data.domain.Page<Page> search(PageSearchRequest request);
-	org.springframework.data.domain.Page<Page> search(PageSearchRequest request, Pageable pageable);
-	List<Long> searchForId(PageSearchRequest request);
+//	org.springframework.data.domain.Page<Page> search(PageSearchRequest request);
+//	org.springframework.data.domain.Page<Page> search(PageSearchRequest request, Pageable pageable);
+//	List<Long> searchForId(PageSearchRequest request);
 }

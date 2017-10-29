@@ -19,9 +19,6 @@ package org.wallride.domain;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SortNatural;
-import org.hibernate.search.annotations.*;
-import org.hibernate.search.annotations.Index;
-
 import javax.persistence.*;
 import java.util.List;
 import java.util.SortedSet;
@@ -42,8 +39,6 @@ import java.util.TreeSet;
 @Table(name = "category", uniqueConstraints = @UniqueConstraint(columnNames = {"code", "language"}))
 @DynamicInsert
 @DynamicUpdate
-@Indexed
-@SuppressWarnings("serial")
 public class Category extends DomainObject<Long> implements Comparable<Category> {
 
 	public static final String SHALLOW_GRAPH_NAME = "CATEGORY_SHALLOW_GRAPH";
@@ -51,36 +46,24 @@ public class Category extends DomainObject<Long> implements Comparable<Category>
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Field(name = "sortId", analyze = Analyze.NO, index = Index.NO)
-	@SortableField(forField = "sortId")
 	private long id;
 
 	@Column(length = 200, nullable = false)
-	@Field(analyze = Analyze.NO)
 	private String code;
 
 	@Column(length = 3, nullable = false)
-	@Field
 	private String language;
 
 	@Column(length = 200, nullable = false)
-	@Fields({
-			@Field,
-			@Field(name = "sortName", analyze = Analyze.NO, index = org.hibernate.search.annotations.Index.NO)
-	})
-	@SortableField(forField = "sortName")
 	private String name;
 
 	@Lob
-	@Field
 	private String description;
 
 	@Column(nullable = false)
-	@Field
 	private int lft;
 
 	@Column(nullable = false)
-	@Field
 	private int rgt;
 
 	@ManyToOne
