@@ -56,7 +56,7 @@ import java.util.Map;
 @EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
 public class WallRideWebMvcConfiguration extends WebMvcConfigurerAdapter {
 
-	private static final String CLASSPATH_RESOURCE_LOCATION = "classpath:/resources/assets/";
+	private static final String CLASSPATH_RESOURCE_LOCATION = "classpath:/resources/guest/";
 
 	@Autowired
 	private WallRideProperties wallRideProperties;

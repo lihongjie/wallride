@@ -23,6 +23,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -597,7 +598,7 @@ public class ArticleService {
 	@Cacheable(value = WallRideCacheConfiguration.ARTICLE_CACHE)
 	public Page<Article> getArticles(ArticleSearchRequest request, Pageable pageable) {
 //		return articleRepository.search(request, pageable);
-		return null;
+		return articleRepository.findAll(pageable);
 	}
 
 	public List<Article> getArticles(Collection<Long> ids) {

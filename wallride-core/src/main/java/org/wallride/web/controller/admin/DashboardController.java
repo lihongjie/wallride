@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.admin;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,15 +37,19 @@ import java.util.SortedSet;
 @Controller
 public class DashboardController {
 
-	@Inject
+	@Autowired
 	private BlogService blogService;
-	@Inject
+
+	@Autowired
 	private PostService postService;
-	@Inject
+
+	@Autowired
 	private ArticleService articleService;
-	@Inject
+
+	@Autowired
 	private PageService pageService;
-	@Inject
+
+	@Autowired
 	private CategoryService categoryService;
 	
 	@RequestMapping({"/","/dashboard"})

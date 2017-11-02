@@ -16,6 +16,8 @@
 
 package org.wallride.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.wallride.domain.Article;
 import org.wallride.domain.Post;
+import org.wallride.model.ArticleSearchRequest;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,7 +36,7 @@ import java.util.Map;
 
 @Repository
 @Transactional
-public interface ArticleRepository extends JpaRepository<Article, Long>, ArticleRepositoryCustom {
+public interface ArticleRepository extends JpaRepository<Article, Long> {
 
 	@EntityGraph(value = Article.DEEP_GRAPH_NAME, type = EntityGraph.EntityGraphType.FETCH)
 	Article findOne(Specification<Article> spec);

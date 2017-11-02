@@ -25,7 +25,7 @@ import java.util.List;
 
 public interface ArticleRepositoryCustom {
 
-//	Page<Article> search(ArticleSearchRequest request);
-//	Page<Article> search(ArticleSearchRequest request, Pageable pageable);
-//	List<Long> searchForId(ArticleSearchRequest request);
+	Page<Article> search(ArticleSearchRequest request);
+	Page<Article> search(ArticleSearchRequest request, Pageable pageable);
+	List<Long> searchForId(ArticleSearchRequest request);
 }
