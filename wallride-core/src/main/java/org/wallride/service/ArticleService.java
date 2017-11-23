@@ -596,9 +596,12 @@ public class ArticleService {
 	}
 
 	@Cacheable(value = WallRideCacheConfiguration.ARTICLE_CACHE)
+	@Transactional
 	public Page<Article> getArticles(ArticleSearchRequest request, Pageable pageable) {
 //		return articleRepository.search(request, pageable);
-		return articleRepository.findAll(pageable);
+		Page<Article> articles = articleRepository.findAll(pageable);
+		int size = articles.getContent().size();
+		return articles;
 	}
 
 	public List<Article> getArticles(Collection<Long> ids) {
@@ -628,9 +631,9 @@ public class ArticleService {
 				.withStatus(status);
 
 		Pageable pageable = new PageRequest(0, size);
-//		Page<Article> page = articleRepository.search(request, pageable);
-//		return new TreeSet<>(page.getContent());
-		return null;
+		Page<Article> page = articleRepository.findAll(pageable);
+		return new TreeSet<>(page.getContent());
+
 	}
 
 	@Cacheable(value = WallRideCacheConfiguration.ARTICLE_CACHE)
@@ -640,9 +643,8 @@ public class ArticleService {
 				.withStatus(status);
 
 		Pageable pageable = new PageRequest(0, size);
-//		Page<Article> page = articleRepository.search(request, pageable);
-//		return new TreeSet<>(page.getContent());
-		return null;
+		Page<Article> page = articleRepository.findAll(ArticleSpecifications.searchRequestSpecification(request), pageable);
+		return new TreeSet<>(page.getContent());
 	}
 
 	public Article getArticleById(long id) {

@@ -189,6 +189,6 @@ public class TagService {
 
 	public Page<Tag> getTags(TagSearchRequest request, Pageable pageable) {
 //		return tagRepository.search(request, pageable);
-		return null;
+		return tagRepository.findAll(pageable);
 	}
 }

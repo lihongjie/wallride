@@ -1,5 +1,6 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
+	  th:lang="${#locale.language}">
 	<head>
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -11,8 +12,8 @@
 		<link rel="alternate" type="application/atom+xml" th:title="${WEBSITE_TITLE}" th:href="@{/feed/atom.xml}" />
 		<link rel="alternate" type="application/rss+xml" th:title="${WEBSITE_TITLE}" th:href="@{/feed/rss.xml}" />
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
-		<link rel="stylesheet" th:href="@{/resources/css/sticky-footer-navbar.css}" href="#" />
-		<link rel="stylesheet" th:href="@{/resources/css/common.css}" href="#" />
+		<link rel="stylesheet" th:href="@{/resources/guest/css/sticky-footer-navbar.css}" href="#" />
+		<link rel="stylesheet" th:href="@{/resources/guest/css/common.css}" href="#" />
 		<!--/*/ </th:block> /*/-->
 		<!--/*/ <th:block th:fragment="head-script"> /*/-->
 		<!--[if lt IE 9]>
@@ -21,8 +22,8 @@
 		<![endif]-->
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 		<script src="//netdna.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-		<script th:src="@{/resources/lib/jsrender.min.js}" src="#"></script>
-		<script th:src="@{/resources/lib/jquery.lazyload.min.js}" src="#"></script>
+		<script th:src="@{/resources/guest/lib/jsrender.min.js}" src="#"></script>
+		<script th:src="@{/resources/guest/lib/jquery.lazyload.min.js}" src="#"></script>
 		<!--/*/ </th:block> /*/-->
 		<script th:replace="google-analytics::ga(null)"></script>
 	</head>

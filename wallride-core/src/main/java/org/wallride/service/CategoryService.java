@@ -201,6 +201,6 @@ public class CategoryService {
 
 	public Page<Category> getCategories(CategorySearchRequest request, Pageable pageable) {
 //		return categoryRepository.search(request, pageable);
-		return null;
+		return categoryRepository.findAll(pageable);
 	}
 }

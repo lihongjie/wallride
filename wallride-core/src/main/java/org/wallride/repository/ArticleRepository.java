@@ -19,10 +19,7 @@ package org.wallride.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +33,7 @@ import java.util.Map;
 
 @Repository
 @Transactional
-public interface ArticleRepository extends JpaRepository<Article, Long> {
+public interface ArticleRepository extends JpaRepository<Article, Long>,JpaSpecificationExecutor<Article>  {
 
 	@EntityGraph(value = Article.DEEP_GRAPH_NAME, type = EntityGraph.EntityGraphType.FETCH)
 	Article findOne(Specification<Article> spec);
@@ -83,4 +80,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 	@Modifying
 	@Query("delete Article article where article.drafted = :drafted ")
 	void deleteByDrafted(@Param("drafted") Article drafted);
+
+//	@Query("select * from Article article left  join article.categories category where article.status = :status and article.language = :language and article.")
+//	Page<Article> findByLanguageAndCategoryCodeAndStatus();
 }

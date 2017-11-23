@@ -74,8 +74,7 @@ public class Post extends DomainObject<Long> {
 
 	private LocalDateTime date;
 
-	@ManyToOne
-
+	@ManyToOne(fetch = FetchType.EAGER)
 	private User author;
 
 	@Enumerated(EnumType.STRING)
@@ -85,13 +84,13 @@ public class Post extends DomainObject<Long> {
 	@Column(nullable = false)
 	private long views;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Post drafted;
 
 	@Column(length = 200)
 	private String draftedCode;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 			name = "post_category",
 			joinColumns = {@JoinColumn(name = "post_id")},
@@ -99,7 +98,7 @@ public class Post extends DomainObject<Long> {
 	@SortNatural
 	private SortedSet<Category> categories = new TreeSet<>();
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 			name = "post_tag",
 			joinColumns = {@JoinColumn(name = "post_id")},
@@ -107,35 +106,35 @@ public class Post extends DomainObject<Long> {
 	@SortNatural
 	private SortedSet<Tag> tags = new TreeSet<>();
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@SortNatural
 	private SortedSet<CustomFieldValue> customFieldValues = new TreeSet<>();
 
 	@OneToMany(mappedBy = "drafted", cascade = CascadeType.ALL)
-	@LazyCollection(LazyCollectionOption.EXTRA)
+//	@LazyCollection(LazyCollectionOption.EXTRA)
 	@SortNatural
 	private SortedSet<Post> drafts;
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-	@LazyCollection(LazyCollectionOption.EXTRA)
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//	@LazyCollection(LazyCollectionOption.EXTRA)
 	@SortNatural
 	private SortedSet<Comment> comments;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 			name = "post_related_post",
 			joinColumns = {@JoinColumn(name = "post_id")},
 			inverseJoinColumns = {@JoinColumn(name = "related_id")})
 	private Set<Post> relatedToPosts = new HashSet<>();
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 			name = "post_related_post",
 			joinColumns = {@JoinColumn(name = "related_id")},
 			inverseJoinColumns = {@JoinColumn(name = "post_id")})
 	private Set<Post> relatedByPosts = new HashSet<>();
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "post_media", joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "media_id", referencedColumnName = "id"))
 	@OrderColumn(name = "`index`")
 	private List<Media> medias;

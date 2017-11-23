@@ -44,6 +44,7 @@ public class TagBulkDeleteController {
 
 	@Inject
 	private TagService tagService;
+
 	@Inject
 	private MessageSourceAccessor messageSourceAccessor;
 	

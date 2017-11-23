@@ -41,8 +41,8 @@ var TableDatatablesManaged = function () {
             "bStateSave": true, // save datatable state(pagination, sort, etc) in cookie.
 
             "lengthMenu": [
-                [5, 15, 20, -1],
-                [5, 15, 20, "All"] // change per page values here
+                [5, 15, 20, 50, -1],
+                [5, 15, 20, 50, "All"] // change per page values here
             ],
             // set the initial value
             "pageLength": 5,            
@@ -67,8 +67,9 @@ var TableDatatablesManaged = function () {
         });
 
         var tableWrapper = jQuery('#sample_1_wrapper');
-
+        debugger;
         table.find('.group-checkable').change(function () {
+            debugger;
             var set = jQuery(this).attr("data-set");
             var checked = jQuery(this).is(":checked");
             jQuery(set).each(function () {

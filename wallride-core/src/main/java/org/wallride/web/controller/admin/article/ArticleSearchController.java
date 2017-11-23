@@ -16,11 +16,13 @@
 
 package org.wallride.web.controller.admin.article;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -41,16 +43,17 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/{language}/articles/index")
 public class ArticleSearchController {
 
-    @Inject
+    @Autowired
     private ArticleService articleService;
 
-    @Inject
+    @Autowired
     private ConversionService conversionService;
 
     @ModelAttribute("countAll")
@@ -106,6 +109,54 @@ public class ArticleSearchController {
         }
 
         return "article/index";
+    }
+
+    @RequestMapping(value = "/metronic", method = RequestMethod.GET)
+    public String search_metronic(
+            @PathVariable String language,
+            @Validated @ModelAttribute("form") ArticleSearchForm form,
+            BindingResult result,
+            @PageableDefault(50) Pageable pageable,
+            Model model,
+            HttpServletRequest servletRequest) throws UnsupportedEncodingException {
+        Page<Article> articles = articleService.getArticles(form.toArticleSearchRequest(), pageable);
+
+        model.addAttribute("articles", articles);
+        model.addAttribute("pageable", pageable);
+        model.addAttribute("pagination", new Pagination<>(articles, servletRequest));
+
+        UriComponents uriComponents = ServletUriComponentsBuilder
+                .fromRequest(servletRequest)
+                .queryParams(ControllerUtils.convertBeanForQueryParams(form, conversionService))
+                .build();
+        if (!StringUtils.isEmpty(uriComponents.getQuery())) {
+            model.addAttribute("query", URLDecoder.decode(uriComponents.getQuery(), "UTF-8"));
+        }
+
+        return "article/index_metronic";
+    }
+
+    @RequestMapping(value = "/metronic/query", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> search_metronic_query(
+            @PathVariable String language,
+            @Validated @ModelAttribute("form") ArticleSearchForm form,
+            BindingResult result,
+            @PageableDefault(50) Pageable pageable,
+            Model model,
+            Integer sEcho,
+            Integer iDisplayStart,
+            Integer iDisplayLength,
+            HttpServletRequest servletRequest) throws UnsupportedEncodingException {
+        Map<String, Object> map = new HashMap<>();
+        Page<Article> articles = articleService.getArticles(form.toArticleSearchRequest(), pageable);
+
+
+        map.put("sEcho", sEcho);
+        map.put("iTotalRecords", articles.getTotalElements());
+        map.put("iTotalDisplayRecords", 10);
+        map.put("aaData", articles.getContent());
+        return map;
     }
 
     @RequestMapping(params = "query")

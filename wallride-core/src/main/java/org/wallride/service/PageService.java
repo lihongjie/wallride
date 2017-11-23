@@ -613,7 +613,7 @@ public class PageService {
 	@Cacheable(value = WallRideCacheConfiguration.PAGE_CACHE)
 	public org.springframework.data.domain.Page<Page> getPages(PageSearchRequest request, Pageable pageable) {
 //		return pageRepository.search(request, pageable);
-		return null;
+		return pageRepository.findAll(pageable);
 	}
 
 	@Cacheable(value = WallRideCacheConfiguration.PAGE_CACHE)

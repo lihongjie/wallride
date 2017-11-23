@@ -59,6 +59,14 @@ public class DashboardController {
 		redirectAttributes.addAttribute("language", defaultLanguage);
 		return "redirect:/_admin/{language}/";
 	}
+
+	@RequestMapping("/metronic")
+	public String dashboard_metroinc(RedirectAttributes redirectAttributes) {
+		Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
+		String defaultLanguage = blog.getDefaultLanguage();
+		redirectAttributes.addAttribute("language", defaultLanguage);
+		return "redirect:/_admin/{language}/metronic";
+	}
 	
 	@RequestMapping("/{language}/")
 	public String dashboard(@PathVariable String language, Model model) {
@@ -74,6 +82,22 @@ public class DashboardController {
 		model.addAttribute("recentDraftArticles", recentDraftArticles(language));
 
 		return "dashboard";
+	}
+
+	@RequestMapping("/{language}/metronic")
+	public String dashboard_metronic(@PathVariable String language, Model model) {
+		long articleCount = articleService.countArticlesByStatus(Post.Status.PUBLISHED, language);
+		long pageCount = pageService.countPagesByStatus(Post.Status.PUBLISHED, language);
+		long categoryCount = categoryService.getCategories(language).size();
+
+		model.addAttribute("articleCount", articleCount);
+		model.addAttribute("pageCount", pageCount);
+		model.addAttribute("categoryCount", categoryCount);
+		model.addAttribute("popularPosts", popularPosts(language));
+		model.addAttribute("recentPublishedArticles", recentPublishedArticles(language));
+		model.addAttribute("recentDraftArticles", recentDraftArticles(language));
+
+		return "metronic_dashboard";
 	}
 
 	private SortedSet<PopularPost> popularPosts(String language) {

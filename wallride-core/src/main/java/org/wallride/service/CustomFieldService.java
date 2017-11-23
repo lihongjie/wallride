@@ -165,7 +165,7 @@ public class CustomFieldService {
 
 	public Page<CustomField> getCustomFields(CustomFieldSearchRequest request, Pageable pageable) {
 //		return customFieldRepository.search(request, pageable);
-		return null;
+		return customFieldRepository.findAll(pageable);
 	}
 
 	public SortedSet<CustomField> getAllCustomFields() {

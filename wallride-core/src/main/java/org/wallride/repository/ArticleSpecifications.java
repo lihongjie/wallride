@@ -17,12 +17,12 @@
 package org.wallride.repository;
 
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 import org.wallride.domain.Article;
 import org.wallride.domain.Article_;
+import org.wallride.model.ArticleSearchRequest;
 
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +39,20 @@ public class ArticleSpecifications {
 
 			predicates.add(cb.equal(root.get(Article_.id), subquery));
 			return cb.and(predicates.toArray(new Predicate[0]));
+		};
+	}
+
+	public static Specification<Article> searchRequestSpecification(ArticleSearchRequest articleSearchRequest) {
+		return new Specification<Article>() {
+			@Override
+			public Predicate toPredicate(Root<Article> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+
+				List<Predicate> predicates = new ArrayList<>();
+				if (StringUtils.hasText(articleSearchRequest.getKeyword())) {
+
+				}
+				return null;
+			}
 		};
 	}
 }

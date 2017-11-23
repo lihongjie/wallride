@@ -15,7 +15,7 @@
 		<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/global/css/components.css}" href="#" />
 		<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/global/css/plugins.css}" href="#" />
 		<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/global/plugins/bootstrap/css/bootstrap.min.css}" href="#" />
-		<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/global/plugins/simple-line-icons/simple-line-icons.css}" href="#" />
+		<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/global/plugins/simple-line-icons/simple-line-icons.min.css}" href="#" />
 		<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/global/plugins/font-awesome/css/font-awesome.min.css}" href="#" />
 		<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/pages/css/blog.css}" href="#" />
 		<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/layouts/layout3/css/layout.css}" href="#" />
@@ -1177,11 +1177,11 @@
 						<div class="page-head">
 							<div class="container">
 								<!-- BEGIN PAGE TITLE -->
-								<div class="page-title">
+<!--								<div class="page-title">
 									<h1>Dashboard
 										<small>dashboard & statistics</small>
 									</h1>
-								</div>
+								</div>-->
 								<!-- END PAGE TITLE -->
 								<!-- BEGIN PAGE TOOLBAR -->
 								<div class="page-toolbar">
@@ -1305,47 +1305,7 @@
 								<div class="container">
 									<div class="col-md-9 col-sm-8 article-block">
 										<h1>Latest Blog</h1>
-										<div class="row">
-											<div class="col-md-4 blog-img blog-tag-data">
-												<img src="/resources/metronic/theme/assets/pages/media/gallery/image4.jpg" alt="" class="img-responsive">
-												<ul class="list-inline">
-													<li>
-														<i class="fa fa-calendar"></i>
-														<a href="javascript:;">
-															April 16, 2013 </a>
-													</li>
-													<li>
-														<i class="fa fa-comments"></i>
-														<a href="javascript:;">
-															38 Comments </a>
-													</li>
-												</ul>
-												<ul class="list-inline blog-tags">
-													<li>
-														<i class="fa fa-tags"></i>
-														<a href="javascript:;">
-															Technology </a>
-														<a href="javascript:;">
-															Education </a>
-														<a href="javascript:;">
-															Internet </a>
-													</li>
-												</ul>
-											</div>
-											<div class="col-md-8 blog-article">
-												<h3>
-													<a href="page_blog_item.html">
-														Hello here will be some recent news.. </a>
-												</h3>
-												<p>
-													At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero consectetur adipiscing elit magna. Sed et quam lacus. Fusce condimentum eleifend enim a feugiat. Pellentesque viverra vehicula sem ut volutpat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero magna. Sed et quam lacus. Fusce condimentum eleifend enim a feugiat.
-												</p>
-												<a class="btn blue" href="page_blog_item.html">
-													Read more <i class="m-icon-swapright m-icon-white"></i>
-												</a>
-											</div>
-										</div>
-										<hr>
+										<article th:each="article : ${articles}">
 										<div class="row">
 											<div class="col-md-4 blog-img blog-tag-data">
 												<img src="/resources/metronic/theme/assets/pages/media/gallery/image3.jpg" alt="" class="img-responsive">
@@ -1373,144 +1333,23 @@
 													</li>
 												</ul>
 											</div>
+
 											<div class="col-md-8 blog-article">
 												<h3>
-													<a href="page_blog_item.html">
-														Hello here will be some recent news.. </a>
+													<a th:href="@{${#posts.path(article)}}" th:text="${article.title}?:'No Titled'" href="#"></a>
 												</h3>
-												<p>
-													At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero consectetur adipiscing elit magna. Sed et quam lacus. Fusce condimentum eleifend enim a feugiat. Pellentesque viverra vehicula sem ut volutpat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero magna. Sed et quam lacus. Fusce condimentum eleifend enim a feugiat.
-												</p>
+												<p th:text="${#posts.summary(article, 45)}"></p>
 												<a class="btn blue" href="page_blog_item.html">
 													Read more <i class="m-icon-swapright m-icon-white"></i>
 												</a>
 											</div>
 										</div>
 										<hr>
-										<div class="row">
-											<div class="col-md-4 blog-img blog-tag-data">
-												<img src="/resources/metronic/theme/assets/pages/media/gallery/image4.jpg" alt="" class="img-responsive">
-												<ul class="list-inline">
-													<li>
-														<i class="fa fa-calendar"></i>
-														<a href="javascript:;">
-															April 16, 2013 </a>
-													</li>
-													<li>
-														<i class="fa fa-comments"></i>
-														<a href="javascript:;">
-															38 Comments </a>
-													</li>
-												</ul>
-												<ul class="list-inline blog-tags">
-													<li>
-														<i class="fa fa-tags"></i>
-														<a href="javascript:;">
-															Technology </a>
-														<a href="javascript:;">
-															Education </a>
-														<a href="javascript:;">
-															Internet </a>
-													</li>
-												</ul>
-											</div>
-											<div class="col-md-8 blog-article">
-												<h3>
-													<a href="page_blog_item.html">
-														Hello here will be some recent news.. </a>
-												</h3>
-												<p>
-													At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero consectetur adipiscing elit magna. Sed et quam lacus. Fusce condimentum eleifend enim a feugiat. Pellentesque viverra vehicula sem ut volutpat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero magna. Sed et quam lacus. Fusce condimentum eleifend enim a feugiat.
-												</p>
-												<a class="btn blue" href="page_blog_item.html">
-													Read more <i class="m-icon-swapright m-icon-white"></i>
-												</a>
-											</div>
-										</div>
-										<hr>
-										<div class="row">
-											<div class="col-md-4 blog-img blog-tag-data">
-												<img src="/resources/metronic/theme/assets/pages/media/gallery/image3.jpg" alt="" class="img-responsive">
-												<ul class="list-inline">
-													<li>
-														<i class="fa fa-calendar"></i>
-														<a href="javascript:;">
-															April 16, 2013 </a>
-													</li>
-													<li>
-														<i class="fa fa-comments"></i>
-														<a href="javascript:;">
-															38 Comments </a>
-													</li>
-												</ul>
-												<ul class="list-inline blog-tags">
-													<li>
-														<i class="fa fa-tags"></i>
-														<a href="javascript:;">
-															Technology </a>
-														<a href="javascript:;">
-															Education </a>
-														<a href="javascript:;">
-															Internet </a>
-													</li>
-												</ul>
-											</div>
-											<div class="col-md-8 blog-article">
-												<h3>
-													<a href="page_blog_item.html">
-														Hello here will be some recent news.. </a>
-												</h3>
-												<p>
-													At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero consectetur adipiscing elit magna. Sed et quam lacus. Fusce condimentum eleifend enim a feugiat. Pellentesque viverra vehicula sem ut volutpat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero magna. Sed et quam lacus. Fusce condimentum eleifend enim a feugiat.
-												</p>
-												<a class="btn blue" href="page_blog_item.html">
-													Read more <i class="m-icon-swapright m-icon-white"></i>
-												</a>
-											</div>
-										</div>
-										<hr>
-										<div class="row">
-											<div class="col-md-4 blog-img blog-tag-data">
-												<img src="/resources/metronic/theme/assets/pages/media/gallery/image5.jpg" alt="" class="img-responsive">
-												<ul class="list-inline">
-													<li>
-														<i class="fa fa-calendar"></i>
-														<a href="javascript:;">
-															April 16, 2013 </a>
-													</li>
-													<li>
-														<i class="fa fa-comments"></i>
-														<a href="javascript:;">
-															38 Comments </a>
-													</li>
-												</ul>
-												<ul class="list-inline blog-tags">
-													<li>
-														<i class="fa fa-tags"></i>
-														<a href="javascript:;">
-															Technology </a>
-														<a href="javascript:;">
-															Education </a>
-														<a href="javascript:;">
-															Internet </a>
-													</li>
-												</ul>
-											</div>
-											<div class="col-md-8 blog-article">
-												<h3>
-													<a href="page_blog_item.html">
-														Hello here will be some recent news.. </a>
-												</h3>
-												<p>
-													At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero consectetur adipiscing elit magna. Sed et quam lacus. Fusce condimentum eleifend enim a feugiat.
-												</p>
-												<a class="btn blue" href="page_blog_item.html">
-													Read more <i class="m-icon-swapright m-icon-white"></i>
-												</a>
-											</div>
-										</div>
+										</article>
+
 									</div>
 									<!--end col-md-9-->
+									<!-- 右侧Top Entiries 开始 -->
 									<div class="col-md-3 col-sm-4 blog-sidebar">
 										<h3>Top Entiries</h3>
 										<div class="top-news">
@@ -1703,8 +1542,9 @@
 											</div>
 										</div>
 									</div>
-									<!--end col-md-3-->
+									<!-- 右侧Top Entiries 结束 -->
 								</div>
+								<!-- pagination start -->
 								<ul class="pagination pull-right">
 									<li>
 										<a href="javascript:;">
@@ -1741,10 +1581,8 @@
 										</a>
 									</li>
 								</ul>
+								<!-- pagination end-->
 							</div>
-						</div>
-						<div class="page-content">
-
 						</div>
 						<!-- END PAGE CONTENT BODY -->
 						<!-- END CONTENT BODY -->
@@ -1763,8 +1601,9 @@
 		<!-- END QUICK SIDEBAR -->
 	</div>
 	<!-- END CONTAINER -->
-	</div>
-	</div>
+
+
+	<!-- 底部 开始-->
 	<div class="page-wrapper-row">
 		<div class="page-wrapper-bottom">
 			<!-- BEGIN FOOTER -->
@@ -1840,7 +1679,7 @@
 			<!-- END FOOTER -->
 		</div>
 	</div>
-	</div>
+	<!-- 底部 结束-->
 	<!-- BEGIN QUICK NAV -->
 	<div class="quick-nav-overlay"></div>
 	<!-- END QUICK NAV -->
