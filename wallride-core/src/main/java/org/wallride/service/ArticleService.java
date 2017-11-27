@@ -19,32 +19,22 @@ package org.wallride.service;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.MessageCodesResolver;
 import org.wallride.autoconfigure.WallRideCacheConfiguration;
 import org.wallride.autoconfigure.WallRideProperties;
 import org.wallride.domain.*;
 import org.wallride.exception.DuplicateCodeException;
 import org.wallride.exception.EmptyCodeException;
-import org.wallride.exception.NotNullException;
 import org.wallride.exception.ServiceException;
 import org.wallride.model.*;
 import org.wallride.repository.*;
@@ -52,8 +42,6 @@ import org.wallride.support.AuthorizedUser;
 import org.wallride.support.CodeFormatter;
 import org.wallride.web.controller.admin.article.CustomFieldValueEditForm;
 
-import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.text.ParseException;
@@ -66,43 +54,38 @@ import java.util.regex.Pattern;
 @Transactional(rollbackFor=Exception.class)
 public class ArticleService {
 
-	@Resource
+	private static Logger logger = LoggerFactory.getLogger(ArticleService.class);
+
+	@Autowired
 	private PostRepository postRepository;
 
-	@Resource
+	@Autowired
 	private ArticleRepository articleRepository;
 
-	@Resource
+	@Autowired
 	private TagRepository tagRepository;
 
-	@Resource
+	@Autowired
 	private MediaRepository mediaRepository;
 
-	@Inject
-	private MessageCodesResolver messageCodesResolver;
-
-	@Inject
-	private PlatformTransactionManager transactionManager;
-
-	@Inject
+	@Autowired
 	private WallRideProperties wallRideProperties;
+
+	@Autowired
+	private CategoryRepository categoryRepository;
 
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	private static Logger logger = LoggerFactory.getLogger(ArticleService.class);
 
-	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
-	public Article createArticle(ArticleCreateRequest request, Post.Status status, AuthorizedUser authorizedUser) {
+	public Article createArticle(ArticleCreateRequest request, Post.Status status, AuthorizedUser authorizedUser) throws ParseException {
 		LocalDateTime now = LocalDateTime.now();
 
 		String code = request.getCode();
 		if (code == null) {
-			try {
-				code = new CodeFormatter().parse(request.getTitle(), LocaleContextHolder.getLocale());
-			} catch (ParseException e) {
-				throw new ServiceException(e);
-			}
+
+			code = new CodeFormatter().parse(request.getTitle(), LocaleContextHolder.getLocale());
+
 		}
 		if (!StringUtils.hasText(code)) {
 			if (!status.equals(Post.Status.DRAFT)) {
@@ -130,21 +113,17 @@ public class ArticleService {
 
 		Media cover = null;
 		if (request.getCoverId() != null) {
-			cover = entityManager.getReference(Media.class, request.getCoverId());
+			cover = mediaRepository.findOne(request.getCoverId());
 		}
 		article.setCover(cover);
 		article.setTitle(request.getTitle());
 		article.setBody(request.getBody());
-
-		article.setAuthor(entityManager.getReference(User.class, authorizedUser.getId()));
+		article.setAuthor(authorizedUser);
 
 		LocalDateTime date = request.getDate();
 		if (Post.Status.PUBLISHED.equals(status)) {
 			if (date == null) {
 				date = now;
-			}
-			else if (date.isAfter(now)) {
-				status = Post.Status.SCHEDULED;
 			}
 		}
 		article.setDate(date);
@@ -153,9 +132,8 @@ public class ArticleService {
 
 		article.getCategories().clear();
 		for (long categoryId : request.getCategoryIds()) {
-			article.getCategories().add(entityManager.getReference(Category.class, categoryId));
+			article.getCategories().add(categoryRepository.findOne(categoryId));
 		}
-
 		article.getTags().clear();
 		Set<String> tagNames = StringUtils.commaDelimitedListToSet(request.getTags());
 		if (!CollectionUtils.isEmpty(tagNames)) {
@@ -178,7 +156,7 @@ public class ArticleService {
 		article.getRelatedPosts().clear();
 		Set<Post> relatedPosts = new HashSet<>();
 		for (long relatedId : request.getRelatedPostIds()) {
-			relatedPosts.add(entityManager.getReference(Post.class, relatedId));
+			relatedPosts.add(postRepository.findOne(relatedId));
 		}
 		article.setRelatedToPosts(relatedPosts);
 
@@ -190,7 +168,6 @@ public class ArticleService {
 
 		List<Media> medias = new ArrayList<>();
 		if (StringUtils.hasText(request.getBody())) {
-//			Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
 			String mediaUrlPrefix = wallRideProperties.getMediaUrlPrefix();
 			Pattern mediaUrlPattern = Pattern.compile(String.format("%s([0-9a-zA-Z\\-]+)", mediaUrlPrefix));
 			Matcher mediaUrlMatcher = mediaUrlPattern.matcher(request.getBody());
@@ -233,9 +210,7 @@ public class ArticleService {
 		return articleRepository.save(article);
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
-	public Article saveArticleAsDraft(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
-//		postRepository.lock(request.getId());
+	public Article saveArticleAsDraft(ArticleUpdateRequest request, AuthorizedUser authorizedUser) throws ParseException {
 		Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		if (!article.getStatus().equals(Post.Status.DRAFT)) {
 			Article draft = articleRepository.findOne(ArticleSpecifications.draft(article));
@@ -284,9 +259,8 @@ public class ArticleService {
 		}
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
 	public Article saveArticleAsPublished(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
-//		postRepository.lock(request.getId());
+
 		Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		publishArticle(article);
 		return saveArticle(request, authorizedUser);
@@ -305,7 +279,6 @@ public class ArticleService {
 
 	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
 	public Article saveArticleAsUnpublished(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
-//		postRepository.lock(request.getId());
 		Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		unpublishArticle(article);
 		return saveArticle(request, authorizedUser);
@@ -322,9 +295,7 @@ public class ArticleService {
 		return unpublished;
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
 	public Article saveArticle(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
-//		postRepository.lock(request.getId());
 		Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		LocalDateTime now = LocalDateTime.now();
 
@@ -364,13 +335,6 @@ public class ArticleService {
 		article.setCover(cover);
 		article.setTitle(request.getTitle());
 		article.setBody(request.getBody());
-
-//		User author = null;
-//		if (request.getAuthorId() != null) {
-//			author = entityManager.getReference(User.class, request.getAuthorId());
-//		}
-//		article.setAuthor(author);
-
 		LocalDateTime date = request.getDate();
 		if (!Post.Status.DRAFT.equals(article.getStatus())) {
 			if (date == null) {
@@ -474,120 +438,68 @@ public class ArticleService {
 		return articleRepository.save(article);
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
-	public Article deleteArticle(ArticleDeleteRequest request, BindingResult result) throws BindException {
-//		postRepository.lock(request.getId());
-		Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
-		articleRepository.delete(article);
-		return article;
+	public void deleteArticle(ArticleBulkDeleteRequest request) {
+
+		List<Article> articles = articleRepository.findAll(request.getIds());
+		articleRepository.delete(articles);
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
+	@Transactional
 	public List<Article> bulkPublishArticle(ArticleBulkPublishRequest request, AuthorizedUser authorizedUser) {
-		List<Article> articles = new ArrayList<>();
-		for (long id : request.getIds()) {
-//			postRepository.lock(id);
-			Article article = articleRepository.findOneByIdAndLanguage(id, request.getLanguage());
-			if (article.getStatus() != Post.Status.DRAFT && request.getDate() == null) {
-				continue;
-			}
 
-			if (!StringUtils.hasText(article.getCode())) {
-				throw new NotNullException();
-			}
-			if (!StringUtils.hasText(article.getTitle())) {
-				throw new NotNullException();
-			}
-			if (!StringUtils.hasText(article.getBody())) {
-				throw new NotNullException();
-			}
-
+		List<Long> ids = request.getIds();
+		List<Article> selectedArticles = articleRepository.findAll(ids);
+		for (Article article: selectedArticles) {
 			LocalDateTime now = LocalDateTime.now();
-			LocalDateTime date = article.getDate();
-			if (request.getDate() != null) {
-				date = request.getDate();
-			}
-			if (date == null) {
-				date = now;
-			}
-			article.setDate(date);
+			article.setStatus(Post.Status.PUBLISHED);
+			article.setDate(now);
 			article.setUpdatedAt(now);
 			article.setUpdatedBy(authorizedUser.toString());
-
-			article = publishArticle(article);
-
-			if (article.getDate().isAfter(now)) {
-				article.setStatus(Post.Status.SCHEDULED);
-			} else {
-				article.setStatus(Post.Status.PUBLISHED);
-			}
-			article = articleRepository.saveAndFlush(article);
-
-			articles.add(article);
 		}
-		return articles;
+		return articleRepository.save(selectedArticles);
+//		for (long id : request.getIds()) {
+//			Article article = articleRepository.findOneByIdAndLanguage(id, request.getLanguage());
+//			if (article.getStatus() != Post.Status.DRAFT && request.getDate() == null) {
+//				continue;
+//			}
+//			LocalDateTime now = LocalDateTime.now();
+//			LocalDateTime date = article.getDate();
+//			if (request.getDate() != null) {
+//				date = request.getDate();
+//			}
+//			if (date == null) {
+//				date = now;
+//			}
+//			article.setDate(date);
+//			article.setUpdatedAt(now);
+//			article.setUpdatedBy(authorizedUser.toString());
+//
+//			article = publishArticle(article);
+//
+//			if (article.getDate().isAfter(now)) {
+//				article.setStatus(Post.Status.SCHEDULED);
+//			} else {
+//				article.setStatus(Post.Status.PUBLISHED);
+//			}
+//			article = articleRepository.saveAndFlush(article);
+//
+//			articles.add(article);
+//		}
+//
+//		return articles;
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
 	public List<Article> bulkUnpublishArticle(ArticleBulkUnpublishRequest request, AuthorizedUser authorizedUser) {
-		List<Article> articles = new ArrayList<>();
-		for (long id : request.getIds()) {
-//			postRepository.lock(id);
-			Article article = articleRepository.findOneByIdAndLanguage(id, request.getLanguage());
-			if (article.getStatus() == Post.Status.DRAFT) {
-				continue;
-			}
-
+		List<Long> ids = request.getIds();
+		List<Article> selectedArticles = articleRepository.findAll(ids);
+		for (Article article: selectedArticles) {
 			LocalDateTime now = LocalDateTime.now();
+			article.setStatus(Post.Status.DRAFT);
+			article.setDate(null);
 			article.setUpdatedAt(now);
 			article.setUpdatedBy(authorizedUser.toString());
-
-			article = unpublishArticle(article);
-			articles.add(article);
 		}
-		return articles;
-	}
-
-	@Transactional(propagation=Propagation.NOT_SUPPORTED)
-	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
-	public List<Article> bulkDeleteArticle(ArticleBulkDeleteRequest bulkDeleteRequest, BindingResult result) {
-		List<Article> articles = new ArrayList<>();
-		for (long id : bulkDeleteRequest.getIds()) {
-			final ArticleDeleteRequest deleteRequest = new ArticleDeleteRequest.Builder()
-					.id(id)
-					.language(bulkDeleteRequest.getLanguage())
-					.build();
-
-			final BeanPropertyBindingResult r = new BeanPropertyBindingResult(deleteRequest, "request");
-			r.setMessageCodesResolver(messageCodesResolver);
-
-			TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-			transactionTemplate.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-			Article article = null;
-			try {
-				article = transactionTemplate.execute(new TransactionCallback<Article>() {
-					public Article doInTransaction(TransactionStatus status) {
-						try {
-							return deleteArticle(deleteRequest, r);
-						}
-						catch (BindException e) {
-							throw new RuntimeException(e);
-						}
-					}
-				});
-				articles.add(article);
-			}
-			catch (Exception e) {
-				logger.debug("Errors: {}", r);
-				result.addAllErrors(r);
-			}
-		}
-		return articles;
-	}
-
-	public List<Long> getArticleIds(ArticleSearchRequest request) {
-//		return articleRepository.searchForId(request);
-		return null;
+		return articleRepository.save(selectedArticles);
 	}
 
 	public Page<Article> getArticles(ArticleSearchRequest request) {
@@ -595,8 +507,6 @@ public class ArticleService {
 		return getArticles(request, pageable);
 	}
 
-	@Cacheable(value = WallRideCacheConfiguration.ARTICLE_CACHE)
-	@Transactional
 	public Page<Article> getArticles(ArticleSearchRequest request, Pageable pageable) {
 //		return articleRepository.search(request, pageable);
 		Page<Article> articles = articleRepository.findAll(pageable);
@@ -605,7 +515,7 @@ public class ArticleService {
 	}
 
 	public List<Article> getArticles(Collection<Long> ids) {
-		Set<Article> results = new LinkedHashSet<Article>(articleRepository.findAllByIdIn(ids));
+		Set<Article> results = new LinkedHashSet<>(articleRepository.findAllByIdIn(ids));
 		List<Article> articles = new ArrayList<>();
 		for (long id : ids) {
 			for (Article article : results) {
@@ -618,12 +528,10 @@ public class ArticleService {
 		return articles;
 	}
 
-	@Cacheable(value = WallRideCacheConfiguration.ARTICLE_CACHE)
 	public SortedSet<Article> getArticlesByCategoryCode(String language, String code, Post.Status status) {
 		return getArticlesByCategoryCode(language, code, status, 10);
 	}
 
-	@Cacheable(value = WallRideCacheConfiguration.ARTICLE_CACHE)
 	public SortedSet<Article> getArticlesByCategoryCode(String language, String code, Post.Status status, int size) {
 		ArticleSearchRequest request = new ArticleSearchRequest()
 				.withLanguage(language)
@@ -636,7 +544,6 @@ public class ArticleService {
 
 	}
 
-	@Cacheable(value = WallRideCacheConfiguration.ARTICLE_CACHE)
 	public SortedSet<Article> getLatestArticles(String language, Post.Status status, int size) {
 		ArticleSearchRequest request = new ArticleSearchRequest()
 				.withLanguage(language)

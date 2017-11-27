@@ -2,6 +2,7 @@ package org.wallride.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,11 +37,13 @@ public class CustomFieldService {
 
 	private static Logger logger = LoggerFactory.getLogger(CustomFieldService.class);
 
-	@Resource
+	@Autowired
 	private CustomFieldRepository customFieldRepository;
-	@Inject
+
+	@Autowired
 	private MessageCodesResolver messageCodesResolver;
-	@Inject
+
+	@Autowired
 	private PlatformTransactionManager transactionManager;
 
 	@CacheEvict(value = WallRideCacheConfiguration.CUSTOM_FIELD_CACHE, allEntries = true)

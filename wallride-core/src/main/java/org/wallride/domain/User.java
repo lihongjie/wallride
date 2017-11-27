@@ -79,7 +79,7 @@ public class User extends DomainObject<Long> {
 	@Column
 	private String description;
 
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@SortNatural
 	@JoinTable(name = "user_role")
 	@Enumerated(EnumType.STRING)

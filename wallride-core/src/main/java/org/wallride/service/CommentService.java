@@ -18,6 +18,7 @@ package org.wallride.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,11 +44,13 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class CommentService {
 
-	@Resource
+	@Autowired
 	private CommentRepository commentRepository;
-	@Resource
+
+	@Autowired
 	private PostRepository postRepository;
-	@Resource
+
+	@Autowired
 	private UserRepository userRepository;
 
 	private static Logger logger = LoggerFactory.getLogger(CommentService.class);

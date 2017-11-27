@@ -16,6 +16,7 @@
 
 package org.wallride.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
@@ -46,7 +47,7 @@ import java.util.Map;
 @Transactional(rollbackFor=Exception.class)
 public class CategoryService {
 
-	@Inject
+	@Autowired
 	private CategoryRepository categoryRepository;
 
 	@CacheEvict(value = {WallRideCacheConfiguration.ARTICLE_CACHE, WallRideCacheConfiguration.PAGE_CACHE}, allEntries = true)

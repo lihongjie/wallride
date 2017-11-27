@@ -87,11 +87,12 @@ public class ArticleSearchController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
+    @Transactional
     public String search(
             @PathVariable String language,
             @Validated @ModelAttribute("form") ArticleSearchForm form,
             BindingResult result,
-            @PageableDefault(50) Pageable pageable,
+            @PageableDefault Pageable pageable,
             Model model,
             HttpServletRequest servletRequest) throws UnsupportedEncodingException {
         Page<Article> articles = articleService.getArticles(form.toArticleSearchRequest(), pageable);
@@ -112,11 +113,19 @@ public class ArticleSearchController {
     }
 
     @RequestMapping(value = "/metronic", method = RequestMethod.GET)
-    public String search_metronic(
+    @Transactional
+    public String search_metronic() {
+
+        return "article/index_metronic";
+    }
+
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @Transactional
+    public String article_list(
             @PathVariable String language,
             @Validated @ModelAttribute("form") ArticleSearchForm form,
             BindingResult result,
-            @PageableDefault(50) Pageable pageable,
+            @PageableDefault Pageable pageable,
             Model model,
             HttpServletRequest servletRequest) throws UnsupportedEncodingException {
         Page<Article> articles = articleService.getArticles(form.toArticleSearchRequest(), pageable);
@@ -133,30 +142,7 @@ public class ArticleSearchController {
             model.addAttribute("query", URLDecoder.decode(uriComponents.getQuery(), "UTF-8"));
         }
 
-        return "article/index_metronic";
-    }
-
-    @RequestMapping(value = "/metronic/query", method = RequestMethod.GET)
-    @ResponseBody
-    public Map<String, Object> search_metronic_query(
-            @PathVariable String language,
-            @Validated @ModelAttribute("form") ArticleSearchForm form,
-            BindingResult result,
-            @PageableDefault(50) Pageable pageable,
-            Model model,
-            Integer sEcho,
-            Integer iDisplayStart,
-            Integer iDisplayLength,
-            HttpServletRequest servletRequest) throws UnsupportedEncodingException {
-        Map<String, Object> map = new HashMap<>();
-        Page<Article> articles = articleService.getArticles(form.toArticleSearchRequest(), pageable);
-
-
-        map.put("sEcho", sEcho);
-        map.put("iTotalRecords", articles.getTotalElements());
-        map.put("iTotalDisplayRecords", 10);
-        map.put("aaData", articles.getContent());
-        return map;
+        return "article/articles";
     }
 
     @RequestMapping(params = "query")

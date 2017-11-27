@@ -18,6 +18,7 @@ package org.wallride.web.controller.admin.page;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,23 +47,14 @@ import java.util.Map;
 @Controller
 public class PageRestController {
 
-	@Inject
+	@Autowired
 	private PageService pageService;
 
-	@Inject
+	@Autowired
 	private PageUtils pageUtils;
-
-	@Inject
-	private MessageSourceAccessor messageSourceAccessor;
 
 	private static Logger logger = LoggerFactory.getLogger(PageRestController.class);
 
-	@ExceptionHandler(BindException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public @ResponseBody RestValidationErrorModel bindException(BindException e) {
-		logger.debug("BindException", e);
-		return RestValidationErrorModel.fromBindingResult(e.getBindingResult(), messageSourceAccessor);
-	}
 
 	@RequestMapping(value="/{language}/pages", method= RequestMethod.GET)
 	public @ResponseBody PageIndexModel index(@PathVariable String language) {
@@ -90,25 +82,6 @@ public class PageRestController {
 		RequestContextUtils.getFlashMapManager(request).saveOutputFlashMap(flashMap, request, response);
 		return new DomainObjectSavedModel<>(page);
 	}
-
-//	@RequestMapping(value="/{language}/pages/{id}", method=RequestMethod.POST)
-//	public @ResponseBody DomainObjectUpdatedModel update(
-//			@Valid PageEditForm form,
-//			BindingResult result,
-//			@PathVariable long id,
-//			AuthorizedUser authorizedUser,
-//			HttpServletRequest request,
-//			HttpServletResponse response) throws BindException {
-//		form.setId(id);
-//		if (result.hasErrors()) {
-//			throw new BindException(result);
-//		}
-//		Page page = pageService.updatePage(form, result, authorizedUser);
-//		FlashMap flashMap = RequestContextUtils.getOutputFlashMap(request);
-//		flashMap.put("updatedPage", page);
-//		RequestContextUtils.getFlashMapManager(request).saveOutputFlashMap(flashMap, request, response);
-//		return new DomainObjectUpdatedModel<Long>(page);
-//	}
 
 	@RequestMapping(value="/{language}/pages/{id}", method= RequestMethod.DELETE)
 	public @ResponseBody DomainObjectDeletedModel<Long> delete(

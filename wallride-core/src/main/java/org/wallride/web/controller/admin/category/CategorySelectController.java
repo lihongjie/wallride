@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.admin.category;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -30,12 +31,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@RequestMapping(value="/{language}/categories/select")
 public class CategorySelectController {
 
-	@Inject
+	@Autowired
 	private CategoryService categoryService;
 
-	@RequestMapping(value="/{language}/categories/select")
+	@RequestMapping(method = RequestMethod.GET)
 	public @ResponseBody List<DomainObjectSelect2Model> select(
 			@PathVariable String language,
 			@RequestParam(required=false) String keyword) {
@@ -54,9 +56,9 @@ public class CategorySelectController {
 		return results;
 	}
 
-	@RequestMapping(value="/{language}/categories/select/{id}", method= RequestMethod.GET)
-	public @ResponseBody
-	DomainObjectSelect2Model select(
+	@RequestMapping(value="/{id}", method= RequestMethod.GET)
+	@ResponseBody
+	public DomainObjectSelect2Model select(
 			@PathVariable String language,
 			@PathVariable Long id,
 			HttpServletResponse response) throws IOException {

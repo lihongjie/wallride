@@ -18,6 +18,7 @@ package org.wallride.web.controller.admin.category;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,23 +47,16 @@ import java.util.Map;
 @Controller
 public class CategoryRestController {
 
-	@Inject
+	@Autowired
 	private CategoryService categoryService;
 
-	@Inject
+	@Autowired
 	private CategoryUtils categoryUtils;
 
-	@Inject
+	@Autowired
 	private MessageSourceAccessor messageSourceAccessor;
 
 	private static Logger logger = LoggerFactory.getLogger(CategoryRestController.class);
-
-	@ExceptionHandler(BindException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public @ResponseBody RestValidationErrorModel bindException(BindException e) {
-		logger.debug("BindException", e);
-		return RestValidationErrorModel.fromBindingResult(e.getBindingResult(), messageSourceAccessor);
-	}
 
 	@RequestMapping(value="/{language}/categories", method= RequestMethod.GET)
 	public @ResponseBody CategoryIndexModel index(@PathVariable String language) {

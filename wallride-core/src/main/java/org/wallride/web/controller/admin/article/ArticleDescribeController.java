@@ -19,6 +19,7 @@ package org.wallride.web.controller.admin.article;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,10 +40,10 @@ import java.util.List;
 @RequestMapping(value="/{language}/articles/describe", method=RequestMethod.GET)
 public class ArticleDescribeController {
 
-	@Inject
+	@Autowired
 	private ArticleService articleService;
 
-	@Inject
+	@Autowired
 	private ConversionService conversionService;
 
 	@ModelAttribute("query")
@@ -92,7 +93,9 @@ public class ArticleDescribeController {
 		beanWrapper.setConversionService(conversionService);
 		beanWrapper.setPropertyValues(mpvs, true, true);
 		ArticleSearchForm form = (ArticleSearchForm) beanWrapper.getWrappedInstance();
-		List<Long> ids = articleService.getArticleIds(form.toArticleSearchRequest());
+//		List<Long> ids = articleService.getArticleIds(form.toArticleSearchRequest());
+
+		List<Long> ids = null;
 		if (!CollectionUtils.isEmpty(ids)) {
 			int index = ids.indexOf(article.getId());
 			if (index < ids.size() - 1) {

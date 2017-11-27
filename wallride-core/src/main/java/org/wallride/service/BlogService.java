@@ -27,6 +27,7 @@ import com.google.api.services.analytics.AnalyticsScopes;
 import com.google.api.services.analytics.model.GaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,7 @@ import java.util.Set;
 @Transactional(rollbackFor=Exception.class)
 public class BlogService {
 
-	@Resource
+	@Autowired
 	private BlogRepository blogRepository;
 
 	private static Logger logger = LoggerFactory.getLogger(BlogService.class);

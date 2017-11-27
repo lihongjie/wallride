@@ -19,6 +19,7 @@ package org.wallride.service;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -64,25 +65,25 @@ import java.util.regex.Pattern;
 @Transactional(rollbackFor = Exception.class)
 public class PageService {
 
-	@Resource
+	@Autowired
 	private PostRepository postRepository;
 
-	@Resource
+	@Autowired
 	private PageRepository pageRepository;
 
-	@Resource
+	@Autowired
 	private TagRepository tagRepository;
 
-	@Resource
+	@Autowired
 	private MediaRepository mediaRepository;
 
-	@Inject
+	@Autowired
 	private MessageCodesResolver messageCodesResolver;
 
-	@Inject
+	@Autowired
 	private PlatformTransactionManager transactionManager;
 
-	@Inject
+	@Autowired
 	private WallRideProperties wallRideProperties;
 
 	@PersistenceContext
@@ -90,7 +91,6 @@ public class PageService {
 
 	private static Logger logger = LoggerFactory.getLogger(PageService.class);
 
-	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
 	public Page createPage(PageCreateRequest request, Post.Status status, AuthorizedUser authorizedUser) {
 		LocalDateTime now = LocalDateTime.now();
 
@@ -248,7 +248,6 @@ public class PageService {
 		return pageRepository.save(page);
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
 	public Page savePageAsDraft(PageUpdateRequest request, AuthorizedUser authorizedUser) {
 //		postRepository.lock(request.getId());
 		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
@@ -328,9 +327,7 @@ public class PageService {
 		return savePage(request, authorizedUser);
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
 	public Page savePage(PageUpdateRequest request, AuthorizedUser authorizedUser) {
-//		postRepository.lock(request.getId());
 		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		LocalDateTime now = LocalDateTime.now();
 
@@ -605,23 +602,19 @@ public class PageService {
 		return null;
 	}
 
-	@Cacheable(value = WallRideCacheConfiguration.PAGE_CACHE)
 	public org.springframework.data.domain.Page<Page> getPages(PageSearchRequest request) {
 		return getPages(request, null);
 	}
 
-	@Cacheable(value = WallRideCacheConfiguration.PAGE_CACHE)
 	public org.springframework.data.domain.Page<Page> getPages(PageSearchRequest request, Pageable pageable) {
 //		return pageRepository.search(request, pageable);
 		return pageRepository.findAll(pageable);
 	}
 
-	@Cacheable(value = WallRideCacheConfiguration.PAGE_CACHE)
 	public List<Page> getPathPages(Page page) {
 		return getPathPages(page, false);
 	}
 
-	@Cacheable(value = WallRideCacheConfiguration.PAGE_CACHE)
 	public List<Page> getPathPages(Page page, boolean includeUnpublished) {
 		return pageRepository.findAll(PageSpecifications.path(page, includeUnpublished));
 	}
@@ -650,7 +643,6 @@ public class PageService {
 		return pageRepository.findOneByIdAndLanguage(id, language);
 	}
 
-	@Cacheable(value = WallRideCacheConfiguration.PAGE_CACHE)
 	public Page getPageByCode(String code, String language) {
 		return pageRepository.findOneByCodeAndLanguage(code, language);
 	}

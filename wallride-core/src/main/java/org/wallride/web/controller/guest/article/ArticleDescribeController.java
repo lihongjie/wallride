@@ -82,7 +82,8 @@ public class ArticleDescribeController {
 		request.setApproved(Boolean.TRUE);
 		Page<Comment> comments = commentService.getComments(request, new PageRequest(0, 1000));
 
-		List<Long> ids = articleService.getArticleIds(new ArticleSearchRequest().withStatus(Post.Status.PUBLISHED));
+//		List<Long> ids = articleService.getArticleIds(new ArticleSearchRequest().withStatus(Post.Status.PUBLISHED));
+		List<Long> ids = null;
 		if (!CollectionUtils.isEmpty(ids)) {
 			int index = ids.indexOf(article.getId());
 			if (index < ids.size() - 1) {

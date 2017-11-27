@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.admin.post;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +35,7 @@ import javax.inject.Inject;
 @RequestMapping(value="/{language}/posts/describe", method= RequestMethod.GET)
 public class PostDescribeController {
 
-	@Inject
+	@Autowired
 	private PostService postService;
 
 	@RequestMapping

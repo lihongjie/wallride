@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.admin.page;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -46,10 +47,10 @@ import java.util.Map;
 @RequestMapping("/{language}/pages/index")
 public class PageSearchController {
 	
-	@Inject
+	@Autowired
 	private PageService pageService;
 
-	@Inject
+	@Autowired
 	private ConversionService conversionService;
 
 	@ModelAttribute("countAll")
@@ -87,7 +88,7 @@ public class PageSearchController {
 			@PathVariable String language,
 			@Validated @ModelAttribute("form") PageSearchForm form,
 			BindingResult result,
-			@PageableDefault(50) Pageable pageable,
+			@PageableDefault Pageable pageable,
 			Model model,
 			HttpServletRequest servletRequest) throws UnsupportedEncodingException {
 		org.springframework.data.domain.Page<Page> pages = pageService.getPages(form.toPageSearchRequest(), pageable);
@@ -105,6 +106,31 @@ public class PageSearchController {
 		}
 
 		return "page/index";
+	}
+
+	@RequestMapping(value = "/metronic", method = RequestMethod.GET)
+	public String search_metronic(
+			@PathVariable String language,
+			@Validated @ModelAttribute("form") PageSearchForm form,
+			BindingResult result,
+			@PageableDefault Pageable pageable,
+			Model model,
+			HttpServletRequest servletRequest) throws UnsupportedEncodingException {
+		org.springframework.data.domain.Page<Page> pages = pageService.getPages(form.toPageSearchRequest(), pageable);
+
+		model.addAttribute("pages", pages);
+		model.addAttribute("pageable", pageable);
+		model.addAttribute("pagination", new Pagination<>(pages, servletRequest));
+
+		UriComponents uriComponents = ServletUriComponentsBuilder
+				.fromRequest(servletRequest)
+				.queryParams(ControllerUtils.convertBeanForQueryParams(form, conversionService))
+				.build();
+		if (!StringUtils.isEmpty(uriComponents.getQuery())) {
+			model.addAttribute("query", URLDecoder.decode(uriComponents.getQuery(), "UTF-8"));
+		}
+
+		return "page/index_metronic";
 	}
 
 	@RequestMapping(params = "query")

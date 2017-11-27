@@ -43,7 +43,6 @@ public class PopularPost extends DomainObject<Long> implements Comparable<Popula
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 50, nullable = false)
-
 	private Type type;
 
 	@Column(nullable = false)

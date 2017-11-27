@@ -20,6 +20,7 @@ import com.google.api.services.analytics.Analytics;
 import com.google.api.services.analytics.model.GaData;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.database.AbstractPagingItemReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.wallride.domain.Blog;
@@ -39,7 +40,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @StepScope
 public class UpdatePostViewsItemReader extends AbstractPagingItemReader<List> {
 
-	@Inject
+	@Autowired
 	private BlogService blogService;
 
 	public UpdatePostViewsItemReader() {

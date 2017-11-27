@@ -17,6 +17,7 @@
 package org.wallride.web.controller.admin.article;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -53,16 +54,16 @@ import java.util.TreeSet;
 @RequestMapping("/{language}/articles/preview")
 public class ArticlePreviewController {
 
-	@Inject
+	@Autowired
 	private BlogService blogService;
 
-	@Inject
+	@Autowired
 	private MediaService mediaService;
 
-	@Inject
+	@Autowired
 	private CustomFieldService customFieldService;
 
-	@Inject
+	@Autowired
 	private ServletContext servletContext;
 
 	@RequestMapping

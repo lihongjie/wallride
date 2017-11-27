@@ -18,6 +18,7 @@ package org.wallride.web.controller.admin.article;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -44,6 +45,7 @@ import org.wallride.web.support.RestValidationErrorModel;
 
 import javax.inject.Inject;
 import javax.validation.groups.Default;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -54,16 +56,16 @@ public class ArticleEditController {
 	
 	private static Logger logger = LoggerFactory.getLogger(ArticleEditController.class); 
 	
-	@Inject
+	@Autowired
 	private ArticleService articleService;
 
-	@Inject
+	@Autowired
 	private CustomFieldService customFieldService;
 
-	@Inject
+	@Autowired
 	private CategoryUtils categoryUtils;
 
-	@Inject
+	@Autowired
 	private MessageSourceAccessor messageSourceAccessor;
 
 	@ModelAttribute("article")
@@ -79,14 +81,6 @@ public class ArticleEditController {
 	@ModelAttribute("query")
 	public String query(@RequestParam(required = false) String query) {
 		return query;
-	}
-
-	@ExceptionHandler(BindException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public @ResponseBody
-	RestValidationErrorModel bindException(BindException e) {
-		logger.debug("BindException", e);
-		return RestValidationErrorModel.fromBindingResult(e.getBindingResult(), messageSourceAccessor);
 	}
 
 	@RequestMapping(method=RequestMethod.GET)
@@ -157,7 +151,7 @@ public class ArticleEditController {
 			BindingResult errors,
 			Model model,
 			AuthorizedUser authorizedUser)
-			throws BindException {
+			throws BindException, ParseException {
 		if (errors.hasErrors()) {
 			for (ObjectError error : errors.getAllErrors()) {
 				if (!"validation.NotNull".equals(error.getCode())) {
@@ -286,11 +280,4 @@ public class ArticleEditController {
 		return "redirect:/_admin/{language}/articles/describe";
 	}
 
-//	@RequestMapping(method=RequestMethod.POST, params="cancel")
-//	public String cancel(
-//			@Valid @ModelAttribute("form") ArticleEditForm form,
-//			RedirectAttributes redirectAttributes) {
-//		redirectAttributes.addAttribute("id", form.getId());
-//		return "redirect:/_admin/articles/describe/{id}";
-//	}
 }

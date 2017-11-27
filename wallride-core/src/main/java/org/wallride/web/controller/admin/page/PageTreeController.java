@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.admin.page;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,10 +32,10 @@ import javax.inject.Inject;
 @RequestMapping("/{language}/pages/tree")
 public class PageTreeController {
 
-	@Inject
+	@Autowired
 	private PageService pageService;
 
-	@Inject
+	@Autowired
 	private PageUtils pageUtils;
 
 	@ModelAttribute("form")

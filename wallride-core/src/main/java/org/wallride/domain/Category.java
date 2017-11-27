@@ -66,13 +66,13 @@ public class Category extends DomainObject<Long> implements Comparable<Category>
 	@Column(nullable = false)
 	private int rgt;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	private Category parent;
 
-	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
 	private List<Category> children;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany
 	@JoinTable(
 			name = "post_category",
 			joinColumns = {@JoinColumn(name = "category_id")},

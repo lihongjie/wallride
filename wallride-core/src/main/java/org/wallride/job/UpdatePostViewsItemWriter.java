@@ -50,7 +50,7 @@ import java.util.List;
 @StepScope
 public class UpdatePostViewsItemWriter implements ItemWriter<List> {
 
-	@Inject
+	@Autowired
 	private ServletContext servletContext;
 
 	@Autowired

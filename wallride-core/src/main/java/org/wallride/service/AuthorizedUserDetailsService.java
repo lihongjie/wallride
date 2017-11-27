@@ -18,6 +18,7 @@ package org.wallride.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,8 +40,8 @@ import java.util.Date;
 
 @Transactional(rollbackFor=Exception.class)
 public class AuthorizedUserDetailsService extends SavedRequestAwareAuthenticationSuccessHandler implements UserDetailsService {
-	
-	@Resource
+
+	@Autowired
 	private UserRepository userRepository;
 	
 	private static Logger logger = LoggerFactory.getLogger(AuthorizedUserDetailsService.class); 

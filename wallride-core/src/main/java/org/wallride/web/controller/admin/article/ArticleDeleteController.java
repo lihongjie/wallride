@@ -18,6 +18,7 @@ package org.wallride.web.controller.admin.article;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -38,7 +39,7 @@ public class ArticleDeleteController {
 	
 	private static Logger logger = LoggerFactory.getLogger(ArticleDeleteController.class); 
 	
-	@Inject
+	@Autowired
 	private ArticleService articleService;
 
 	@ModelAttribute("query")
@@ -47,33 +48,9 @@ public class ArticleDeleteController {
 	}
 
 	@RequestMapping
-	public String delete(
-			@Valid @ModelAttribute("form") ArticleDeleteForm form,
-			BindingResult errors,
-			String query,
-			RedirectAttributes redirectAttributes) {
-//		if (!form.isConfirmed()) {
-//			errors.rejectValue("confirmed", "Confirmed");
-//		}
-		if (errors.hasErrors()) {
-			logger.debug("Errors: {}", errors);
-			return "article/describe";
-		}
+	public String delete(ArticleBulkDeleteForm form) {
 
-		Article article = null;
-		try {
-			article = articleService.deleteArticle(form.buildArticleDeleteRequest(), errors);
-		}
-		catch (BindException e) {
-			if (errors.hasErrors()) {
-				logger.debug("Errors: {}", errors);
-				return "article/describe";
-			}
-			throw new RuntimeException(e);
-		}
-
-		redirectAttributes.addFlashAttribute("deletedArticle", article);
-		redirectAttributes.addAttribute("query", query);
+		articleService.deleteArticle(form.buildArticleBulkDeleteRequest());
 		return "redirect:/_admin/{language}/articles/index";
 	}
 }

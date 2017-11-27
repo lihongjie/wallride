@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.admin.comment;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,10 +47,10 @@ import java.util.Map;
 @RequestMapping("/{language}/comments/index")
 public class CommentSearchController {
 
-    @Inject
+    @Autowired
     private CommentService commentService;
 
-    @Inject
+    @Autowired
     private ConversionService conversionService;
 
     @ModelAttribute("form")

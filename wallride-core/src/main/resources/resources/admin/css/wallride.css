@@ -1,9 +1,9 @@
-body {
+/*body {
 	font-family: 'Segoe UI', Arial, 'Meiryo UI', Meiryo, 'MS PGothic', sans-serif;
 	background-color: #FFFEFC;
-	/* 	background-image: url(../img/body-bg.png);
+	!* 	background-image: url(../img/body-bg.png);
 		background-repeat: repeat;
-	 */}
+	 *!}
 h1, h2, h3, h4, h5, h6, input, pre {
 	font-family: 'Segoe UI', Arial, 'Meiryo UI', Meiryo, 'MS PGothic', sans-serif;
 	font-weight: normal;
@@ -59,7 +59,7 @@ pre {
 	background-color: transparent;
 }
 
-/***** bootstrap *****/
+!***** bootstrap *****!
 .container {
 	width: 100%;
 }
@@ -70,7 +70,7 @@ pre {
 .modal {
 	z-index: 1060;
 }
-/***** layout *****/
+!***** layout *****!
 #header {
 	margin-bottom: 0;
 }
@@ -167,9 +167,9 @@ pre {
 	background-color: transparent;
 }
 @media (max-width: 768px) {
-	/*#wr-blog-nav {*/
-		/*display: none;*/
-	/*}*/
+	!*#wr-blog-nav {*!
+		!*display: none;*!
+	!*}*!
 	#wr-page-content {
 		margin-left: 0;
 	}
@@ -181,7 +181,7 @@ pre {
 	}
 }
 
-/*** search ***/
+!*** search ***!
 #wr-page-content .search-condition {
 	position: relative;
 	margin-bottom: 15px;
@@ -213,7 +213,7 @@ pre {
 #wr-page-content .wr-tool-panel dl.wr-tags dd {
 	margin-left: 5px;
 }
-/***** button *****/
+!***** button *****!
 .btn-primary {
 	background-color: #E25656;
 	border-color: #DDDDDD;
@@ -273,7 +273,7 @@ pre {
 	}
 }
 
-/***** pagination *****/
+!***** pagination *****!
 .pagination>.active>a,
 .pagination>.active>span,
 .pagination>.active>a:hover,
@@ -303,7 +303,7 @@ pre {
 	color: #ffffff;
 }
 
-/***** table ******/
+!***** table ******!
 .table > thead > tr > th {
 	border-bottom: 1px solid #ddd;
 }
@@ -316,19 +316,19 @@ pre {
 	padding-left: 4px;
 }
 
-/****search***/
+!****search***!
 .search-condition .checkbox-inline {
 	margin-top:7px;
 }
 .search-condition .label {
 	font-size: 85%;
 }
-/***** list *****/
+!***** list *****!
 .form-group .list-inline > li.disabled > a {
 	color: #ccc;
 }
 
-/**** sortable *****/
+!**** sortable *****!
 ul.nested-sortable .placeholder {
 	outline: 1px dashed #bbb;
 }
@@ -375,15 +375,15 @@ ul.nested-sortable, ul.sortable {
 .nested-sortable li.mjs-nestedSortable-branch.mjs-nestedSortable-collapsed > div .disclose > span:before {
 	color: #819FAA;
 	content: ' \2b ';
-	/*content: ' \e080 ';*/
+	!*content: ' \e080 ';*!
 }
 .nested-sortable li.mjs-nestedSortable-branch.mjs-nestedSortable-expanded > div .disclose > span:before {
 	color: #819FAA;
 	content: ' \2212 ';
 }
-/*.sortable li button.remove {
+!*.sortable li button.remove {
     float: right;
-}*/
+}*!
 .field-option-group ul.sortable {
     margin: 0;
 }
@@ -418,7 +418,7 @@ ul.nested-sortable, ul.sortable {
 .grippy::after {
     content: '.. .. .. ..';
 }
-/**** article-edit *****/
+!**** article-edit *****!
 #category-fieldset ul ul {
 	padding-left: 20px;
 }
@@ -447,7 +447,7 @@ ul.nested-sortable, ul.sortable {
 
 
 
-/***** form ******/
+!***** form ******!
 legend {
 	font-size: 16px;
 	line-height: 32px;
@@ -486,7 +486,7 @@ legend {
 .label-draft {
 	background-color: #A39B9B;
 }
-/***** describe *****/
+!***** describe *****!
 .checked {
 	color: #E77059;
 }
@@ -520,7 +520,7 @@ legend {
 	margin-bottom: 3px;
 }
 
-/***** dropdown *****/
+!***** dropdown *****!
 .dropdown-submenu{position:relative;}
 .dropdown-submenu>.dropdown-menu{top:0;left:100%;margin-top:-6px;margin-left:-1px;-webkit-border-radius:0 6px 6px 6px;-moz-border-radius:0 6px 6px 6px;border-radius:0 6px 6px 6px;}
 .dropdown-submenu:hover>.dropdown-menu{display:block;}
@@ -528,7 +528,7 @@ legend {
 .dropdown-submenu:hover>a:after{border-left-color:#ffffff;}
 .dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
 
-/***** other *****/
+!***** other *****!
 .nav-tabs {
 	margin-bottom: 2em;
 }
@@ -536,7 +536,7 @@ legend {
 	background-color: #F3F3F3;
 }
 
-/***** select2 ******/
+!***** select2 ******!
 .select2-container .select2-choice {
 	height: 34px;
 	background-image: none;
@@ -615,7 +615,7 @@ legend {
 	background-color:#FFFEFD;
 }
 
-/***** redactor *****/
+!***** redactor *****!
 .redactor_editor,
 .redactor_editor:focus,
 .redactor_editor div,
@@ -640,7 +640,7 @@ legend {
 
 *[data-href] {
 	cursor: pointer;
-}
+}*/
 
 
 .wr-post-cover {

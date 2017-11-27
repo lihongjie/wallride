@@ -18,6 +18,7 @@ package org.wallride.web.controller.admin.article;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,11 +27,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.wallride.domain.Article;
-import org.wallride.exception.ServiceException;
 import org.wallride.service.ArticleService;
 import org.wallride.support.AuthorizedUser;
 
-import javax.inject.Inject;
 import javax.validation.Valid;
 import java.util.Collection;
 
@@ -38,10 +37,10 @@ import java.util.Collection;
 @RequestMapping(value="/{language}/articles/bulk-unpublish", method=RequestMethod.POST)
 public class ArticleBulkUnpublishController {
 
-	@Inject
-	private ArticleService articleService;
-
 	private static Logger logger = LoggerFactory.getLogger(ArticleBulkUnpublishController.class);
+
+	@Autowired
+	private ArticleService articleService;
 
 	@ModelAttribute("query")
 	public String query(@RequestParam(required = false) String query) {
@@ -57,19 +56,8 @@ public class ArticleBulkUnpublishController {
 			RedirectAttributes redirectAttributes) {
 		redirectAttributes.addAttribute("query", query);
 
-		if (errors.hasErrors()) {
-			logger.debug("Errors: {}", errors);
-			return "redirect:/_admin/{language}/articles/index";
-		}
+		Collection<Article> unpublishedArticles = articleService.bulkUnpublishArticle(form.toArticleBulkUnpublishRequest(), authorizedUser);
 
-		Collection<Article> unpublishedArticles;
-		try {
-			unpublishedArticles = articleService.bulkUnpublishArticle(form.toArticleBulkUnpublishRequest(), authorizedUser);
-		} catch (ServiceException e) {
-			return "redirect:/_admin/{language}/articles/index";
-		}
-
-		redirectAttributes.addFlashAttribute("unpublishedArticles", unpublishedArticles);
 		return "redirect:/_admin/{language}/articles/index";
 	}
 }
