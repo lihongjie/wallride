@@ -98,7 +98,7 @@ public class ArticleCreateController {
 	@RequestMapping(method=RequestMethod.POST, params="draft")
 	public @ResponseBody DomainObjectSavedModel saveAsDraft(
 			@PathVariable String language,
-			@Validated @ModelAttribute("form") ArticleCreateForm form,
+			ArticleCreateForm form,
 			AuthorizedUser authorizedUser) throws ParseException {
 
 		Article article = articleService.createArticle(form.buildArticleCreateRequest(), Post.Status.DRAFT, authorizedUser);
@@ -108,7 +108,7 @@ public class ArticleCreateController {
 	@RequestMapping(method=RequestMethod.POST, params="publish")
 	public String saveAsPublished(
 			@PathVariable String language,
-			@Validated({Default.class, ArticleCreateForm.GroupPublish.class}) @ModelAttribute("form") ArticleCreateForm form,
+			ArticleCreateForm form,
 			AuthorizedUser authorizedUser) throws ParseException {
 
 		Article article = articleService.createArticle(form.buildArticleCreateRequest(), Post.Status.PUBLISHED, authorizedUser);

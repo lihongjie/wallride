@@ -90,8 +90,7 @@ public class ArticleSearchController {
     @Transactional
     public String search(
             @PathVariable String language,
-            @Validated @ModelAttribute("form") ArticleSearchForm form,
-            BindingResult result,
+            ArticleSearchForm form,
             @PageableDefault Pageable pageable,
             Model model,
             HttpServletRequest servletRequest) throws UnsupportedEncodingException {

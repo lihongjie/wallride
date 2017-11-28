@@ -100,12 +100,15 @@ License: You must have a valid license purchased only from themeforest(the above
     <script type="text/javascript" th:src="@{/_admin/resources/admin/lib/froala/js/froala_editor.min.js}"></script>
    <script th:inline="javascript">
         $(document).ready(function() {
-            debugger;
+
             tagsFieldSet();
             relatedPostFieldSet();
             $(':input[name="date"]').datetimepicker({});
             postCoverDropzone();
             enableSaveCategory();
+            removePostCover();
+            saveDraft();
+            savePublish();
         });
 
     </script>
@@ -978,7 +981,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                                         <div class="progress hide">
                                                             <div class="progress-bar progress-bar-success"></div>
                                                         </div>
-                                                        <input type="hidden" th:field="*{coverId}"/>
+                                                        <input type="hidden" th:field="*{coverId}" id="form-coverId"/>
                                                     </div>
                                                 </div>
 
@@ -986,7 +989,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                             <fieldset>
                                                 <div class="form-group"
                                                      th:classappend="${#fields.hasErrors('title')}? has-error">
-                                                    <input type="text" th:field="*{title}" class="form-control"
+                                                    <input type="text" th:field="*{title}" class="form-control" id="form-title"
                                                            th:attr="placeholder=#{EnterTitle}"
                                                            placeholder="Enter title here"/>
                                                     <span class="help-block" th:each="err : ${#fields.errors('title')}"
@@ -997,7 +1000,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                                 <div class="form-group"
                                                      th:classappend="${#fields.hasErrors('code')}? has-error">
                                                     <span class="url-path" th:text="${WEBSITE_LINK} + '/'"></span>
-                                                    <input type="text" th:field="*{code}" name="path"
+                                                    <input type="text" th:field="*{code}" name="path" id="form-code"
                                                            class="form-control input-sm wr-code"
                                                            th:attr="placeholder=#{URLPath}" placeholder="URL繝代せ"/>
                                                     <span class="help-block" th:each="err : ${#fields.errors('code')}"
@@ -1023,7 +1026,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                                 <div class="form-group row"
                                                      th:classappend="${#fields.hasErrors('date')}? has-error">
                                                     <div class="col-sm-12">
-                                                        <input type="text" name="date"
+                                                        <input type="text" name="date" id="form-date"
                                                                th:value="*{date ne null ? #temporals.format(date, 'yyyy/MM/dd HH:mm') : ''}"
                                                                class="form-control" placeholder="YYYY/MM/DD HH:mm"/>
                                                     </div>
@@ -1087,14 +1090,14 @@ License: You must have a valid license purchased only from themeforest(the above
                                                 <legend th:text="#{Seo}">SEO</legend>
                                                 <div class="form-group"
                                                      th:classappend="${#fields.hasErrors('seoTitle')}? has-error">
-                                                    <input type="text" th:field="*{seoTitle}" class="form-control"
+                                                    <input type="text" th:field="*{seoTitle}" class="form-control" id="form-seo-title"
                                                            th:placeholder="#{SeoTitle}"/>
                                                     <span th:if="${#fields.hasErrors('seoTitle')}" class="help-block"
                                                           th:text="${#fields.errors('seoTitle')}"/>
                                                 </div>
                                                 <div class="form-group"
                                                      th:classappend="${#fields.hasErrors('seoDescription')}? has-error">
-                                                    <textarea th:field="*{seoDescription}" class="form-control"
+                                                    <textarea th:field="*{seoDescription}" class="form-control" id="form-seo-description"
                                                               th:placeholder="#{SeoDescription}"
                                                               style="min-height: 100px"></textarea>
                                                     <span th:if="${#fields.hasErrors('seoDescription')}"
@@ -1103,7 +1106,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                                 </div>
                                                 <div class="form-group"
                                                      th:classappend="${#fields.hasErrors('seoKeywords')}? has-error">
-                                                    <textarea th:field="*{seoKeywords}" class="form-control"
+                                                    <textarea th:field="*{seoKeywords}" class="form-control" id="form-seo-keywords"
                                                               th:placeholder="#{SeoKeywords}"></textarea>
                                                     <span th:if="${#fields.hasErrors('seoKeywords')}" class="help-block"
                                                           th:text="${#fields.errors('seoKeywords')}"/>

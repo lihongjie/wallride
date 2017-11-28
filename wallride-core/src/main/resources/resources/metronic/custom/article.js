@@ -1,21 +1,35 @@
-function fetchArticleList() {
+function fetchArticleList(param) {
 
     $.ajax({
         url: "./list",//这个就是请求地址对应sAjaxSource
         data: {
-            // "aoData": JSON.stringify(aoData)
+            page : param
         },
         type: 'GET',
         async: false,
         success: function (result) {
-            debugger;
+
             $("#article-list-wrapper").empty().append(result);
+            enablePagingArticle();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
 
             alert("status:" + XMLHttpRequest.status + ",readyState:" + XMLHttpRequest.readyState + ",textStatus:" + textStatus);
 
         }
+    });
+}
+
+function enablePagingArticle() {
+
+    $(".pagination-a").on("click", function(e) {
+        debugger;
+        e.preventDefault();
+        var page = $(this).data("page");
+        if($(this).parent().hasClass('disabled')) {
+            return false;
+        }
+        fetchArticleList(page);
     });
 }
 
@@ -36,12 +50,7 @@ function fetchArticleList() {
 
 
 
-    $('#post-cover-dropzone .remove').click(function(e) {
-        $('#post-cover-dropzone :input[name="coverId"]').val('');
-        $('#post-cover-dropzone .image-wrap').addClass('hide');
-        $('#post-cover-dropzone img').remove();
-        e.preventDefault();
-    });
+
 }*/
 
 /*
@@ -82,11 +91,19 @@ function fetchArticleList() {
         $('input[name="date"]').trigger("change");
     });*/
 
+function removePostCover() {
+    $('#post-cover-dropzone').on('click', ' .remove', function(e) {
+        $('#post-cover-dropzone :input[name="coverId"]').val('');
+        $('#post-cover-dropzone .image-wrap').addClass('hide');
+        $('#post-cover-dropzone img').remove();
+        e.preventDefault();
+    });
+}
 
 
 function postCoverDropzone() {
     $('#post-cover-dropzone').fileupload({
-        url: 'http://localhost:8080/_admin/en/media/create.json',
+        url: '/_admin/en/media/create.json',
         paramName: 'file',
         dropZone: $('#post-cover-dropzone'),
         dragover: function (e) {
@@ -145,7 +162,7 @@ function relatedPostFieldSet() {
         minimumInputLength: 1,
         multiple: true,
         ajax: {
-            url:  '',
+            url:  '/_admin/en/posts/select',
             dataType: 'json',
             data: function (term, page) {
                 return {
@@ -187,7 +204,7 @@ function tagsFieldSet() {
             }
         },
         ajax: {
-            url: '',
+            url: '/_admin/en/tags/select',
             dataType: 'json',
             data: function (term, page) {
                 return {
@@ -265,34 +282,47 @@ function enableSaveCategory() {
     });
 }
     function saveDraft() {
-        $('#save-draft-button').on('click', function(e) {
-            saveArticle('', 'DRAFT');
-            return false;
+        $('#save-draft-button').on('click', function() {
+            saveArticle('draft');
         });
     }
 
     function savePublish() {
-        $('#save-publish-button').on('click', function(e) {
-            saveArticle('', 'PUBLISH');
+        $('#save-publish-button').on('click', function() {
+            saveArticle('publish');
         });
     }
 
-    function saveArticle(url,status) {
-        var $this = $(this);
-        $this.button('loading');
-        var $form = $this.closest('form');
-        $(':input[name="body"]', $form).val($('#wr-page-content :input[name="body"]').froalaEditor('html.get'));
-        var data = $form.serializeArray();
-        data.push({name: 'draft', value: 1});
+    function saveArticle(status) {
+        var coverId = $("#coverId").val();
+        var title = $("#form-title").val();
+        var code = $("#form-code").val();
+        var body = $('#wr-page-content :input[name="body"]').froalaEditor('html.get');
+        var date = $("#form-date").val();
+        var tags = $("#tags-field").val();
+        var relatedPostIds = $("#related-posts-fieldset").val();
+        var seoTitle = $("#form-seo-title").val();
+        var seoDescription = $("#form-seo-description").text();
+        var seoKeywords = $("#form-seo-keywords").text();
+        var data = {
+            coverId: coverId,
+            title: title,
+            code: code,
+            body: body,
+            date: date,
+            tags: tags,
+            relatedPostIds: relatedPostIds,
+            seoTitle: seoTitle,
+            seoDescription: seoDescription,
+            seoKeywords: seoKeywords
+        };
+        data.push({name: status, value: 1});
         $.ajax({
             type: "POST",
-            url: $form.attr('action'),
+            url: '/_admin/en/articles/create',
             data: data,
             success: function(data) {
-                $form.children(':input[name="id"]').val(data.id);
-                $form.attr('action', '');
-                var url = '';
-                history.replaceState(null, null, url);
+
                 new PNotify({
                     icon: false,
                     title: 'Saved as draft',
@@ -304,7 +334,7 @@ function enableSaveCategory() {
                 });
             },
             complete: function() {
-                $this.button('reset');
+
             }
         });
     }
