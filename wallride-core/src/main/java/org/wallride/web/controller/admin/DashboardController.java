@@ -30,7 +30,6 @@ import org.wallride.domain.Post;
 import org.wallride.service.*;
 import org.wallride.web.controller.admin.article.ArticleSearchForm;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -72,7 +71,8 @@ public class DashboardController {
 	public String dashboard(@PathVariable String language, Model model) {
 		long articleCount = articleService.countArticlesByStatus(Post.Status.PUBLISHED, language);
 		long pageCount = pageService.countPagesByStatus(Post.Status.PUBLISHED, language);
-		long categoryCount = categoryService.getCategories(language).size();
+//		long categoryCount = categoryService.getCategories(language).size();
+		long categoryCount = 0;
 
 		model.addAttribute("articleCount", articleCount);
 		model.addAttribute("pageCount", pageCount);
@@ -88,7 +88,8 @@ public class DashboardController {
 	public String dashboard_metronic(@PathVariable String language, Model model) {
 		long articleCount = articleService.countArticlesByStatus(Post.Status.PUBLISHED, language);
 		long pageCount = pageService.countPagesByStatus(Post.Status.PUBLISHED, language);
-		long categoryCount = categoryService.getCategories(language).size();
+//		long categoryCount = categoryService.getCategories(language).size();
+		long categoryCount = 0;
 
 		model.addAttribute("articleCount", articleCount);
 		model.addAttribute("pageCount", pageCount);

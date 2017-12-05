@@ -45,13 +45,11 @@ public class ArticleSpecifications {
 	public static Specification<Article> searchRequestSpecification(ArticleSearchRequest articleSearchRequest) {
 		return new Specification<Article>() {
 			@Override
-			public Predicate toPredicate(Root<Article> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+			public Predicate toPredicate(Root<Article> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
 
-				List<Predicate> predicates = new ArrayList<>();
-				if (StringUtils.hasText(articleSearchRequest.getKeyword())) {
-
-				}
-				return null;
+				Predicate predicate = cb.equal(root.get(Article_.language), articleSearchRequest.getLanguage());
+				cb.and(predicate, cb.equal(root.get(Article_.status), articleSearchRequest.getStatus()));
+				return predicate;
 			}
 		};
 	}

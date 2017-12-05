@@ -67,7 +67,7 @@ var TableDatatablesManaged = function () {
         });
 
         var tableWrapper = jQuery('#sample_1_wrapper');
-        debugger;
+
         table.find('.group-checkable').change(function () {
             debugger;
             var set = jQuery(this).attr("data-set");

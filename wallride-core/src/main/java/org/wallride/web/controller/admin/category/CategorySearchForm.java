@@ -23,6 +23,7 @@ import java.io.Serializable;
 public class CategorySearchForm implements Serializable {
 
 	private String keyword;
+
 	private String language;
 
 	public String getKeyword() {

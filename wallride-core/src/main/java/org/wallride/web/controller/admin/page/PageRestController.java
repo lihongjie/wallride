@@ -56,32 +56,32 @@ public class PageRestController {
 	private static Logger logger = LoggerFactory.getLogger(PageRestController.class);
 
 
-	@RequestMapping(value="/{language}/pages", method= RequestMethod.GET)
-	public @ResponseBody PageIndexModel index(@PathVariable String language) {
-		return new PageIndexModel(pageUtils.getNodes(true));
-	}
+//	@RequestMapping(value="/{language}/pages", method= RequestMethod.GET)
+//	public @ResponseBody PageIndexModel index(@PathVariable String language) {
+//		return new PageIndexModel(pageUtils.getNodes(true));
+//	}
 
 //	@RequestMapping(value="/{language}/pages/{id}", method= RequestMethod.GET)
 //	public void describe() {
 //
 //	}
 
-	@RequestMapping(value="/{language}/pages", method=RequestMethod.POST)
-	public @ResponseBody DomainObjectSavedModel save(
-			@Valid PageCreateForm form,
-			BindingResult result,
-			AuthorizedUser authorizedUser,
-			HttpServletRequest request,
-			HttpServletResponse response) throws BindException {
-		if (result.hasErrors()) {
-			throw new BindException(result);
-		}
-		Page page = pageService.createPage(form.buildPageCreateRequest(), Post.Status.DRAFT, authorizedUser);
-		FlashMap flashMap = RequestContextUtils.getOutputFlashMap(request);
-		flashMap.put("savedPage", page);
-		RequestContextUtils.getFlashMapManager(request).saveOutputFlashMap(flashMap, request, response);
-		return new DomainObjectSavedModel<>(page);
-	}
+//	@RequestMapping(value="/{language}/pages", method=RequestMethod.POST)
+//	public @ResponseBody DomainObjectSavedModel save(
+//			@Valid PageCreateForm form,
+//			BindingResult result,
+//			AuthorizedUser authorizedUser,
+//			HttpServletRequest request,
+//			HttpServletResponse response) throws BindException {
+//		if (result.hasErrors()) {
+//			throw new BindException(result);
+//		}
+//		Page page = pageService.createPage(form.buildPageCreateRequest(), Post.Status.DRAFT, authorizedUser);
+//		FlashMap flashMap = RequestContextUtils.getOutputFlashMap(request);
+//		flashMap.put("savedPage", page);
+//		RequestContextUtils.getFlashMapManager(request).saveOutputFlashMap(flashMap, request, response);
+//		return new DomainObjectSavedModel<>(page);
+//	}
 
 	@RequestMapping(value="/{language}/pages/{id}", method= RequestMethod.DELETE)
 	public @ResponseBody DomainObjectDeletedModel<Long> delete(

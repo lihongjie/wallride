@@ -18,6 +18,7 @@ package org.wallride.web.controller.admin.system;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,10 +46,10 @@ public class SystemIndexController {
 
 	private static Logger logger = LoggerFactory.getLogger(SystemIndexController.class);
 
-	@Inject
+	@Autowired
 	private SystemService systemService;
 
-	@Inject
+	@Autowired
 	private ServletContext servletContext;
 
 	@RequestMapping(method = RequestMethod.GET)

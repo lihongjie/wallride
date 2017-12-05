@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.wallride</groupId>
         <artifactId>wallride</artifactId>
-        <version>1.0.0.M17</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>wallride-tools</artifactId>
@@ -23,6 +23,7 @@
         <dependency>
             <groupId>org.wallride</groupId>
             <artifactId>wallride-core</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

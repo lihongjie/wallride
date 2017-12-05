@@ -21,7 +21,6 @@ import org.wallride.model.UserSearchRequest;
 
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
 public class UserSearchForm implements Serializable {
 	
 	private String keyword;

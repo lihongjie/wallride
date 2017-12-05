@@ -199,7 +199,7 @@ public class PageEditController {
 
 		Page page = null;
 		try {
-			page = pageService.savePageAsPublished(form.buildPageUpdateRequest(), authorizedUser);
+			page = pageService.savePages(form.buildPageUpdateRequest(), authorizedUser);
 		}
 		catch (EmptyCodeException e) {
 			errors.rejectValue("code", "NotNull");
@@ -233,7 +233,7 @@ public class PageEditController {
 
 		Page page = null;
 		try {
-			page = pageService.savePageAsUnpublished(form.buildPageUpdateRequest(), authorizedUser);
+			page = pageService.savePages(form.buildPageUpdateRequest(), authorizedUser);
 		}
 		catch (EmptyCodeException e) {
 			errors.rejectValue("code", "NotNull");

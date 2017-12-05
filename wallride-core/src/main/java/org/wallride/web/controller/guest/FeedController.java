@@ -31,7 +31,6 @@ import org.wallride.model.ArticleSearchRequest;
 import org.wallride.service.ArticleService;
 import org.wallride.service.CategoryService;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
@@ -42,7 +41,7 @@ public class FeedController {
 
 	private static final PageRequest DEFAULT_PAGE_REQUEST = new PageRequest(0, 50);
 
-	@Inject
+	@Autowired
 	private ArticleService articleService;
 	
 	@Autowired

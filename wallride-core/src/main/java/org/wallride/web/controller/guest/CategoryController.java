@@ -1,5 +1,6 @@
 package org.wallride.web.controller.guest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -26,9 +27,10 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/category")
 public class CategoryController {
 
-    @Inject
+    @Autowired
     private CategoryService categoryService;
-    @Inject
+
+    @Autowired
     private PostService postService;
 
     @RequestMapping

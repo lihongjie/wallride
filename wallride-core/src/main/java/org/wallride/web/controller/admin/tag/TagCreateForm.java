@@ -28,6 +28,7 @@ public class TagCreateForm implements Serializable {
 
 	@NotNull
 	private String name;
+
 	@NotNull
 	private String language;
 

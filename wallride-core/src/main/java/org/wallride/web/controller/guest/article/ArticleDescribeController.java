@@ -18,28 +18,32 @@ package org.wallride.web.controller.guest.article;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.wallride.domain.Article;
-import org.wallride.domain.BlogLanguage;
-import org.wallride.domain.Comment;
-import org.wallride.domain.Post;
-import org.wallride.model.ArticleSearchRequest;
-import org.wallride.model.CommentSearchRequest;
+import org.wallride.domain.*;
+import org.wallride.model.ArticleArchiveResponse;
+import org.wallride.model.CategoryResponse;
+import org.wallride.model.CommentCreateRequest;
 import org.wallride.service.ArticleService;
+import org.wallride.service.CategoryService;
 import org.wallride.service.CommentService;
+import org.wallride.support.AuthorizedUser;
 import org.wallride.web.support.HttpNotFoundException;
+import org.wallride.web.support.Pagination;
 
-import java.time.LocalDate;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
-@RequestMapping("/{year:[0-9]{4}}/{month:[0-9]{2}}/{day:[0-9]{2}}/{code:.+}")
+@RequestMapping
 public class ArticleDescribeController {
 
 	@Autowired
@@ -48,15 +52,11 @@ public class ArticleDescribeController {
 	@Autowired
 	private CommentService commentService;
 
-	@RequestMapping
-	public String describe(
-			@PathVariable int year,
-			@PathVariable int month,
-			@PathVariable int day,
-			@PathVariable String code,
-			BlogLanguage blogLanguage,
-			Model model,
-			RedirectAttributes redirectAttributes) {
+	@Autowired
+	private CategoryService categoryService;
+
+	@GetMapping("/{year:[0-9]{4}}/{month:[0-9]{2}}/{day:[0-9]{2}}/{code:.+}")
+	public String describe(@PathVariable String code, BlogLanguage blogLanguage, Model model) {
 		Article article = articleService.getArticleByCode(code, blogLanguage.getLanguage());
 		if (article == null) {
 			article = articleService.getArticleByCode(code, blogLanguage.getBlog().getDefaultLanguage());
@@ -68,35 +68,60 @@ public class ArticleDescribeController {
 			throw new HttpNotFoundException();
 		}
 
-		LocalDate date = LocalDate.of(year, month, day);
-		if (!article.getDate().toLocalDate().equals(date)) {
-			redirectAttributes.addAttribute("year", article.getDate().getYear());
-			redirectAttributes.addAttribute("month", article.getDate().getMonth().getValue());
-			redirectAttributes.addAttribute("day", article.getDate().getDayOfMonth());
-			redirectAttributes.addAttribute("code", code);
-			return "redirect:/{year}/{month}/{day}/{code}";
-		}
+//		CommentSearchRequest request = new CommentSearchRequest();
+//		request.setPostId(article.getId());
+//		request.setApproved(Boolean.TRUE);
+		Long articleId = article.getId();
+		Article prevArticle = articleService.getPrevArticle(articleId);
+		Article nextArticle = articleService.getNextArticle(articleId);
 
-		CommentSearchRequest request = new CommentSearchRequest();
-		request.setPostId(article.getId());
-		request.setApproved(Boolean.TRUE);
-		Page<Comment> comments = commentService.getComments(request, new PageRequest(0, 1000));
-
-//		List<Long> ids = articleService.getArticleIds(new ArticleSearchRequest().withStatus(Post.Status.PUBLISHED));
-		List<Long> ids = null;
-		if (!CollectionUtils.isEmpty(ids)) {
-			int index = ids.indexOf(article.getId());
-			if (index < ids.size() - 1) {
-				Article next = articleService.getArticleById(ids.get(index + 1));
-				model.addAttribute("next", next);
-			}
-			if (index > 0) {
-				Article prev = articleService.getArticleById(ids.get(index - 1));
-				model.addAttribute("prev", prev);
-			}
-		}
+		model.addAttribute("prev", prevArticle);
+		model.addAttribute("next", nextArticle);
 		model.addAttribute("article", article);
-		model.addAttribute("comments", comments);
 		return "article/describe";
+	}
+
+	@PostMapping("/article/{id}/comments")
+	public ResponseEntity postComment(CommentCreateRequest commentCreateRequest) {
+		User user = new User();
+		user.setId(13L);
+		commentCreateRequest.setAuthorId(13L);
+		AuthorizedUser authorizedUser = new AuthorizedUser(user);
+		commentService.createComment(commentCreateRequest, authorizedUser);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.build();
+	}
+
+	@GetMapping("/article/{id}/comments")
+	public String comments(
+			@PathVariable Long id,
+			@PageableDefault Pageable pageable,
+			HttpServletRequest servletRequest,
+			Model model) {
+
+		Page<Comment> comments = commentService.getCommentsByArticleId(id, pageable);
+		long totalCount = commentService.totalCountCommentForArticle(id);
+		model.addAttribute("totalCount", totalCount);
+		model.addAttribute("comments", comments);
+		model.addAttribute("pageable", pageable);
+		model.addAttribute("pagination", new Pagination<>(comments, servletRequest));
+		return "article/comments";
+	}
+
+	@GetMapping("/article/{id}/categories")
+	public String categoryArchive(Model model) {
+
+		List<CategoryResponse> categories = categoryService.categoryGroup();
+		model.addAttribute("cagegories", categories);
+		return "article/category-archive";
+	}
+
+	@GetMapping("/article/{id}/archive")
+	public String articleArchive(@PathVariable Long id, Model model) {
+
+		List<ArticleArchiveResponse> articleArchives = articleService.articleArchive(id);
+		model.addAttribute("articleArchives", articleArchives);
+		return "article/article-archive";
 	}
 }

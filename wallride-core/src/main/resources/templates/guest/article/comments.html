@@ -1,0 +1,80 @@
+<div xmlns:th="http://www.w3.org/1999/xhtml">
+    <h3 th:text="${totalCount} + ' Comments'">Comments</h3>
+    <comment th:each="comment : ${comments}">
+        <div class="media">
+            <a href="javascript:;" class="pull-left">
+                <img alt="" src="/resources/metronic/theme/assets/pages/media/blog/9.jpg" class="media-object">
+            </a>
+            <div class="media-body">
+                <h4 class="media-heading"><b th:text="${comment.authorName}">User Name</b>
+                    <span>
+                        <relative-time datetime="${#temporals.format(comment.date, 'yyyy-MM-dd HH:mm:ss')}"
+                                       title="${#temporals.format(comment.date, 'yyyy-MM-dd HH:mm:ss')}" class="comment-created-time"
+                                       th:text="${#temporals.format(comment.date, 'yyyy-MM-dd HH:mm:ss')}">5 hours ago</relative-time>
+                        /
+                        <a href="javascript:;" th:text="Reply">Reply</a></span>
+                </h4>
+                <p th:text="${comment.content}">Comment Content</p>
+
+                <!-- Nested media object -->
+<!--                <div class="media">
+                    <a href="javascript:;" class="pull-left">
+                        <img alt="" src="/resources/metronic/theme/assets/pages/media/blog/5.jpg" class="media-object">
+                    </a>
+                    <div class="media-body">
+                        <h4 class="media-heading">Media heading
+                            <span>17 hours ago / <a href="javascript:;">Reply </a></span>
+                        </h4>
+                        <p>
+                            Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+                        </p>
+                    </div>
+                </div>-->
+                <!--end media-->
+            </div>
+        </div>
+        <hr>
+    </comment>
+    <div class="pagination-group pull-right">
+
+        <div class="pull-right">
+            <ul class="pagination paginateon-sm">
+                <li th:classappend="${pagination.hasPreviousPage() ? '' : 'disabled'}">
+                    <a th:href="@{${pagination.url}(page=${pagination.previousPageNumber})}"
+                       th:data-page="${pagination.previousPageNumber}" th:text="#{Prev}" class="pagination-a">Prev</a></li>
+                <li th:each="p : ${pagination.getPageables(pageable)}"
+                    th:classappend="${p.pageNumber eq pagination.currentPageNumber ? 'active' : ''}">
+                    <a th:href="@{${pagination.url}(page=${p.pageNumber})}" th:data-page="${p.pageNumber}"
+                       th:text="${p.pageNumber + 1}" class="pagination-a"></a></li>
+                <li th:classappend="${pagination.hasNextPage() ? '' : 'disabled'}">
+                    <a th:href="@{${pagination.url}(page=${pagination.nextPageNumber})}"
+                       th:data-page="${pagination.nextPageNumber}" th:text="#{Next}" class="pagination-a">Next</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<hr>
+<div class="post-comment">
+    <h3>Leave a Comment</h3>
+    <form role="form" action="#">
+        <div class="form-group">
+            <label class="control-label">Name <span class="required">
+										* </span>
+            </label>
+            <input type="text" class="form-control">
+        </div>
+        <div class="form-group">
+            <label class="control-label">Email <span class="required">
+										* </span>
+            </label>
+            <input type="text" class="form-control">
+        </div>
+        <div class="form-group">
+            <label class="control-label">Message <span class="required">
+										* </span>
+            </label>
+            <textarea class="col-md-10 form-control" rows="8" id="post-comment-content"></textarea>
+        </div>
+        <button class="margin-top-20 btn blue" type="submit" id="post-comment-btn">Post a Comment</button>
+    </form>
+</div>

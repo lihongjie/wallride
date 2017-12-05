@@ -23,12 +23,18 @@ import java.time.LocalDateTime;
 
 public class CommentCreateRequest implements Serializable {
 
-	private BlogLanguage blogLanguage;
-	private long postId;
-	private long authorId;
-	private LocalDateTime date;
+	private BlogLanguage blogLanguage = new BlogLanguage();
+
+	private Long postId;
+
+	private Long parentId;
+
+	private Long authorId;
+
+	private LocalDateTime date = LocalDateTime.now();
+
 	private String content;
-	private boolean approved;
+
 
 	public BlogLanguage getBlogLanguage() {
 		return blogLanguage;
@@ -38,19 +44,19 @@ public class CommentCreateRequest implements Serializable {
 		this.blogLanguage = blogLanguage;
 	}
 
-	public long getPostId() {
+	public Long getPostId() {
 		return postId;
 	}
 
-	public void setPostId(long postId) {
+	public void setPostId(Long postId) {
 		this.postId = postId;
 	}
 
-	public long getAuthorId() {
+	public Long getAuthorId() {
 		return authorId;
 	}
 
-	public void setAuthorId(long authorId) {
+	public void setAuthorId(Long authorId) {
 		this.authorId = authorId;
 	}
 
@@ -70,12 +76,12 @@ public class CommentCreateRequest implements Serializable {
 		this.content = content;
 	}
 
-	public boolean isApproved() {
-		return approved;
+	public Long getParentId() {
+		return parentId;
 	}
 
-	public void setApproved(boolean approved) {
-		this.approved = approved;
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
 	}
 }
 

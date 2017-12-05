@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.admin.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,7 +36,7 @@ import javax.validation.Valid;
 @RequestMapping("/{language}/users/invitations/delete")
 public class UserInvitationDeleteController {
 
-	@Inject
+	@Autowired
 	private UserService userService;
 
 	@ModelAttribute("query")

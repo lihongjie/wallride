@@ -18,6 +18,7 @@ package org.wallride.web.controller.admin.page;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.wallride.domain.CustomField;
+import org.wallride.domain.Post;
 import org.wallride.model.PageCreateRequest;
 import org.wallride.support.CodeFormat;
 import org.wallride.web.controller.admin.article.CustomFieldValueEditForm;

@@ -17,40 +17,32 @@
 package org.wallride.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
-import org.wallride.autoconfigure.WallRideCacheConfiguration;
 import org.wallride.domain.Category;
 import org.wallride.domain.Category_;
-import org.wallride.exception.ServiceException;
 import org.wallride.model.CategoryCreateRequest;
+import org.wallride.model.CategoryResponse;
 import org.wallride.model.CategorySearchRequest;
 import org.wallride.model.CategoryUpdateRequest;
 import org.wallride.repository.CategoryRepository;
 import org.wallride.repository.CategorySpecifications;
 import org.wallride.support.AuthorizedUser;
-import org.wallride.support.CodeFormatter;
 
-import javax.inject.Inject;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
 @Service
-@Transactional(rollbackFor=Exception.class)
 public class CategoryService {
 
 	@Autowired
 	private CategoryRepository categoryRepository;
 
-	@CacheEvict(value = {WallRideCacheConfiguration.ARTICLE_CACHE, WallRideCacheConfiguration.PAGE_CACHE}, allEntries = true)
+
 	public Category createCategory(CategoryCreateRequest request, AuthorizedUser authorizedUser) {
 		Category category = new Category();
 
@@ -59,73 +51,72 @@ public class CategoryService {
 			parent = categoryRepository.findOneByIdAndLanguage(request.getParentId(), request.getLanguage());
 		}
 
-		int rgt = 0;
-		if (parent == null) {
-			rgt = categoryRepository.findMaxRgt();
-			rgt++;
-		}
-		else {
-			rgt = parent.getRgt();
-			categoryRepository.unshiftRgt(rgt);
-			categoryRepository.unshiftLft(rgt);
-		}
+//		int rgt = 0;
+//		if (parent == null) {
+//			rgt = categoryRepository.findMaxRgt();
+//			rgt++;
+//		}
+//		else {
+//			rgt = parent.getRgt();
+//			categoryRepository.unshiftRgt(rgt);
+//			categoryRepository.unshiftLft(rgt);
+//		}
 
 		category.setParent(parent);
 		String code = request.getCode();
-		if (code == null) {
-			try {
-				code = new CodeFormatter().parse(request.getName(), LocaleContextHolder.getLocale());
-			} catch (ParseException e) {
-				throw new ServiceException(e);
-			}
-		}
+
+//		code = new CodeFormatter().parse(request.getName(), LocaleContextHolder.getLocale());
+
+		String userName = authorizedUser.getUsername();
+		category.setCreatedBy(userName);
+		category.setUpdatedBy(userName);
 		category.setCode(code);
 		category.setName(request.getName());
 		category.setDescription(request.getDescription());
-		category.setLft(rgt);
-		category.setRgt(rgt + 1);
+//		category.setLft(rgt);
+//		category.setRgt(rgt + 1);
 		category.setLanguage(request.getLanguage());
 
 		return categoryRepository.save(category);
 	}
 
-	@CacheEvict(value = {WallRideCacheConfiguration.ARTICLE_CACHE, WallRideCacheConfiguration.PAGE_CACHE}, allEntries = true)
 	public Category updateCategory(CategoryUpdateRequest request, AuthorizedUser authorizedUser) {
-//		categoryRepository.lock(request.getId());
+
 		Category category = categoryRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		Category parent = null;
 		if (request.getParentId() != null) {
 			parent = categoryRepository.findOneByIdAndLanguage(request.getParentId(), request.getLanguage());
 		}
 
-		if (!(category.getParent() == null && parent == null) && !ObjectUtils.nullSafeEquals(category.getParent(), parent)) {
-			categoryRepository.shiftLftRgt(category.getLft(), category.getRgt());
-			categoryRepository.shiftRgt(category.getRgt());
-			categoryRepository.shiftLft(category.getRgt());
-
-			int rgt = 0;
-			if (parent == null) {
-				rgt = categoryRepository.findMaxRgt();
-				rgt++;
-			}
-			else {
-				rgt = parent.getRgt();
-				categoryRepository.unshiftRgt(rgt);
-				categoryRepository.unshiftLft(rgt);
-			}
-			category.setLft(rgt);
-			category.setRgt(rgt + 1);
-		}
+//		if (!(category.getParent() == null && parent == null) && !ObjectUtils.nullSafeEquals(category.getParent(), parent)) {
+//			categoryRepository.shiftLftRgt(category.getLft(), category.getRgt());
+//			categoryRepository.shiftRgt(category.getRgt());
+//			categoryRepository.shiftLft(category.getRgt());
+//
+//			int rgt = 0;
+//			if (parent == null) {
+//				rgt = categoryRepository.findMaxRgt();
+//				rgt++;
+//			}
+//			else {
+//				rgt = parent.getRgt();
+//				categoryRepository.unshiftRgt(rgt);
+//				categoryRepository.unshiftLft(rgt);
+//			}
+//			category.setLft(rgt);
+//			category.setRgt(rgt + 1);
+//		}
 
 		category.setParent(parent);
 		String code = request.getCode();
-		if (code == null) {
-			try {
-				code = new CodeFormatter().parse(request.getName(), LocaleContextHolder.getLocale());
-			} catch (ParseException e) {
-				throw new ServiceException(e);
-			}
-		}
+//		if (code == null) {
+//			try {
+//				code = new CodeFormatter().parse(request.getName(), LocaleContextHolder.getLocale());
+//			} catch (ParseException e) {
+//				throw new ServiceException(e);
+//			}
+//		}
+		category.setUpdatedBy(authorizedUser.getUsername());
 		category.setCode(code);
 		category.setName(request.getName());
 		category.setDescription(request.getDescription());
@@ -134,12 +125,11 @@ public class CategoryService {
 		return categoryRepository.save(category);
 	}
 
-	@CacheEvict(value = {WallRideCacheConfiguration.ARTICLE_CACHE, WallRideCacheConfiguration.PAGE_CACHE}, allEntries = true)
 	public void updateCategoryHierarchy(List<Map<String, Object>> data, String language) {
 		for (int i = 0; i < data.size(); i++) {
 			Map<String, Object> map = data.get(i);
 			if (map.get("item_id") != null) {
-//				categoryRepository.lock(Long.parseLong((String) map.get("item_id")));
+
 				Category category = categoryRepository.findOneByIdAndLanguage(Long.parseLong((String) map.get("item_id")), language);
 				if (category != null) {
 					Category parent = null;
@@ -155,36 +145,26 @@ public class CategoryService {
 		}
 	}
 
-	@CacheEvict(value = {WallRideCacheConfiguration.ARTICLE_CACHE, WallRideCacheConfiguration.PAGE_CACHE}, allEntries = true)
-	public Category deleteCategory(long id, String language) {
-//		categoryRepository.lock(id);
+	@Transactional
+	public Category deleteCategory(Long id, String language) {
+
 		Category category = categoryRepository.findOneByIdAndLanguage(id, language);
 		Category parent = category.getParent();
 		for (Category child : category.getChildren()) {
 			child.setParent(parent);
-			categoryRepository.saveAndFlush(child);
+			categoryRepository.save(child);
 		}
 		category.getChildren().clear();
-		categoryRepository.saveAndFlush(category);
 		categoryRepository.delete(category);
-
-		categoryRepository.shiftLftRgt(category.getLft(), category.getRgt());
-		categoryRepository.shiftRgt(category.getRgt());
-		categoryRepository.shiftLft(category.getRgt());
-
 		return category;
 	}
 
-	public Category getCategoryById(long id, String language) {
+	public Category getCategoryById(Long id, String language) {
 		return categoryRepository.findOneByIdAndLanguage(id, language);
 	}
 
 	public Category getCategoryByCode(String code, String language) {
 		return categoryRepository.findOneByCodeAndLanguage(code, language);
-	}
-
-	public List<Category> getCategories(String language) {
-		return getCategories(language, false);
 	}
 
 	public List<Category> getCategories(String language, boolean includeNoPosts) {
@@ -203,5 +183,9 @@ public class CategoryService {
 	public Page<Category> getCategories(CategorySearchRequest request, Pageable pageable) {
 //		return categoryRepository.search(request, pageable);
 		return categoryRepository.findAll(pageable);
+	}
+
+	public List<CategoryResponse> categoryGroup() {
+		return categoryRepository.findAllGroupByCateogry();
 	}
 }

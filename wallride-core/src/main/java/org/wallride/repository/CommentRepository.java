@@ -16,12 +16,15 @@
 
 package org.wallride.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.wallride.domain.Comment;
+import org.wallride.domain.Post;
 
 import javax.persistence.LockModeType;
 
@@ -35,4 +38,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
 	@EntityGraph(value = Comment.DEEP_GRAPH_NAME, type = EntityGraph.EntityGraphType.FETCH)
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	Comment findOneForUpdateById(Long id);
+
+	Page<Comment> findAllByPost(Post post, Pageable pageable);
+
+	long countCommentByPostId(Long postId);
 }

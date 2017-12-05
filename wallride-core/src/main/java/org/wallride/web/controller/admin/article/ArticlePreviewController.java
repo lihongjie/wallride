@@ -16,7 +16,7 @@
 
 package org.wallride.web.controller.admin.article;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -40,7 +40,6 @@ import org.wallride.support.AuthorizedUser;
 import org.wallride.web.support.BlogLanguageMethodArgumentResolver;
 import org.wallride.web.support.DefaultModelAttributeInterceptor;
 
-import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

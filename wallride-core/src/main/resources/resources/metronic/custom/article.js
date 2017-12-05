@@ -1,37 +1,3 @@
-function fetchArticleList(param) {
-
-    $.ajax({
-        url: "./list",//这个就是请求地址对应sAjaxSource
-        data: {
-            page : param
-        },
-        type: 'GET',
-        async: false,
-        success: function (result) {
-
-            $("#article-list-wrapper").empty().append(result);
-            enablePagingArticle();
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-
-            alert("status:" + XMLHttpRequest.status + ",readyState:" + XMLHttpRequest.readyState + ",textStatus:" + textStatus);
-
-        }
-    });
-}
-
-function enablePagingArticle() {
-
-    $(".pagination-a").on("click", function(e) {
-        debugger;
-        e.preventDefault();
-        var page = $(this).data("page");
-        if($(this).parent().hasClass('disabled')) {
-            return false;
-        }
-        fetchArticleList(page);
-    });
-}
 
 /*function articlePreview() {
     $('#wr-page-header').on('click', '#article-preview', function(e) {
@@ -338,3 +304,144 @@ function enableSaveCategory() {
             }
         });
     }
+
+function enableSearchArticle(param) {
+
+    $.ajax({
+        url: "./articles",
+        data: {
+            page : param
+        },
+        type: 'GET',
+        async: false,
+        success: function (result) {
+            debugger;
+            $("#article-list-wrapper").empty().append(result);
+            enablePagination();
+            eableFormatTime($(".article-created-time"));
+
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            alert("status:" + XMLHttpRequest.status + ",readyState:" + XMLHttpRequest.readyState + ",textStatus:" + textStatus);
+
+        }
+    });
+}
+function enablePagination() {
+
+    $(".pagination-a").on("click", function(e) {
+        e.preventDefault();
+        var page = $(this).data("page");
+        if($(this).parent().hasClass('disabled')) {
+            return false;
+        }
+        enableSearchArticle(page);
+    });
+}
+
+
+function enableFetchCommentsByArticleId(param) {
+    var id = $("#article-id").val();
+    var url = "/article/" + id + "/comments";
+    $.ajax({
+        url: url,
+        data: {
+            page : param
+        },
+        type: 'GET',
+        async: false,
+        success: function (result) {
+
+            $("#article-comments-wrapper").empty().append(result);
+            enableArticleCommentsPagination();
+            enableSubmitComment();
+            eableFormatTime($(".comment-created-time"));
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            alert("status:" + XMLHttpRequest.status + ",readyState:" + XMLHttpRequest.readyState + ",textStatus:" + textStatus);
+
+        }
+    });
+}
+
+function enableArticleCommentsPagination() {
+
+    $(".pagination-a").on("click", function(e) {
+        e.preventDefault();
+        var page = $(this).data("page");
+        if($(this).parent().hasClass('disabled')) {
+            return false;
+        }
+        enableFetchCommentsByArticleId(page);
+    });
+}
+
+function enableSubmitComment() {
+    $("#post-comment-btn").on("click", function() {
+        var content = $("#post-comment-content").val();
+        var articleId = $("#article-id").val();
+        var parentId = '';
+        var data = {
+            content : content,
+            postId : articleId,
+            parentId : parentId
+        };
+        var url = "/article/" + articleId + "/comments";
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'POST',
+            async: false,
+            success: function (textStatus) {
+                enableFetchCommentsByArticleId(0);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                alert("status:" + XMLHttpRequest.status + ",readyState:" + XMLHttpRequest.readyState + ",textStatus:" + textStatus);
+
+            }
+        });
+    })
+}
+
+function enableFetchCategoryArchive() {
+    var id = $("#article-id").val();
+    var url = "/article/" + id + "/categories";
+    $.ajax({
+        url: url,
+        type: 'GET',
+        async: false,
+        success: function (result) {
+
+            $(".blog-sidebar-categories").empty().append(result);
+
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            alert("status:" + XMLHttpRequest.status + ",readyState:" + XMLHttpRequest.readyState + ",textStatus:" + textStatus);
+
+        }
+    });
+}
+
+function enableArticleArchive() {
+    var id = $("#article-id").val();
+    var url = "/article/" + id + "/archive";
+    $.ajax({
+        url: url,
+        type: 'GET',
+        async: false,
+        success: function (result) {
+
+            $(".blog-sidebar-article-archive").empty().append(result);
+
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            alert("status:" + XMLHttpRequest.status + ",readyState:" + XMLHttpRequest.readyState + ",textStatus:" + textStatus);
+
+        }
+    });
+}

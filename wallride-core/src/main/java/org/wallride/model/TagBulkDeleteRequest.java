@@ -22,6 +22,7 @@ import java.util.List;
 public class TagBulkDeleteRequest implements Serializable {
 
 	private List<Long> ids;
+
 	private String language;
 
 	public List<Long> getIds() {

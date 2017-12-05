@@ -1,104 +1,89 @@
-<div class="col-md-12" xmlns:th="">
-	<div class="portlet light ">
-		<div class="portlet-title tabbable-line">
-			<div class="caption caption-md">
-				<i class="icon-globe theme-font hide"></i>
-				<!--<span class="caption-subject font-blue-madison bold uppercase">Article List</span>-->
-			</div>
-		</div>
-		<div class="portlet-body">
-			<div class="table-toolbar">
-				<div class="row">
-					<div class="col-md-6">
-						<div class="btn-group">
-							<a href="/_admin/en/articles/create">
-							<span id="sample_editable_1_new" class="btn sbold green"> Add New Article
-								<i class="fa fa-plus"></i>
-							</span>
-							</a>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="btn-group pull-right">
-							<button class="btn green  btn-outline dropdown-toggle" data-toggle="dropdown">Tools
-								<i class="fa fa-angle-down"></i>
-							</button>
-							<ul class="dropdown-menu pull-right">
-								<li>
-									<a href="javascript:;">
-										<i class="fa fa-print"></i> Print </a>
-								</li>
-								<li>
-									<a href="javascript:;">
-										<i class="fa fa-file-pdf-o"></i> Save as PDF </a>
-								</li>
-								<li>
-									<a href="javascript:;">
-										<i class="fa fa-file-excel-o"></i> Export to Excel </a>
-								</li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-			<table class="table table-striped table-bordered table-hover table-checkable order-column" id="#sample_1">
-				<thead>
-				<tr>
-					<th>
-						<label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
-							<input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes" />
-							<span></span>
-						</label>
-					</th>
-					<th> ID # </th>
-					<th> Title </th>
-					<th> Categories </th>
-					<th> Tags </th>
-					<th> Author </th>
-					<th> Date </th>
-					<th> Views </th>
-					<th> Status </th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr th:each="article : ${articles}" class="odd gradeX">
-					<td>
-						<label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
-							<input type="checkbox" class="checkboxes" th:value="${article.id}" th:attr="data-status=${#messages.msg('Post.Status.' + article.status)}"/>
-							<span></span>
-						</label>
-					</td>
-					<td>
-						<a href="#" th:text="${article.id}"></a>
-					</td>
-					<td>
-						<a th:text="${article.title?:'(No Titled)'}">Title</a>
-					</td>
-					<td>
-						<th:block th:each="category : ${article.categories}"><a th:text="${category}"></a> <span th:unless="${categoryStat.last}">&nbsp; | &nbsp;</span></th:block></td>
-					<td>
-						<th:block th:each="tag : ${article.tags}"><a th:href="@{__${ADMIN_PATH}__/articles/index(tagId=${tag.id})}" th:text="${tag}"></a> <span th:unless="${tagStat.last}">&nbsp; | &nbsp;</span></th:block>
-					</td>
-					<td> <a th:if="${article.author ne null}" th:href="@{__${ADMIN_PATH}__/articles/index(authorId=${article.author.id})}" th:text="${article.author.name}">Author</a> </td>
-					<td th:text="${article.date ne null ? #temporals.format(article.date, 'yyyy/MM/dd (E) HH:mm', #locale) : ''}">2013/10/24</td>
-					<td class="text-right" th:text="${article.views}">0</td>
-					<td><span class="label label-sm label-success" th:class=" 'wr-post-status-' + ${article.status} " th:text="${#messages.msg('Post.Status.' + article.status)}">Status</span></td>
-				</tr>
-				</tbody>
-			</table>
-			<div class="pagination-group pull-right">
-				<div class="pull-left pagination-summary"><span th:text="${pagination.numberOfFirstElement}"></span> - <span th:text="${pagination.numberOfLastElement}"></span> / <span th:text="${pagination.totalElements}"></span></div>
-				<div class="pull-right">
-					<ul class="pagination paginateon-sm">
-						<li th:classappend="${pagination.hasPreviousPage() ? '' : 'disabled'}">
-							<a th:href="@{${pagination.url}(page=${pagination.previousPageNumber})}" th:data-page="${pagination.previousPageNumber}" th:text="#{Prev}" class="pagination-a">Prev</a></li>
-						<li th:each="p : ${pagination.getPageables(pageable)}" th:classappend="${p.pageNumber eq pagination.currentPageNumber ? 'active' : ''}">
-							<a th:href="@{${pagination.url}(page=${p.pageNumber})}" th:data-page="${p.pageNumber}" th:text="${p.pageNumber + 1}" class="pagination-a"></a></li>
-						<li th:classappend="${pagination.hasNextPage() ? '' : 'disabled'}">
-							<a th:href="@{${pagination.url}(page=${pagination.nextPageNumber})}" th:data-page="${pagination.nextPageNumber}" th:text="#{Next}" class="pagination-a">Next</a></li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</div>
+<div xmlns:th="http://www.w3.org/1999/xhtml">
+<table class="table table-striped table-bordered table-hover table-checkable order-column" id="article-table">
+    <thead>
+    <tr>
+        <th class="sorting_disabled" rowspan="1" colspan="1" style="width: 75px">
+            <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
+                <input type="checkbox" class="group-checkable" data-set="#article-table .checkboxes"/>
+                <span></span>
+            </label>
+        </th>
+        <th> ID #</th>
+        <th> Title</th>
+        <th> Categories</th>
+        <th> Tags</th>
+        <th> Author</th>
+        <th> Date</th>
+        <th> Views</th>
+        <th> Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="article : ${articles}" class="odd gradeX">
+        <td>
+            <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
+                <input type="checkbox" class="checkboxes" th:value="${article.id}"
+                       th:attr="data-status=${#messages.msg('Post.Status.' + article.status)}"/>
+                <span></span>
+            </label>
+        </td>
+        <td>
+            <a href="#" th:text="${article.id}"></a>
+        </td>
+        <td>
+            <a th:text="${article.title?:'(No Titled)'}">Title</a>
+        </td>
+        <td>
+            <th:block th:each="category : ${article.categories}"><a th:text="${category}"></a> <span
+                    th:unless="${categoryStat.last}">&nbsp; | &nbsp;</span></th:block>
+        </td>
+        <td>
+            <th:block th:each="tag : ${article.tags}"><a
+                    th:href="@{__${ADMIN_PATH}__/articles/index(tagId=${tag.id})}" th:text="${tag}"></a>
+                <span th:unless="${tagStat.last}">&nbsp; | &nbsp;</span></th:block>
+        </td>
+        <td><a th:if="${article.author ne null}"
+               th:href="@{__${ADMIN_PATH}__/articles/index(authorId=${article.author.id})}"
+               th:text="${article.author.name}">Author</a></td>
+        <td th:text="${article.date ne null ? #temporals.format(article.date, 'yyyy/MM/dd (E) HH:mm', #locale) : ''}">
+            2013/10/24
+        </td>
+        <td class="text-right" th:text="${article.views}">0</td>
+        <td><span class="label label-sm label-success" th:class=" 'wr-post-status-' + ${article.status} "
+                  th:text="${#messages.msg('Post.Status.' + article.status)}">Status</span></td>
+    </tr>
+    </tbody>
+</table>
+<div class="row">
+    <div class="col-md-5 col-sm-5">
+        <div class="dataTables_info">
+            Showing
+            <span th:text="${pagination.numberOfFirstElement}"></span> to
+            <span th:text="${pagination.numberOfLastElement}"></span> of
+            <span th:text="${pagination.totalElements}"></span> records
+        </div>
+    </div>
+    <div class="col-md-7 col-sm-7">
+        <div class="pagination-group pull-right">
+            <div class="pull-right">
+                <ul class="pagination paginateon-sm">
+                    <li th:classappend="${pagination.hasPreviousPage() ? '' : 'disabled'}">
+                        <a th:href="@{${pagination.url}(page=${pagination.previousPageNumber})}"
+                           th:data-page="${pagination.previousPageNumber}" th:text="#{Prev}"
+                           class="pagination-a">Prev</a></li>
+                    <li th:each="p : ${pagination.getPageables(pageable)}"
+                        th:classappend="${p.pageNumber eq pagination.currentPageNumber ? 'active' : ''}">
+                        <a th:href="@{${pagination.url}(page=${p.pageNumber})}"
+                           th:data-page="${p.pageNumber}"
+                           th:text="${p.pageNumber + 1}" class="pagination-a"></a></li>
+                    <li th:classappend="${pagination.hasNextPage() ? '' : 'disabled'}">
+                        <a th:href="@{${pagination.url}(page=${pagination.nextPageNumber})}"
+                           th:data-page="${pagination.nextPageNumber}" th:text="#{Next}"
+                           class="pagination-a">Next</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
 </div>

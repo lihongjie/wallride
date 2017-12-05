@@ -16,8 +16,6 @@
 
 package org.wallride.repository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
@@ -25,7 +23,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.wallride.domain.Article;
 import org.wallride.domain.Post;
-import org.wallride.model.ArticleSearchRequest;
+import org.wallride.model.ArticleArchiveResponse;
 
 import java.util.Collection;
 import java.util.List;
@@ -83,4 +81,22 @@ public interface ArticleRepository extends JpaRepository<Article, Long>,JpaSpeci
 
 //	@Query("select * from Article article left  join article.categories category where article.status = :status and article.language = :language and article.")
 //	Page<Article> findByLanguageAndCategoryCodeAndStatus();
+
+// 	@Modifying
+//	@Query("select article from Article article where article.id > :id order by  article.id asc")
+//	Article getNextArticle(@Param("id") Long id, Pageable pageable);
+
+
+//	@Modifying
+//	@Query("select article from Article article where article.id < :id order by article.id desc")
+//	Article getPrevArticle(@Param("id") Long id, Pageable pageable);
+
+	//next
+	Article findTopByIdIsAfterOrderByIdAsc(Long id);
+
+	//prev
+	Article findTopByIdIsBeforeOrderByIdDesc(Long id);
+
+	@Query("select new org.wallride.model.ArticleArchiveResponse(article.id, YEAR(article.date) as year, MONTH(article.date) as month, count(*) as num ) from Article article where article.author.id = :id group by YEAR(article.date), MONTH(article.date)")
+	List<ArticleArchiveResponse> articleArchive(@Param("id") Long id);
 }

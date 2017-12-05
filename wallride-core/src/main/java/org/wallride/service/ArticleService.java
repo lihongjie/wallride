@@ -16,11 +16,10 @@
 
 package org.wallride.service;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
@@ -277,7 +276,6 @@ public class ArticleService {
 		return published;
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.ARTICLE_CACHE, allEntries = true)
 	public Article saveArticleAsUnpublished(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
 		Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		unpublishArticle(article);
@@ -507,6 +505,7 @@ public class ArticleService {
 		return getArticles(request, pageable);
 	}
 
+//	@Transactional
 	public Page<Article> getArticles(ArticleSearchRequest request, Pageable pageable) {
 //		return articleRepository.search(request, pageable);
 		Page<Article> articles = articleRepository.findAll(pageable);
@@ -539,7 +538,7 @@ public class ArticleService {
 				.withStatus(status);
 
 		Pageable pageable = new PageRequest(0, size);
-		Page<Article> page = articleRepository.findAll(pageable);
+		Page<Article> page = articleRepository.findAll(ArticleSpecifications.searchRequestSpecification(request), pageable);
 		return new TreeSet<>(page.getContent());
 
 	}
@@ -564,7 +563,9 @@ public class ArticleService {
 
 	@Cacheable(value = WallRideCacheConfiguration.ARTICLE_CACHE)
 	public Article getArticleByCode(String code, String language) {
-		return articleRepository.findOneByCodeAndLanguage(code, language);
+		Article article = articleRepository.findOneByCodeAndLanguage(code, language);
+		int size = article.getComments().size();
+		return article;
 	}
 
 	public Article getDraftById(long id) {
@@ -605,4 +606,20 @@ public class ArticleService {
 		}
 		return counts;
 	}
+
+	public Article getNextArticle(Long id) {
+
+		return articleRepository.findTopByIdIsAfterOrderByIdAsc(id);
+	}
+
+	public Article getPrevArticle(Long id) {
+
+		return articleRepository.findTopByIdIsBeforeOrderByIdDesc(id);
+	}
+
+	public List<ArticleArchiveResponse> articleArchive(Long id) {
+		Article article = articleRepository.getOne(id);
+		return articleRepository.articleArchive(article.getAuthor().getId());
+	}
+
 }

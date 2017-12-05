@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.guest.comment;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.wallride.domain.BlogLanguage;
 import org.wallride.domain.User;
 import org.wallride.model.CommentCreateRequest;
@@ -29,8 +30,20 @@ public class CommentForm implements Serializable {
 
 	@NotNull
 	private Long postId;
+
 	@NotNull
+	private Long parentId;
+
+	@NotBlank
 	private String content;
+
+	public Long getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
+	}
 
 	public Long getPostId() {
 		return postId;
@@ -55,7 +68,7 @@ public class CommentForm implements Serializable {
 		request.setAuthorId(author.getId());
 		request.setDate(LocalDateTime.now());
 		request.setContent(getContent());
-		request.setApproved(true);
+//		request.setApproved(true);
 		return request;
 	}
 

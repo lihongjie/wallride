@@ -64,41 +64,7 @@ public class CustomFieldCreateController {
 		return RestValidationErrorModel.fromBindingResult(e.getBindingResult(), messageSourceAccessor);
 	}
 
-	@RequestMapping(method=RequestMethod.GET)
-	public String create() {
-		return "customfield/create";
-	}
 
-	@RequestMapping(method=RequestMethod.POST)
-	public String save(
-			@PathVariable String language,
-			@Validated @ModelAttribute("form") CustomFieldCreateForm form,
-			BindingResult errors,
-			String query,
-			AuthorizedUser authorizedUser,
-			RedirectAttributes redirectAttributes)
-			throws BindException {
-		if (errors.hasErrors()) {
-			return "customfield/create";
-		}
 
-		CustomField customfield = null;
-		try {
-			customfield = customfieldService.createCustomField(form.buildCustomFieldCreateRequest(), authorizedUser);
-		}
-		catch (EmptyCodeException e) {
-			errors.rejectValue("code", "NotNull");
-		}
-		catch (DuplicateCodeException e) {
-			errors.rejectValue("code", "NotDuplicate");
-		}
-		if (errors.hasErrors()) {
-			logger.debug("Errors: {}", errors);
-			return "customfield/create";
-		}
-		redirectAttributes.addFlashAttribute("savedCustomField", customfield);
-		redirectAttributes.addAttribute("language", language);
-		redirectAttributes.addAttribute("id", customfield.getId());
-		return "redirect:/_admin/{language}/customfields/index";
-	}
+
 }

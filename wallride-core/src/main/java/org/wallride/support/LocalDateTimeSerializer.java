@@ -29,7 +29,7 @@ public class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
 
 	@Override
 	public void serialize(LocalDateTime localDateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-			throws IOException, JsonProcessingException {
+			throws IOException {
 		jsonGenerator.writeString(localDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")));
 	}
 }

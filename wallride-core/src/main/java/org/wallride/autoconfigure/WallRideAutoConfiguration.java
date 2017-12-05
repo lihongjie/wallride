@@ -46,7 +46,7 @@ import org.wallride.service.BlogService;
 		WallRideSecurityConfiguration.class,
 		WallRideServletConfiguration.class,
 		WallRideThymeleafConfiguration.class,
-		WallRideWebMvcConfiguration.class,
+		WallRideWebMvcConfiguration.class
 })
 @ComponentScan(basePackageClasses = BlogService.class)
 public class WallRideAutoConfiguration {

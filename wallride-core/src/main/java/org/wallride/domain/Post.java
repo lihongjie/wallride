@@ -52,7 +52,7 @@ public class Post extends DomainObject<Long> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 
 	@Column(length = 200)
 	private String code;
@@ -82,7 +82,7 @@ public class Post extends DomainObject<Long> {
 	private Status status;
 
 	@Column(nullable = false)
-	private long views;
+	private Long views;
 
 	@ManyToOne
 	private Post drafted;

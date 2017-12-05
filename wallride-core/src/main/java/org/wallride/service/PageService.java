@@ -16,29 +16,18 @@
 
 package org.wallride.service;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.MessageCodesResolver;
-import org.wallride.autoconfigure.WallRideCacheConfiguration;
 import org.wallride.autoconfigure.WallRideProperties;
 import org.wallride.domain.*;
 import org.wallride.exception.DuplicateCodeException;
@@ -50,10 +39,6 @@ import org.wallride.support.AuthorizedUser;
 import org.wallride.support.CodeFormatter;
 import org.wallride.web.controller.admin.article.CustomFieldValueEditForm;
 
-import javax.annotation.Resource;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -64,6 +49,8 @@ import java.util.regex.Pattern;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class PageService {
+
+	private static Logger logger = LoggerFactory.getLogger(PageService.class);
 
 	@Autowired
 	private PostRepository postRepository;
@@ -78,22 +65,17 @@ public class PageService {
 	private MediaRepository mediaRepository;
 
 	@Autowired
-	private MessageCodesResolver messageCodesResolver;
-
-	@Autowired
-	private PlatformTransactionManager transactionManager;
-
-	@Autowired
 	private WallRideProperties wallRideProperties;
 
-	@PersistenceContext
-	private EntityManager entityManager;
+	@Autowired
+	private CategoryRepository categoryRepository;
 
-	private static Logger logger = LoggerFactory.getLogger(PageService.class);
+	@Autowired
+	private CustomFieldRepository customFieldRepository;
 
 	public Page createPage(PageCreateRequest request, Post.Status status, AuthorizedUser authorizedUser) {
-		LocalDateTime now = LocalDateTime.now();
 
+		LocalDateTime now = LocalDateTime.now();
 		String code = request.getCode();
 		if (code == null) {
 			try {
@@ -140,13 +122,13 @@ public class PageService {
 
 		Media cover = null;
 		if (request.getCoverId() != null) {
-			cover = entityManager.getReference(Media.class, request.getCoverId());
+			cover = mediaRepository.findOne(request.getCoverId());
 		}
 		page.setCover(cover);
 		page.setTitle(request.getTitle());
 		page.setBody(request.getBody());
 
-		page.setAuthor(entityManager.getReference(User.class, authorizedUser.getId()));
+		page.setAuthor(null);
 
 		LocalDateTime date = request.getDate();
 		if (Post.Status.PUBLISHED.equals(status)) {
@@ -162,8 +144,8 @@ public class PageService {
 
 		page.getCategories().clear();
 		SortedSet<Category> categories = new TreeSet<>();
-		for (long categoryId : request.getCategoryIds()) {
-			categories.add(entityManager.getReference(Category.class, categoryId));
+		for (Long categoryId : request.getCategoryIds()) {
+			categories.add(categoryRepository.findOne(categoryId));
 		}
 		page.setCategories(categories);
 
@@ -188,9 +170,9 @@ public class PageService {
 
 		page.getRelatedPosts().clear();
 		Set<Post> relatedPosts = new HashSet<>();
-		for (long relatedId : request.getRelatedPostIds()) {
-			relatedPosts.add(entityManager.getReference(Post.class, relatedId));
-		}
+//		for (long relatedId : request.getRelatedPostIds()) {
+//			relatedPosts.add(entityManager.getReference(Post.class, relatedId));
+//		}
 		page.setRelatedToPosts(relatedPosts);
 
 		Seo seo = new Seo();
@@ -221,35 +203,34 @@ public class PageService {
 		page.setUpdatedBy(authorizedUser.toString());
 
 		page.getCustomFieldValues().clear();
-		if (!CollectionUtils.isEmpty(request.getCustomFieldValues())) {
-			for (CustomFieldValueEditForm valueForm : request.getCustomFieldValues()) {
-				CustomFieldValue value =  new CustomFieldValue();
-				value.setCustomField(entityManager.getReference(CustomField.class, valueForm.getCustomFieldId()));
-				value.setPost(page);
-				if (valueForm.getFieldType().equals(CustomField.FieldType.CHECKBOX)) {
-					if (!ArrayUtils.isEmpty(valueForm.getTextValues())) {
-						value.setTextValue(String.join(",", valueForm.getTextValues()));
-					} else {
-						value.setTextValue(null);
-					}
-				} else {
-					value.setTextValue(valueForm.getTextValue());
-				}
-				value.setStringValue(valueForm.getStringValue());
-				value.setNumberValue(valueForm.getNumberValue());
-				value.setDateValue(valueForm.getDateValue());
-				value.setDatetimeValue(valueForm.getDatetimeValue());
-				if (!value.isEmpty()) {
-					page.getCustomFieldValues().add(value);
-				}
-			}
-		}
+//		if (!CollectionUtils.isEmpty(request.getCustomFieldValues())) {
+//			for (CustomFieldValueEditForm valueForm : request.getCustomFieldValues()) {
+//				CustomFieldValue value =  new CustomFieldValue();
+//				value.setCustomField(entityManager.getReference(CustomField.class, valueForm.getCustomFieldId()));
+//				value.setPost(page);
+//				if (valueForm.getFieldType().equals(CustomField.FieldType.CHECKBOX)) {
+//					if (!ArrayUtils.isEmpty(valueForm.getTextValues())) {
+//						value.setTextValue(String.join(",", valueForm.getTextValues()));
+//					} else {
+//						value.setTextValue(null);
+//					}
+//				} else {
+//					value.setTextValue(valueForm.getTextValue());
+//				}
+//				value.setStringValue(valueForm.getStringValue());
+//				value.setNumberValue(valueForm.getNumberValue());
+//				value.setDateValue(valueForm.getDateValue());
+//				value.setDatetimeValue(valueForm.getDatetimeValue());
+//				if (!value.isEmpty()) {
+//					page.getCustomFieldValues().add(value);
+//				}
+//			}
+//		}
 
 		return pageRepository.save(page);
 	}
 
 	public Page savePageAsDraft(PageUpdateRequest request, AuthorizedUser authorizedUser) {
-//		postRepository.lock(request.getId());
 		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		if (!page.getStatus().equals(Post.Status.DRAFT)) {
 			Page draft = pageRepository.findOne(PageSpecifications.draft(page));
@@ -298,23 +279,9 @@ public class PageService {
 		}
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
-	public Page savePageAsPublished(PageUpdateRequest request, AuthorizedUser authorizedUser) {
-//		postRepository.lock(request.getId());
-		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
-		Page deleteTarget = getDraftById(page.getId());
-		if (deleteTarget != null) {
-			pageRepository.delete(deleteTarget);
-		}
-		page.setDrafted(null);
-		page.setStatus(Post.Status.PUBLISHED);
-		pageRepository.save(page);
-		return savePage(request, authorizedUser);
-	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
-	public Page savePageAsUnpublished(PageUpdateRequest request, AuthorizedUser authorizedUser) {
-//		postRepository.lock(request.getId());
+	public Page savePages(PageUpdateRequest request, AuthorizedUser authorizedUser) {
+
 		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
 		Page deleteTarget = getDraftById(page.getId());
 		if (deleteTarget != null) {
@@ -359,7 +326,7 @@ public class PageService {
 			page.setDraftedCode(code);
 		}
 
-		Page parent = (request.getParentId() != null) ? entityManager.getReference(Page.class, request.getParentId()) : null;
+		Page parent = (request.getParentId() != null) ? pageRepository.findOne(request.getParentId()) : null;
 		if (!(page.getParent() == null && parent == null) && !ObjectUtils.nullSafeEquals(page.getParent(), parent)) {
 			pageRepository.shiftLftRgt(page.getLft(), page.getRgt());
 			pageRepository.shiftRgt(page.getRgt());
@@ -382,7 +349,7 @@ public class PageService {
 
 		Media cover = null;
 		if (request.getCoverId() != null) {
-			cover = entityManager.getReference(Media.class, request.getCoverId());
+			cover = mediaRepository.findOne(request.getCoverId());
 		}
 		page.setCover(cover);
 		page.setTitle(request.getTitle());
@@ -407,8 +374,9 @@ public class PageService {
 
 		page.getCategories().clear();
 		SortedSet<Category> categories = new TreeSet<>();
-		for (long categoryId : request.getCategoryIds()) {
-			categories.add(entityManager.getReference(Category.class, categoryId));
+		for (Long categoryId : request.getCategoryIds()) {
+
+			categories.add(categoryRepository.findOne(categoryId));
 		}
 		page.setCategories(categories);
 
@@ -434,7 +402,7 @@ public class PageService {
 		page.getRelatedPosts().clear();
 		Set<Post> relatedPosts = new HashSet<>();
 		for (long relatedId : request.getRelatedPostIds()) {
-			relatedPosts.add(entityManager.getReference(Post.class, relatedId));
+//			relatedPosts.add(entityManager.getReference(Post.class, relatedId));
 		}
 		page.setRelatedToPosts(relatedPosts);
 
@@ -469,7 +437,7 @@ public class PageService {
 		page.getCustomFieldValues().clear();
 		if (!CollectionUtils.isEmpty(request.getCustomFieldValues())) {
 			for (CustomFieldValueEditForm valueForm : request.getCustomFieldValues()) {
-				CustomField customField = entityManager.getReference(CustomField.class, valueForm.getCustomFieldId());
+				CustomField customField = customFieldRepository.findOne(valueForm.getCustomFieldId());
 				CustomFieldValue value = valueMap.get(customField);
 				if (value == null) {
 					value = new CustomFieldValue();
@@ -499,7 +467,6 @@ public class PageService {
 		return pageRepository.save(page);
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
 	public void updatePageHierarchy(List<Map<String, Object>> data, String language) {
 		for (int i = 0; i < data.size(); i++) {
 			Map<String, Object> map = data.get(i);
@@ -522,29 +489,7 @@ public class PageService {
 		}
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
-	public Page deletePage(PageDeleteRequest request, BindingResult result) throws BindException {
-//		postRepository.lock(request.getId());
-		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
-		Page parent = page.getParent();
-		for (Page child : page.getChildren()) {
-			child.setParent(parent);
-			pageRepository.saveAndFlush(child);
-		}
-		page.getChildren().clear();
-		pageRepository.saveAndFlush(page);
-		pageRepository.delete(page);
-
-		pageRepository.shiftLftRgt(page.getLft(), page.getRgt());
-		pageRepository.shiftRgt(page.getRgt());
-		pageRepository.shiftLft(page.getRgt());
-
-		return page;
-	}
-
-	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
-	public Page deletePage(long id, String language) {
-//		postRepository.lock(id);
+	public Page deletePage(Long id, String language) {
 		Page page = pageRepository.findOneByIdAndLanguage(id, language);
 		Page parent = page.getParent();
 		for (Page child : page.getChildren()) {
@@ -554,7 +499,6 @@ public class PageService {
 		page.getChildren().clear();
 		pageRepository.saveAndFlush(page);
 		pageRepository.delete(page);
-
 		pageRepository.shiftLftRgt(page.getLft(), page.getRgt());
 		pageRepository.shiftRgt(page.getRgt());
 		pageRepository.shiftLft(page.getRgt());
@@ -562,38 +506,11 @@ public class PageService {
 		return page;
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.PAGE_CACHE, allEntries = true)
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<Page> bulkDeletePage(PageBulkDeleteRequest bulkDeleteRequest, BindingResult result) {
-		List<Page> pages = new ArrayList<>();
-		for (long id : bulkDeleteRequest.getIds()) {
-			final PageDeleteRequest deleteRequest = new PageDeleteRequest.Builder()
-					.id(id)
-					.language(bulkDeleteRequest.getLanguage())
-					.build();
+	public List<Page> bulkDeletePage(PageBulkDeleteRequest bulkDeleteRequest) {
 
-			final BeanPropertyBindingResult r = new BeanPropertyBindingResult(deleteRequest, "request");
-			r.setMessageCodesResolver(messageCodesResolver);
-
-			TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-			transactionTemplate.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-			Page page = null;
-			try {
-				page = transactionTemplate.execute(new TransactionCallback<Page>() {
-					public Page doInTransaction(TransactionStatus status) {
-						try {
-							return deletePage(deleteRequest, r);
-						} catch (BindException e) {
-							throw new RuntimeException(e);
-						}
-					}
-				});
-				pages.add(page);
-			} catch (Exception e) {
-				logger.debug("Errors: {}", r);
-				result.addAllErrors(r);
-			}
-		}
+		List<Page> pages = pageRepository.findAll(bulkDeleteRequest.getIds());
+		pageRepository.deleteInBatch(pages);
 		return pages;
 	}
 
@@ -635,11 +552,11 @@ public class PageService {
 		return pageRepository.findAll(PageSpecifications.siblings(page, includeUnpublished));
 	}
 
-	public Page getPageById(long id) {
+	public Page getPageById(Long id) {
 		return pageRepository.findOneById(id);
 	}
 
-	public Page getPageById(long id, String language) {
+	public Page getPageById(Long id, String language) {
 		return pageRepository.findOneByIdAndLanguage(id, language);
 	}
 
@@ -647,8 +564,8 @@ public class PageService {
 		return pageRepository.findOneByCodeAndLanguage(code, language);
 	}
 
-	public Page getDraftById(long id) {
-		return pageRepository.findOne(PageSpecifications.draft(entityManager.getReference(Page.class, id)));
+	public Page getDraftById(Long id) {
+		return pageRepository.findOne(id);
 	}
 
 	public long countPages(String language) {

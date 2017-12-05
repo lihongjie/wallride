@@ -46,7 +46,7 @@ public class Category extends DomainObject<Long> implements Comparable<Category>
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 
 	@Column(length = 200, nullable = false)
 	private String code;

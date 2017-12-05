@@ -70,7 +70,6 @@ public class MediaService {
 		return mediaRepository.findAll(new Sort(new Sort.Order(Sort.Direction.DESC, "createdAt")));
 	}
 
-	@Cacheable(value = WallRideCacheConfiguration.MEDIA_CACHE)
 	public Media getMedia(String id) {
 		return mediaRepository.findOneById(id);
 	}

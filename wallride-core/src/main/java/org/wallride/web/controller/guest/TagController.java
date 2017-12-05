@@ -1,5 +1,6 @@
 package org.wallride.web.controller.guest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -24,9 +25,10 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/tag")
 public class TagController {
 
-	@Inject
+	@Autowired
 	private TagService tagService;
-	@Inject
+
+	@Autowired
 	private PostService postService;
 
 	@RequestMapping

@@ -28,8 +28,8 @@ import org.wallride.service.BlogService;
 import org.wallride.service.PageService;
 import org.wallride.web.controller.guest.*;
 import org.wallride.web.controller.guest.article.ArticleDescribeController;
-import org.wallride.web.controller.guest.article.ArticleIndexController;
-import org.wallride.web.controller.guest.comment.CommentRestController;
+import org.wallride.web.controller.guest.article.ArticleController;
+import org.wallride.web.controller.guest.comment.CommentController;
 import org.wallride.web.controller.guest.page.PageDescribeController;
 import org.wallride.web.controller.guest.user.*;
 
@@ -81,14 +81,14 @@ public class WebGuestConfiguration extends DelegatingWebMvcConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ArticleIndexController articleIndexController() {
-			return new ArticleIndexController();
+		public ArticleController articleIndexController() {
+			return new ArticleController();
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		public CommentRestController commentRestController() {
-			return new CommentRestController();
+		public CommentController commentRestController() {
+			return new CommentController();
 		}
 
 		@Bean

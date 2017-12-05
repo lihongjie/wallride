@@ -13,7 +13,7 @@ var Datatable = function () {
     var the;
 
     var countSelectedRecords = function () {
-        debugger;
+
         var selected = $('tbody > tr > td:nth-child(1) input[type="checkbox"]:checked', table).size();
         var text = tableOptions.dataTable.language.metronicGroupActions;
         if (selected > 0) {
@@ -185,6 +185,7 @@ var Datatable = function () {
             }
             // handle group checkboxes check/uncheck
             $('.group-checkable', table).change(function () {
+                debugger;
                 var set = table.find('tbody > tr > td:nth-child(1) input[type="checkbox"]');
                 var checked = $(this).prop("checked");
                 $(set).each(function () {

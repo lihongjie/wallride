@@ -21,6 +21,7 @@ import java.io.Serializable;
 public class TagDeleteRequest implements Serializable {
 
 	private Long id;
+
 	private String language;
 
 	public Long getId() {

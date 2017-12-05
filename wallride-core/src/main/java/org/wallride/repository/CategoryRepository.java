@@ -18,13 +18,16 @@ package org.wallride.repository;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.wallride.domain.Category;
+import org.wallride.model.CategoryResponse;
 
-import javax.persistence.LockModeType;
 import java.util.List;
 
 @Repository
@@ -69,4 +72,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
 	@Modifying
 	@Query("update Category set rgt = rgt - 2 where rgt > :rgt ")
 	void shiftRgt(@Param("rgt") int rgt);
+
+	@Modifying
+	@Query("select new org.wallride.model.CategoryResponse(c.id, c.code as name, count(*) as num) from Category c group by c.code")
+	List<CategoryResponse> findAllGroupByCateogry();
+
+//	@Query(value = "select new com.xxx.xxx.class.SureveyQueryAnalytics(s.answer, count(sv)) from Survey s group by s.answer")
+//	List<SureveyQueryAnalytics> calculateSurveyCount();
 }

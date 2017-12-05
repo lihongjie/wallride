@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.guest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -29,20 +30,19 @@ import org.wallride.model.PostSearchRequest;
 import org.wallride.service.PostService;
 import org.wallride.web.support.Pagination;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/search")
 public class SearchController {
 
-	@Inject
+	@Autowired
 	private PostService postService;
 
 	@RequestMapping
 	public String search(
 			@RequestParam String keyword,
-			@PageableDefault(50) Pageable pageable,
+			@PageableDefault Pageable pageable,
 			BlogLanguage blogLanguage,
 			Model model,
 			HttpServletRequest servletRequest) {

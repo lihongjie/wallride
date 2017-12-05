@@ -18,12 +18,10 @@ package org.wallride.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,18 +32,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.*;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.wallride.autoconfigure.WallRideCacheConfiguration;
 import org.wallride.domain.Blog;
 import org.wallride.domain.PasswordResetToken;
 import org.wallride.domain.User;
@@ -60,12 +54,8 @@ import org.wallride.repository.UserInvitationRepository;
 import org.wallride.repository.UserRepository;
 import org.wallride.support.AuthorizedUser;
 
-import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.validation.ValidationException;
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -73,39 +63,36 @@ import java.util.*;
 @Transactional(rollbackFor=Exception.class)
 public class UserService {
 
-	@Inject
+	private static Logger logger = LoggerFactory.getLogger(UserService.class);
+
+	@Autowired
 	private BlogService blogService;
 
-	@Inject
+	@Autowired
 	private MessageCodesResolver messageCodesResolver;
 
-	@Inject
+	@Autowired
 	private PlatformTransactionManager transactionManager;
 
-	@Inject
+	@Autowired
 	private JavaMailSender mailSender;
 
-	@Inject
+	@Autowired
 	@Qualifier("emailTemplateEngine")
 	private TemplateEngine templateEngine;
 
-	@Inject
-	private MessageSourceAccessor messageSourceAccessor;
-
-	@Inject
-	private Environment environment;
-
-	@Inject
+	@Autowired
 	private MailProperties mailProperties;
 
-	@Resource
+	@Autowired
 	private UserRepository userRepository;
-	@Resource
+
+	@Autowired
 	private UserInvitationRepository userInvitationRepository;
-	@Resource
+
+	@Autowired
 	private PasswordResetTokenRepository passwordResetTokenRepository;
 
-	private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
 	public PasswordResetToken createPasswordResetToken(PasswordResetTokenCreateRequest request) {
 		User user = userRepository.findOneByEmail(request.getEmail());
@@ -146,9 +133,6 @@ public class UserService {
 
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); // true = multipart
-			message.setSubject(MessageFormat.format(
-					messageSourceAccessor.getMessage("PasswordResetSubject", LocaleContextHolder.getLocale()),
-					blogTitle));
 			message.setFrom(mailProperties.getProperties().get("mail.from"));
 			message.setTo(passwordResetToken.getEmail());
 
@@ -163,8 +147,7 @@ public class UserService {
 		return passwordResetToken;
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.USER_CACHE, allEntries = true)
-	public User updateUser(UserUpdateRequest form, Errors errors, AuthorizedUser authorizedUser) throws ValidationException {
+	public User updateUser(UserUpdateRequest form, AuthorizedUser authorizedUser) {
 		User user = userRepository.findOneForUpdateById(form.getId());
 		user.setName(form.getName());
 		user.setNickname(form.getNickname());
@@ -175,9 +158,8 @@ public class UserService {
 		return user;
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.USER_CACHE, allEntries = true)
 	public User updateProfile(ProfileUpdateRequest request, AuthorizedUser updatedBy) {
-		User user = userRepository.findOneForUpdateById(request.getUserId());
+		User user = userRepository.findOne(request.getUserId());
 		if (user == null) {
 			throw new IllegalArgumentException("The user does not exist");
 		}
@@ -201,10 +183,9 @@ public class UserService {
 		user.setName(request.getName());
 		user.setUpdatedAt(LocalDateTime.now());
 		user.setUpdatedBy(updatedBy.toString());
-		return userRepository.saveAndFlush(user);
+		return userRepository.save(user);
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.USER_CACHE, allEntries = true)
 	public User updatePassword(PasswordUpdateRequest request, PasswordResetToken passwordResetToken) {
 		User user = userRepository.findOneForUpdateById(request.getUserId());
 		if (user == null) {
@@ -239,9 +220,6 @@ public class UserService {
 
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); // true = multipart
-			message.setSubject(MessageFormat.format(
-					messageSourceAccessor.getMessage("PasswordChangedSubject", LocaleContextHolder.getLocale()),
-					blogTitle));
 			message.setFrom(mailProperties.getProperties().get("mail.from"));
 			message.setTo(passwordResetToken.getEmail());
 
@@ -256,7 +234,6 @@ public class UserService {
 		return user;
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.USER_CACHE, allEntries = true)
 	public User updatePassword(PasswordUpdateRequest request, AuthorizedUser updatedBy) {
 		User user = userRepository.findOneForUpdateById(request.getUserId());
 		if (user == null) {
@@ -269,50 +246,12 @@ public class UserService {
 		return userRepository.saveAndFlush(user);
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.USER_CACHE, allEntries = true)
-	public User deleteUser(UserDeleteRequest form, BindingResult result) throws BindException {
-		User user = userRepository.findOneForUpdateById(form.getId());
-		userRepository.delete(user);
-		return user;
+	@Transactional
+	public void bulkDeleteUser(UserBulkDeleteRequest deleteRequest) {
+		List<User> users = userRepository.findAll(deleteRequest.getIds());
+		userRepository.delete(users);
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.USER_CACHE, allEntries = true)
-	@Transactional(propagation= Propagation.NOT_SUPPORTED)
-	public List<User> bulkDeleteUser(UserBulkDeleteRequest bulkDeleteForm, BindingResult result) {
-		List<User> users = new ArrayList<>();
-		for (long id : bulkDeleteForm.getIds()) {
-			final UserDeleteRequest deleteRequest = new UserDeleteRequest.Builder()
-					.id(id)
-					.build();
-
-			final BeanPropertyBindingResult r = new BeanPropertyBindingResult(deleteRequest, "request");
-			r.setMessageCodesResolver(messageCodesResolver);
-
-			TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-			transactionTemplate.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-			User user = null;
-			try {
-				user = transactionTemplate.execute(new TransactionCallback<User>() {
-					public User doInTransaction(TransactionStatus status) {
-						try {
-							return deleteUser(deleteRequest, r);
-						}
-						catch (BindException e) {
-							throw new RuntimeException(e);
-						}
-					}
-				});
-				users.add(user);
-			}
-			catch (Exception e) {
-				logger.debug("Errors: {}", r);
-				result.addAllErrors(r);
-			}
-		}
-		return users;
-	}
-
-	@CacheEvict(value = WallRideCacheConfiguration.USER_CACHE, allEntries = true)
 	public List<UserInvitation> inviteUsers(UserInvitationCreateRequest form, BindingResult result, AuthorizedUser authorizedUser) throws MessagingException {
 		String[] recipients = StringUtils.commaDelimitedListToStringArray(form.getInvitees());
 
@@ -348,10 +287,6 @@ public class UserService {
 
 			final MimeMessage mimeMessage = mailSender.createMimeMessage();
 			final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); // true = multipart
-			message.setSubject(MessageFormat.format(
-					messageSourceAccessor.getMessage("InvitationMessageTitle", LocaleContextHolder.getLocale()),
-					authorizedUser.toString(),
-					websiteTitle));
 			message.setFrom(authorizedUser.getEmail());
 			message.setTo(invitation.getEmail());
 
@@ -364,7 +299,6 @@ public class UserService {
 		return invitations;
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.USER_CACHE, allEntries = true)
 	public UserInvitation inviteAgain(UserInvitationResendRequest form, BindingResult result, AuthorizedUser authorizedUser) throws MessagingException {
 		LocalDateTime now = LocalDateTime.now();
 
@@ -389,10 +323,6 @@ public class UserService {
 
 		final MimeMessage mimeMessage = mailSender.createMimeMessage();
 		final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8"); // true = multipart
-		message.setSubject(MessageFormat.format(
-				messageSourceAccessor.getMessage("InvitationMessageTitle", LocaleContextHolder.getLocale()),
-				authorizedUser.toString(),
-				websiteTitle));
 		message.setFrom(authorizedUser.getEmail());
 		message.setTo(invitation.getEmail());
 
@@ -404,7 +334,6 @@ public class UserService {
 		return invitation;
 	}
 
-	@CacheEvict(value = WallRideCacheConfiguration.USER_CACHE, allEntries = true)
 	public UserInvitation deleteUserInvitation(UserInvitationDeleteRequest request) {
 		UserInvitation invitation = userInvitationRepository.findOneForUpdateByToken(request.getToken());
 		userInvitationRepository.delete(invitation);
@@ -423,7 +352,7 @@ public class UserService {
 
 	public Page<User> getUsers(UserSearchRequest request, Pageable pageable) {
 //		return userRepository.search(request, pageable);
-		return null;
+		return userRepository.findAll(pageable);
 	}
 
 	private List<User> getUsers(Collection<Long> ids) {
@@ -440,7 +369,6 @@ public class UserService {
 		return users;
 	}
 
-//	@Cacheable(value="users", key="'id.'+#id")
 	public User getUserById(long id) {
 		return userRepository.findOne(id);
 	}
@@ -449,7 +377,6 @@ public class UserService {
 		return userRepository.findOneByLoginId(loginId);
 	}
 
-//	@Cacheable(value="users", key="'invitations.list'")
 	public List<UserInvitation> getUserInvitations() {
 		return userInvitationRepository.findAll(new Sort(Sort.Direction.DESC, "createdAt"));
 	}

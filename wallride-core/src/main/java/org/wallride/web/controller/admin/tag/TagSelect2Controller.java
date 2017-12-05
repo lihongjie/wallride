@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.admin.tag;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -30,12 +31,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@RequestMapping(value="/{language}/tags/select")
 public class TagSelect2Controller {
 
-	@Inject
+	@Autowired
 	private TagService tagService;
 
-	@RequestMapping(value="/{language}/tags/select")
+	@GetMapping
 	public @ResponseBody List<DomainObjectSelect2Model> select(
 			@PathVariable String language,
 			@RequestParam(required=false) String keyword) {
@@ -53,17 +55,10 @@ public class TagSelect2Controller {
 		return results;
 	}
 
-	@RequestMapping(value="/{language}/tags/select/{id}", method= RequestMethod.GET)
-	public @ResponseBody
-	DomainObjectSelect2Model select(
-			@PathVariable String language,
-			@PathVariable Long id,
-			HttpServletResponse response) throws IOException {
+	@GetMapping(value="/{id}")
+	public @ResponseBody DomainObjectSelect2Model select(@PathVariable String language, @PathVariable Long id) {
 		Tag tag = tagService.getTagById(id, language);
-		if (tag == null) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND);
-			return null;
-		}
+
 
 		DomainObjectSelect2Model model = new DomainObjectSelect2Model(tag.getName(), tag.getName());
 		return model;

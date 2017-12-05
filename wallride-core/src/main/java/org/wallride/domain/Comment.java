@@ -16,11 +16,12 @@
 
 package org.wallride.domain;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @NamedEntityGraphs({
@@ -42,7 +43,13 @@ public class Comment extends DomainObject<Long> implements Comparable<Comment> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
+
+	@ManyToOne
+	private Comment parent;
+
+	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+	private List<Comment> children;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private Post post;
@@ -68,10 +75,9 @@ public class Comment extends DomainObject<Long> implements Comparable<Comment> {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
-
 	public Post getPost() {
 		return post;
 	}
@@ -118,6 +124,22 @@ public class Comment extends DomainObject<Long> implements Comparable<Comment> {
 
 	public void setApproved(boolean approved) {
 		this.approved = approved;
+	}
+
+	public Comment getParent() {
+		return parent;
+	}
+
+	public void setParent(Comment parent) {
+		this.parent = parent;
+	}
+
+	public List<Comment> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<Comment> children) {
+		this.children = children;
 	}
 
 	@Override
