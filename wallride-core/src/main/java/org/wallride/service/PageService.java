@@ -16,563 +16,61 @@
 
 package org.wallride.service;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
-import org.wallride.autoconfigure.WallRideProperties;
-import org.wallride.domain.*;
-import org.wallride.exception.DuplicateCodeException;
-import org.wallride.exception.EmptyCodeException;
-import org.wallride.exception.ServiceException;
-import org.wallride.model.*;
-import org.wallride.repository.*;
+import org.wallride.domain.Page;
+import org.wallride.domain.Post;
+import org.wallride.model.PageBulkDeleteRequest;
+import org.wallride.model.PageCreateRequest;
+import org.wallride.model.PageSearchRequest;
+import org.wallride.model.PageUpdateRequest;
 import org.wallride.support.AuthorizedUser;
-import org.wallride.support.CodeFormatter;
-import org.wallride.web.controller.admin.article.CustomFieldValueEditForm;
 
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
+import java.util.Map;
 
-@Service
-@Transactional(rollbackFor = Exception.class)
-public class PageService {
+public interface PageService {
 
-	private static Logger logger = LoggerFactory.getLogger(PageService.class);
+	Page createPage(PageCreateRequest request, Post.Status status, AuthorizedUser authorizedUser);
 
-	@Autowired
-	private PostRepository postRepository;
+	Page savePageAsDraft(PageUpdateRequest request, AuthorizedUser authorizedUser);
 
-	@Autowired
-	private PageRepository pageRepository;
+	Page savePages(PageUpdateRequest request, AuthorizedUser authorizedUser);
 
-	@Autowired
-	private TagRepository tagRepository;
+	Page savePage(PageUpdateRequest request, AuthorizedUser authorizedUser);
 
-	@Autowired
-	private MediaRepository mediaRepository;
+	void updatePageHierarchy(List<Map<String, Object>> data, String language);
 
-	@Autowired
-	private WallRideProperties wallRideProperties;
+	Page deletePage(Long id, String language);
 
-	@Autowired
-	private CategoryRepository categoryRepository;
+	List<Page> bulkDeletePage(PageBulkDeleteRequest bulkDeleteRequest);
 
-	@Autowired
-	private CustomFieldRepository customFieldRepository;
+	List<Long> getPageIds(PageSearchRequest request);
 
-	public Page createPage(PageCreateRequest request, Post.Status status, AuthorizedUser authorizedUser) {
+	org.springframework.data.domain.Page<Page> getPages(PageSearchRequest request);
 
-		LocalDateTime now = LocalDateTime.now();
-		String code = request.getCode();
-		if (code == null) {
-			try {
-				code = new CodeFormatter().parse(request.getTitle(), LocaleContextHolder.getLocale());
-			} catch (ParseException e) {
-				throw new ServiceException(e);
-			}
-		}
-		if (!StringUtils.hasText(code)) {
-			if (!status.equals(Post.Status.DRAFT)) {
-				throw new EmptyCodeException();
-			}
-		}
+	org.springframework.data.domain.Page<Page> getPages(PageSearchRequest request, Pageable pageable);
 
-		if (!status.equals(Post.Status.DRAFT)) {
-			Post duplicate = postRepository.findOneByCodeAndLanguage(code, request.getLanguage());
-			if (duplicate != null) {
-				throw new DuplicateCodeException(code);
-			}
-		}
+	List<Page> getPathPages(Page page);
 
-		Page page = new Page();
+	List<Page> getPathPages(Page page, boolean includeUnpublished);
 
-		if (!status.equals(Post.Status.DRAFT)) {
-			page.setCode(code);
-			page.setDraftedCode(null);
-		} else {
-			page.setCode(null);
-			page.setDraftedCode(code);
-		}
+	List<Page> getChildPages(Page page);
 
-		Page parent = (request.getParentId() != null) ? pageRepository.findOneByIdAndLanguage(request.getParentId(), request.getLanguage()) : null;
-		int rgt = 0;
-		if (parent == null) {
-			rgt = pageRepository.findMaxRgt();
-			rgt++;
-		} else {
-			rgt = parent.getRgt();
-			pageRepository.unshiftRgt(rgt);
-			pageRepository.unshiftLft(rgt);
-		}
+	List<Page> getChildPages(Page page, boolean includeUnpublished);
 
-		page.setParent(parent);
+	List<Page> getSiblingPages(Page page);
 
-		Media cover = null;
-		if (request.getCoverId() != null) {
-			cover = mediaRepository.findOne(request.getCoverId());
-		}
-		page.setCover(cover);
-		page.setTitle(request.getTitle());
-		page.setBody(request.getBody());
+	List<Page> getSiblingPages(Page page, boolean includeUnpublished);
 
-		page.setAuthor(null);
+	Page getPageById(Long id);
 
-		LocalDateTime date = request.getDate();
-		if (Post.Status.PUBLISHED.equals(status)) {
-			if (date == null) {
-				date = now;
-			} else if (date.isAfter(now)) {
-				status = Post.Status.SCHEDULED;
-			}
-		}
-		page.setDate(date);
-		page.setStatus(status);
-		page.setLanguage(request.getLanguage());
+	Page getPageById(Long id, String language);
 
-		page.getCategories().clear();
-		SortedSet<Category> categories = new TreeSet<>();
-		for (Long categoryId : request.getCategoryIds()) {
-			categories.add(categoryRepository.findOne(categoryId));
-		}
-		page.setCategories(categories);
+	Page getPageByCode(String code, String language);
 
-		page.getTags().clear();
-		Set<String> tagNames = StringUtils.commaDelimitedListToSet(request.getTags());
-		if (!CollectionUtils.isEmpty(tagNames)) {
-			for (String tagName : tagNames) {
-				Tag tag = tagRepository.findOneForUpdateByNameAndLanguage(tagName, request.getLanguage());
-				if (tag == null) {
-					tag = new Tag();
-					tag.setName(tagName);
-					tag.setLanguage(request.getLanguage());
-					page.setCreatedAt(now);
-					page.setCreatedBy(authorizedUser.toString());
-					page.setUpdatedAt(now);
-					page.setUpdatedBy(authorizedUser.toString());
-					tag = tagRepository.saveAndFlush(tag);
-				}
-				page.getTags().add(tag);
-			}
-		}
+	Page getDraftById(Long id);
 
-		page.getRelatedPosts().clear();
-		Set<Post> relatedPosts = new HashSet<>();
-//		for (long relatedId : request.getRelatedPostIds()) {
-//			relatedPosts.add(entityManager.getReference(Post.class, relatedId));
-//		}
-		page.setRelatedToPosts(relatedPosts);
+	long countPages(String language);
 
-		Seo seo = new Seo();
-		seo.setTitle(request.getSeoTitle());
-		seo.setDescription(request.getSeoDescription());
-		seo.setKeywords(request.getSeoKeywords());
-		page.setSeo(seo);
-
-		page.setLft(rgt);
-		page.setRgt(rgt + 1);
-
-		List<Media> medias = new ArrayList<>();
-		if (StringUtils.hasText(request.getBody())) {
-//			Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
-			String mediaUrlPrefix = wallRideProperties.getMediaUrlPrefix();
-			Pattern mediaUrlPattern = Pattern.compile(String.format("%s([0-9a-zA-Z\\-]+)", mediaUrlPrefix));
-			Matcher mediaUrlMatcher = mediaUrlPattern.matcher(request.getBody());
-			while (mediaUrlMatcher.find()) {
-				Media media = mediaRepository.findOneById(mediaUrlMatcher.group(1));
-				medias.add(media);
-			}
-		}
-		page.setMedias(medias);
-
-		page.setCreatedAt(now);
-		page.setCreatedBy(authorizedUser.toString());
-		page.setUpdatedAt(now);
-		page.setUpdatedBy(authorizedUser.toString());
-
-		page.getCustomFieldValues().clear();
-//		if (!CollectionUtils.isEmpty(request.getCustomFieldValues())) {
-//			for (CustomFieldValueEditForm valueForm : request.getCustomFieldValues()) {
-//				CustomFieldValue value =  new CustomFieldValue();
-//				value.setCustomField(entityManager.getReference(CustomField.class, valueForm.getCustomFieldId()));
-//				value.setPost(page);
-//				if (valueForm.getFieldType().equals(CustomField.FieldType.CHECKBOX)) {
-//					if (!ArrayUtils.isEmpty(valueForm.getTextValues())) {
-//						value.setTextValue(String.join(",", valueForm.getTextValues()));
-//					} else {
-//						value.setTextValue(null);
-//					}
-//				} else {
-//					value.setTextValue(valueForm.getTextValue());
-//				}
-//				value.setStringValue(valueForm.getStringValue());
-//				value.setNumberValue(valueForm.getNumberValue());
-//				value.setDateValue(valueForm.getDateValue());
-//				value.setDatetimeValue(valueForm.getDatetimeValue());
-//				if (!value.isEmpty()) {
-//					page.getCustomFieldValues().add(value);
-//				}
-//			}
-//		}
-
-		return pageRepository.save(page);
-	}
-
-	public Page savePageAsDraft(PageUpdateRequest request, AuthorizedUser authorizedUser) {
-		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
-		if (!page.getStatus().equals(Post.Status.DRAFT)) {
-			Page draft = pageRepository.findOne(PageSpecifications.draft(page));
-			if (draft == null) {
-				PageCreateRequest createRequest = new PageCreateRequest.Builder()
-						.code(request.getCode())
-						.coverId(request.getCoverId())
-						.title(request.getTitle())
-						.body(request.getBody())
-						.authorId(request.getAuthorId())
-						.date(request.getDate())
-						.parentId(request.getParentId())
-						.categoryIds(request.getCategoryIds())
-						.tags(request.getTags())
-						.seoTitle(request.getSeoTitle())
-						.seoDescription(request.getSeoDescription())
-						.seoKeywords(request.getSeoKeywords())
-						.customFieldValues(new ArrayList<>(request.getCustomFieldValues()))
-						.language(request.getLanguage())
-						.build();
-				draft = createPage(createRequest, Post.Status.DRAFT, authorizedUser);
-				draft.setDrafted(page);
-				return pageRepository.save(draft);
-			} else {
-				PageUpdateRequest updateRequest = new PageUpdateRequest.Builder()
-						.id(draft.getId())
-						.code(request.getCode())
-						.coverId(request.getCoverId())
-						.title(request.getTitle())
-						.body(request.getBody())
-						.authorId(request.getAuthorId())
-						.date(request.getDate())
-						.parentId(request.getParentId())
-						.categoryIds(request.getCategoryIds())
-						.tags(request.getTags())
-						.seoTitle(request.getSeoTitle())
-						.seoDescription(request.getSeoDescription())
-						.seoKeywords(request.getSeoKeywords())
-						.customFieldValues(request.getCustomFieldValues())
-						.language(request.getLanguage())
-						.build();
-				return savePage(updateRequest, authorizedUser);
-			}
-		} else {
-			return savePage(request, authorizedUser);
-		}
-	}
-
-
-	public Page savePages(PageUpdateRequest request, AuthorizedUser authorizedUser) {
-
-		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
-		Page deleteTarget = getDraftById(page.getId());
-		if (deleteTarget != null) {
-			pageRepository.delete(deleteTarget);
-		}
-		page.setDrafted(null);
-		page.setStatus(Post.Status.DRAFT);
-		pageRepository.save(page);
-		pageRepository.deleteByDrafted(page);
-		return savePage(request, authorizedUser);
-	}
-
-	public Page savePage(PageUpdateRequest request, AuthorizedUser authorizedUser) {
-		Page page = pageRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
-		LocalDateTime now = LocalDateTime.now();
-
-		String code = request.getCode();
-		if (code == null) {
-			try {
-				code = new CodeFormatter().parse(request.getTitle(), LocaleContextHolder.getLocale());
-			} catch (ParseException e) {
-				throw new ServiceException(e);
-			}
-		}
-		if (!StringUtils.hasText(code)) {
-			if (!page.getStatus().equals(Post.Status.DRAFT)) {
-				throw new EmptyCodeException();
-			}
-		}
-		if (!page.getStatus().equals(Post.Status.DRAFT)) {
-			Post duplicate = postRepository.findOneByCodeAndLanguage(code, request.getLanguage());
-			if (duplicate != null && !duplicate.equals(page)) {
-				throw new DuplicateCodeException(code);
-			}
-		}
-
-		if (!page.getStatus().equals(Post.Status.DRAFT)) {
-			page.setCode(code);
-			page.setDraftedCode(null);
-		} else {
-			page.setCode(null);
-			page.setDraftedCode(code);
-		}
-
-		Page parent = (request.getParentId() != null) ? pageRepository.findOne(request.getParentId()) : null;
-		if (!(page.getParent() == null && parent == null) && !ObjectUtils.nullSafeEquals(page.getParent(), parent)) {
-			pageRepository.shiftLftRgt(page.getLft(), page.getRgt());
-			pageRepository.shiftRgt(page.getRgt());
-			pageRepository.shiftLft(page.getRgt());
-
-			int rgt = 0;
-			if (parent == null) {
-				rgt = pageRepository.findMaxRgt();
-				rgt++;
-			} else {
-				rgt = parent.getRgt();
-				pageRepository.unshiftRgt(rgt);
-				pageRepository.unshiftLft(rgt);
-			}
-			page.setLft(rgt);
-			page.setRgt(rgt + 1);
-		}
-
-		page.setParent(parent);
-
-		Media cover = null;
-		if (request.getCoverId() != null) {
-			cover = mediaRepository.findOne(request.getCoverId());
-		}
-		page.setCover(cover);
-		page.setTitle(request.getTitle());
-		page.setBody(request.getBody());
-
-//		User author = null;
-//		if (request.getAuthorId() != null) {
-//			author = entityManager.getReference(User.class, request.getAuthorId());
-//		}
-//		page.setAuthor(author);
-
-		LocalDateTime date = request.getDate();
-		if (Post.Status.PUBLISHED.equals(page.getStatus())) {
-			if (date == null) {
-				date = now.truncatedTo(ChronoUnit.HOURS);
-			} else if (date.isAfter(now)) {
-				page.setStatus(Post.Status.SCHEDULED);
-			}
-		}
-		page.setDate(date);
-		page.setLanguage(request.getLanguage());
-
-		page.getCategories().clear();
-		SortedSet<Category> categories = new TreeSet<>();
-		for (Long categoryId : request.getCategoryIds()) {
-
-			categories.add(categoryRepository.findOne(categoryId));
-		}
-		page.setCategories(categories);
-
-		page.getTags().clear();
-		Set<String> tagNames = StringUtils.commaDelimitedListToSet(request.getTags());
-		if (!CollectionUtils.isEmpty(tagNames)) {
-			for (String tagName : tagNames) {
-				Tag tag = tagRepository.findOneForUpdateByNameAndLanguage(tagName, request.getLanguage());
-				if (tag == null) {
-					tag = new Tag();
-					tag.setName(tagName);
-					tag.setLanguage(request.getLanguage());
-					page.setCreatedAt(now);
-					page.setCreatedBy(authorizedUser.toString());
-					page.setUpdatedAt(now);
-					page.setUpdatedBy(authorizedUser.toString());
-					tag = tagRepository.saveAndFlush(tag);
-				}
-				page.getTags().add(tag);
-			}
-		}
-
-		page.getRelatedPosts().clear();
-		Set<Post> relatedPosts = new HashSet<>();
-		for (long relatedId : request.getRelatedPostIds()) {
-//			relatedPosts.add(entityManager.getReference(Post.class, relatedId));
-		}
-		page.setRelatedToPosts(relatedPosts);
-
-		Seo seo = new Seo();
-		seo.setTitle(request.getSeoTitle());
-		seo.setDescription(request.getSeoDescription());
-		seo.setKeywords(request.getSeoKeywords());
-		page.setSeo(seo);
-
-		List<Media> medias = new ArrayList<>();
-		if (StringUtils.hasText(request.getBody())) {
-//			Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
-			String mediaUrlPrefix = wallRideProperties.getMediaUrlPrefix();
-			Pattern mediaUrlPattern = Pattern.compile(String.format("%s([0-9a-zA-Z\\-]+)", mediaUrlPrefix));
-			Matcher mediaUrlMatcher = mediaUrlPattern.matcher(request.getBody());
-			while (mediaUrlMatcher.find()) {
-				Media media = mediaRepository.findOneById(mediaUrlMatcher.group(1));
-				medias.add(media);
-			}
-		}
-		page.setMedias(medias);
-
-		page.setUpdatedAt(now);
-		page.setUpdatedBy(authorizedUser.toString());
-
-		SortedSet<CustomFieldValue> fieldValues = new TreeSet<>();
-		Map<CustomField, CustomFieldValue> valueMap = new LinkedHashMap<>();
-		for (CustomFieldValue value : page.getCustomFieldValues()) {
-			valueMap.put(value.getCustomField(), value);
-		}
-
-		page.getCustomFieldValues().clear();
-		if (!CollectionUtils.isEmpty(request.getCustomFieldValues())) {
-			for (CustomFieldValueEditForm valueForm : request.getCustomFieldValues()) {
-				CustomField customField = customFieldRepository.findOne(valueForm.getCustomFieldId());
-				CustomFieldValue value = valueMap.get(customField);
-				if (value == null) {
-					value = new CustomFieldValue();
-				}
-				value.setCustomField(customField);
-				value.setPost(page);
-				if (valueForm.getFieldType().equals(CustomField.FieldType.CHECKBOX)) {
-					if (!ArrayUtils.isEmpty(valueForm.getTextValues())) {
-						value.setTextValue(String.join(",", valueForm.getTextValues()));
-					} else {
-						value.setTextValue(null);
-					}
-				} else {
-					value.setTextValue(valueForm.getTextValue());
-				}
-				value.setStringValue(valueForm.getStringValue());
-				value.setNumberValue(valueForm.getNumberValue());
-				value.setDateValue(valueForm.getDateValue());
-				value.setDatetimeValue(valueForm.getDatetimeValue());
-				if (!value.isEmpty()) {
-					fieldValues.add(value);
-				}
-			}
-		}
-		page.setCustomFieldValues(fieldValues);
-
-		return pageRepository.save(page);
-	}
-
-	public void updatePageHierarchy(List<Map<String, Object>> data, String language) {
-		for (int i = 0; i < data.size(); i++) {
-			Map<String, Object> map = data.get(i);
-			if (map.get("item_id") != null) {
-//				postRepository.lock(Long.parseLong((String) map.get("item_id")));
-				Page page = pageRepository.findOneByIdAndLanguage(Long.parseLong((String) map.get("item_id")), language);
-				if (page != null) {
-					Page parent = null;
-					if (map.get("parent_id") != null) {
-						parent = pageRepository.findOneByIdAndLanguage(Long.parseLong((String) map.get("parent_id")), language);
-					}
-					page.setParent(parent);
-					page.setLft(((int) map.get("left")) - 1);
-					page.setRgt(((int) map.get("right")) - 1);
-//					page.setDepth((int) map.get("depth"));
-//					page.setSort(i);
-					pageRepository.save(page);
-				}
-			}
-		}
-	}
-
-	public Page deletePage(Long id, String language) {
-		Page page = pageRepository.findOneByIdAndLanguage(id, language);
-		Page parent = page.getParent();
-		for (Page child : page.getChildren()) {
-			child.setParent(parent);
-			pageRepository.saveAndFlush(child);
-		}
-		page.getChildren().clear();
-		pageRepository.saveAndFlush(page);
-		pageRepository.delete(page);
-		pageRepository.shiftLftRgt(page.getLft(), page.getRgt());
-		pageRepository.shiftRgt(page.getRgt());
-		pageRepository.shiftLft(page.getRgt());
-
-		return page;
-	}
-
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<Page> bulkDeletePage(PageBulkDeleteRequest bulkDeleteRequest) {
-
-		List<Page> pages = pageRepository.findAll(bulkDeleteRequest.getIds());
-		pageRepository.deleteInBatch(pages);
-		return pages;
-	}
-
-	public List<Long> getPageIds(PageSearchRequest request) {
-//		return pageRepository.searchForId(request);
-		return null;
-	}
-
-	public org.springframework.data.domain.Page<Page> getPages(PageSearchRequest request) {
-		return getPages(request, null);
-	}
-
-	public org.springframework.data.domain.Page<Page> getPages(PageSearchRequest request, Pageable pageable) {
-//		return pageRepository.search(request, pageable);
-		return pageRepository.findAll(pageable);
-	}
-
-	public List<Page> getPathPages(Page page) {
-		return getPathPages(page, false);
-	}
-
-	public List<Page> getPathPages(Page page, boolean includeUnpublished) {
-		return pageRepository.findAll(PageSpecifications.path(page, includeUnpublished));
-	}
-
-	public List<Page> getChildPages(Page page) {
-		return getChildPages(page, false);
-	}
-
-	public List<Page> getChildPages(Page page, boolean includeUnpublished) {
-		return pageRepository.findAll(PageSpecifications.children(page, includeUnpublished));
-	}
-
-	public List<Page> getSiblingPages(Page page) {
-		return getSiblingPages(page, false);
-	}
-
-	public List<Page> getSiblingPages(Page page, boolean includeUnpublished) {
-		return pageRepository.findAll(PageSpecifications.siblings(page, includeUnpublished));
-	}
-
-	public Page getPageById(Long id) {
-		return pageRepository.findOneById(id);
-	}
-
-	public Page getPageById(Long id, String language) {
-		return pageRepository.findOneByIdAndLanguage(id, language);
-	}
-
-	public Page getPageByCode(String code, String language) {
-		return pageRepository.findOneByCodeAndLanguage(code, language);
-	}
-
-	public Page getDraftById(Long id) {
-		return pageRepository.findOne(id);
-	}
-
-	public long countPages(String language) {
-		return pageRepository.count(language);
-	}
-
-	public long countPagesByStatus(Post.Status status, String language) {
-		return pageRepository.countByStatus(status, language);
-	}
+	long countPagesByStatus(Post.Status status, String language);
 }

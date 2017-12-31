@@ -54,7 +54,7 @@ public class User extends DomainObject<Long> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 
 	@Column(length = 100, nullable = false, unique = true)
 	private String loginId;
@@ -85,6 +85,31 @@ public class User extends DomainObject<Long> {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role", length = 20, nullable = false)
 	private SortedSet<Role> roles = new TreeSet<>();
+
+//	private String passwordHint;
+//
+//	private boolean isSystem;
+//
+//	private Boolean enabled;
+//
+//	private Boolean hasLoggedOut;
+//
+//	private Boolean requirePasswordChange;
+//
+//	private Locale lastLocale;
+//
+//	private TimeZone lasTimeZone;
+//
+//	private String lastHostAddress;
+//
+//	private LocalDateTime disabledDateTime;
+//
+//	private Integer successiveFailedLogins;
+
+//	private UserLoginHistory userLoginHistory;
+//
+//	private UserLoginPasswordHistory userLoginPasswordHistory;
+
 
 	@Override
 	public Long getId() {
@@ -155,6 +180,8 @@ public class User extends DomainObject<Long> {
 		String hash = DigestUtils.md5DigestAsHex(getEmail().getBytes("CP1252"));
 		return String.format("https://secure.gravatar.com/avatar/%s?size=%d&d=mm", hash, size);
 	}
+
+
 
 	@Override
 	public String print() {
