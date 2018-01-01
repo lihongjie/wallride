@@ -1,62 +1,67 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
-	<head>
-		<meta charset="utf-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta name="description" />
-		<meta name="keywords" />
-		<meta name="author" content="" />
-		<title>Signup</title>
-		<!--/*/ <th:block th:replace="layout::head-link"> /*/-->
-		<link rel="shortcut icon" th:href="@{/resource/favicon.png}" />
-		<link rel="alternate" type="application/atom+xml" th:title="${WEBSITE_TITLE}" th:href="@{__${WEBSITE_LINK}__/feed/atom.xml}" />
-		<link rel="alternate" type="application/rss+xml" th:title="${WEBSITE_TITLE}" th:href="@{__${WEBSITE_LINK}__/feed/rss.xml}" />
-		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" />
-		<link rel="stylesheet" th:href="@{/resources/guest/css/sticky-footer-navbar.css}" href="#" />
-		<link rel="stylesheet" th:href="@{/resources/guest/css/common.css}" href="#" />
-		<!--/*/ </th:block> /*/-->
-		<!--/*/ <th:block th:replace="layout::head-script"> /*/-->
-		<!--[if lt IE 9]>
-		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-		<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-		<![endif]-->
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-		<script th:src="@{/resources/guest/lib/jquery.lazyload.min.js}" src="#"></script>
-		<!--/*/ </th:block> /*/-->
-		<script th:replace="google-analytics::ga(null)"></script>
-	</head>
-	<body>
-		<div id="wrap">
-			<div th:replace="layout::nav"></div>
-			<div class="container">
-				<div class="row">
-					<div class="col-sm-6">
-						<div class="page-header">
-							<h1 th:text="#{LogIn}">Login</h1>
-						</div>
-						<form th:action="@{/login}" action="#" method="post">
-							<div class="form-group">
-								<label th:text="#{UserName}">User Name</label>
-								<input type="text" name="username" class="form-control" th:attr="placeholder=#{UserName}" autofocus="autofocus" autocomplete="off" tabindex="1" />
-							</div>
-							<div class="form-group">
-								<label><span th:text="#{Password}">Password</span> <a th:href="@{/password-reset}">(<span th:text="#{ForgotPassword}">Forgot password</span>)</a></label>
-								<input type="password" name="password" class="form-control" th:attr="placeholder=#{Password}" autocomplete="off" tabindex="2" />
-							</div>
-							<div class="checkbox">
-								<label><input type="checkbox" name="remember-me" th:text="#{RememberMe}" tabindex="3" /></label>
-							</div>
-							<div class="form-group">
-								<button class="btn btn-lg btn-primary" type="submit" th:text="#{LogIn}" tabindex="4">Log in</button>
-								<a class="btn btn-link btn-lg btn-default" th:href="@{/signup}" th:text="#{Signup}">Sign up</a>
-							</div>
-						</form>
-					</div>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="" />
+	<meta name="author" content="" />
+	<title th:text="${WEBSITE_TITLE}">Title</title>
+	<link rel="shortcut icon" th:href="@{/resource/favicon.png}" />
+	<link rel="alternate" type="application/atom+xml" th:title="${WEBSITE_TITLE}" th:href="@{__${WEBSITE_LINK}__/feed/atom.xml}" />
+	<link rel="alternate" type="application/rss+xml" th:title="${WEBSITE_TITLE}" th:href="@{__${WEBSITE_LINK}__/feed/rss.xml}" />
+
+	<link rel="stylesheet" th:href="@{/resources/metronic/custom/css/login.css}" />
+	<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/global/css/components.css}" href="#" />
+	<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/global/css/plugins.css}" href="#" />
+	<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/global/plugins/bootstrap/css/bootstrap.min.css}" href="#" />
+	<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/global/plugins/simple-line-icons/simple-line-icons.min.css}" href="#" />
+	<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/global/plugins/font-awesome/css/font-awesome.min.css}" href="#" />
+	<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/pages/css/blog.css}" href="#" />
+	<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/layouts/layout3/css/layout.css}" href="#" />
+	<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/layouts/layout3/css/custom.css}" href="#" />
+	<link rel="stylesheet" th:href="@{/resources/metronic/theme/assets/layouts/layout3/css/themes/default.css}" href="#" />
+</head>
+
+<body class="session-authentication">
+<div class="">
+
+</div>
+<div role="main">
+	<div class="container">
+		<div class="auth-form px-3" id="login">
+			<form th:action="@{/login}" action="#" method="post">
+				<div class="auth-form-header p-0">
+					<h1>Sign in to Wallride</h1>
 				</div>
-			</div>
+				<div class="auth-form-body mt-3">
+					<label for="login_field">
+						Username or email address
+					</label>
+					<input autocapitalize="off" autocorrect="off" autofocus="autofocus" class="form-control input-block"
+						   id="login_field"  name="username" tabindex="1" type="text">
+
+					<label for="password">
+						Password <a th:href="@{/password_reset}" class="label-link">Forgot password?</a>
+					</label>
+					<input class="form-control form-control input-block" id="password" name="password" tabindex="2"
+						   type="password">
+
+					<input class="login-btn login-btn-primary login-btn-block" data-disable-with="Signing in…" name="commit" tabindex="3"
+						   type="submit" value="Sign in">
+				</div>
+			</form>
+			<p class="create-account-callout mt-3">
+				New to Wallride?
+				<a th:href="@{/join}" data-ga-click="Sign in, switch to sign up">Create an account</a>.
+			</p>
 		</div>
-		<div th:replace="layout::footer" id="footer"></div>
-	</body>
+
+	</div>
+
+</div>
+
+
+
+</body>
 </html>

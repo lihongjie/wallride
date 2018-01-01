@@ -26,11 +26,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.wallride.domain.Article;
 import org.wallride.domain.BlogLanguage;
+import org.wallride.domain.PopularPost;
 import org.wallride.service.ArticleService;
+import org.wallride.service.PostService;
+import org.wallride.support.AuthorizedUser;
 import org.wallride.web.controller.guest.article.ArticleSearchForm;
 import org.wallride.web.support.Pagination;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/")
@@ -38,6 +42,9 @@ public class IndexController {
 
 	@Autowired
 	private ArticleService articleService;
+
+	@Autowired
+	private PostService postService;
 
 	@GetMapping
 	public String index() {
@@ -51,7 +58,7 @@ public class IndexController {
 			@PageableDefault(5) Pageable pageable,
 			BlogLanguage blogLanguage,
 			Model model,
-			HttpServletRequest servletRequest) {
+			HttpServletRequest servletRequest, AuthorizedUser authorizedUser) {
 
 		ArticleSearchForm form = new ArticleSearchForm();
 		form.setLanguage(blogLanguage.getLanguage());
@@ -59,6 +66,16 @@ public class IndexController {
 		model.addAttribute("articles", articles);
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(articles, servletRequest));
+		model.addAttribute("authorizedUser", authorizedUser);
 		return "articles";
+	}
+
+	@GetMapping(value = "/popular_post")
+	public String popularPosts(Model model) {
+
+		Set<PopularPost> popularPostList = postService.getPopularPosts("en", PopularPost.Type.WEEKLY);
+		model.addAttribute("popularPosts", popularPostList);
+		return "articles/popular-post";
+
 	}
 }

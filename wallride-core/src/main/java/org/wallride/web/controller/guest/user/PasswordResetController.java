@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.guest.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -33,11 +34,10 @@ import org.wallride.model.PasswordResetTokenCreateRequest;
 import org.wallride.model.PasswordUpdateRequest;
 import org.wallride.service.UserService;
 
-import javax.inject.Inject;
 import java.time.LocalDateTime;
 
 @Controller
-@RequestMapping("/password-reset")
+@RequestMapping("/password_reset")
 public class PasswordResetController {
 
 	public static final String FORM_MODEL_KEY = "form";
@@ -45,7 +45,7 @@ public class PasswordResetController {
 
 	public static final String INVALID_PASSOWRD_RESET_LINK_ATTR_NAME = "invalidPasswordResetLink";
 
-	@Inject
+	@Autowired
 	private UserService userService;
 
 	@ModelAttribute(FORM_MODEL_KEY)

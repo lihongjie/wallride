@@ -21,6 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -32,6 +33,9 @@ import org.wallride.web.controller.guest.article.ArticleController;
 import org.wallride.web.controller.guest.comment.CommentController;
 import org.wallride.web.controller.guest.page.PageDescribeController;
 import org.wallride.web.controller.guest.user.*;
+import org.wallride.web.support.AuthorizedUserMethodArgumentResolver;
+
+import java.util.List;
 
 @Configuration
 public class WebGuestConfiguration extends DelegatingWebMvcConfiguration {
@@ -55,7 +59,14 @@ public class WebGuestConfiguration extends DelegatingWebMvcConfiguration {
 
 	@Override
 	protected RequestMappingHandlerAdapter createRequestMappingHandlerAdapter() {
+
 		return super.createRequestMappingHandlerAdapter();
+	}
+
+	@Override
+	protected void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+		argumentResolvers.add(new AuthorizedUserMethodArgumentResolver());
+		super.addArgumentResolvers(argumentResolvers);
 	}
 
 	@Configuration

@@ -20,6 +20,7 @@ import org.wallride.domain.User;
 import org.wallride.domain.UserInvitation;
 import org.wallride.model.SignupRequest;
 import org.wallride.support.AuthorizedUser;
+import org.wallride.web.controller.guest.user.SignupCheckRequest;
 
 public interface SignupService {
 
@@ -31,4 +32,8 @@ public interface SignupService {
 	AuthorizedUser signup(SignupRequest request, User.Role role);
 
 	AuthorizedUser signup(SignupRequest request, User.Role role, String token);
+
+	User signupCheckUsername(SignupCheckRequest checkRequest);
+
+	User signupCheckEmail(SignupCheckRequest checkRequest);
 }

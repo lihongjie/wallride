@@ -16,37 +16,33 @@
 
 package org.wallride.web.controller.guest.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.wallride.domain.User;
-import org.wallride.exception.DuplicateEmailException;
-import org.wallride.exception.DuplicateLoginIdException;
 import org.wallride.service.SignupService;
 
-import javax.inject.Inject;
 import javax.validation.Valid;
 
 @Controller
-@RequestMapping("/signup")
+@RequestMapping
 public class SignupController {
 
 	public static final String FORM_MODEL_KEY = "form";
+
 	public static final String ERRORS_MODEL_KEY = BindingResult.MODEL_KEY_PREFIX + FORM_MODEL_KEY;
 
-	@Inject
+	@Autowired
 	private SignupService signupService;
 
-	@ModelAttribute(FORM_MODEL_KEY)
-	public SignupForm setupSignupForm() {
-		return new SignupForm();
-	}
-
-	@RequestMapping(method = RequestMethod.GET)
+	@GetMapping("/join")
 	public String init(Model model) {
 		SignupForm form = new SignupForm();
 		model.addAttribute(FORM_MODEL_KEY, form);
@@ -59,28 +55,34 @@ public class SignupController {
 	}
 
 	@RequestMapping(method=RequestMethod.POST)
-	public String signup(
-			@Valid @ModelAttribute("form") SignupForm form,
-			BindingResult errors,
-			RedirectAttributes redirectAttributes) {
-		redirectAttributes.addFlashAttribute(FORM_MODEL_KEY, form);
-		redirectAttributes.addFlashAttribute(ERRORS_MODEL_KEY, errors);
+	public ResponseEntity signup(SignupForm form) {
 
-		if (errors.hasErrors()) {
-			return "redirect:/signup?step.edit";
+		signupService.signup(form.toSignupRequest(), User.Role.VIEWER);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.build();
+	}
+
+	@PostMapping(value = "/signup_check/username")
+	public ResponseEntity signup_check_name(@Valid SignupCheckRequest checkRequest, BindingResult result) {
+		if (result.hasErrors()) {
+
 		}
+		signupService.signupCheckUsername(checkRequest);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.build();
+	}
 
-		try {
-			signupService.signup(form.toSignupRequest(), User.Role.VIEWER);
-		} catch (DuplicateLoginIdException e) {
-			errors.rejectValue("loginId", "NotDuplicate");
-			return "redirect:/signup?step.edit";
-		} catch (DuplicateEmailException e) {
-			errors.rejectValue("email", "NotDuplicate");
-			return "redirect:/signup?step.edit";
+	@PostMapping(value = "/signup_check/email")
+	public ResponseEntity signup_check_email(@Valid SignupCheckRequest checkRequest, BindingResult result) {
+
+		if (result.hasErrors()) {
+
 		}
-
-		redirectAttributes.getFlashAttributes().clear();
-		return "redirect:/";
+		signupService.signupCheckEmail(checkRequest);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.build();
 	}
 }

@@ -56,7 +56,7 @@ public class ArticleDescribeController {
 	private CategoryService categoryService;
 
 	@GetMapping("/{year:[0-9]{4}}/{month:[0-9]{2}}/{day:[0-9]{2}}/{code:.+}")
-	public String describe(@PathVariable String code, BlogLanguage blogLanguage, Model model) {
+	public String describe(@PathVariable String code, BlogLanguage blogLanguage, Model model, AuthorizedUser authorizedUser) {
 		Article article = articleService.getArticleByCode(code, blogLanguage.getLanguage());
 		if (article == null) {
 			article = articleService.getArticleByCode(code, blogLanguage.getBlog().getDefaultLanguage());
@@ -78,6 +78,7 @@ public class ArticleDescribeController {
 		model.addAttribute("prev", prevArticle);
 		model.addAttribute("next", nextArticle);
 		model.addAttribute("article", article);
+		model.addAttribute("authorizedUser", authorizedUser);
 		return "article/describe";
 	}
 
@@ -123,5 +124,13 @@ public class ArticleDescribeController {
 		List<ArticleArchiveResponse> articleArchives = articleService.articleArchive(id);
 		model.addAttribute("articleArchives", articleArchives);
 		return "article/article-archive";
+	}
+
+	@GetMapping("/article/{id}/tags")
+	public String tags(@PathVariable Long id, Model model) {
+
+		List<Tag> tags = articleService.tagsArchive(id);
+		model.addAttribute("tags", tags);
+		return "article/tags";
 	}
 }

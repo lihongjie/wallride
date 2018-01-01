@@ -31,6 +31,7 @@ import org.wallride.domain.User;
 import org.wallride.service.ArticleService;
 import org.wallride.service.CommentService;
 import org.wallride.service.UserService;
+import org.wallride.support.AuthorizedUser;
 import org.wallride.web.support.HttpNotFoundException;
 import org.wallride.web.support.Pagination;
 
@@ -55,7 +56,7 @@ public class ArticleController {
 			@PageableDefault Pageable pageable,
 			BlogLanguage blogLanguage,
 			HttpServletRequest servletRequest,
-			Model model) {
+			Model model, AuthorizedUser authorizedUser) {
 		ArticleSearchForm form = new ArticleSearchForm() {};
 		form.setLanguage(blogLanguage.getLanguage());
 		form.setDateFrom(LocalDateTime.of(year, 1, 1, 0, 0, 0));
@@ -65,6 +66,7 @@ public class ArticleController {
 		model.addAttribute("articles", articles);
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(articles, servletRequest));
+		model.addAttribute("authorizedUser", authorizedUser);
 		return "article/index";
 	}
 
@@ -75,7 +77,7 @@ public class ArticleController {
 			@PageableDefault Pageable pageable,
 			BlogLanguage blogLanguage,
 			HttpServletRequest servletRequest,
-			Model model) {
+			Model model, AuthorizedUser authorizedUser) {
 		ArticleSearchForm form = new ArticleSearchForm() {};
 		form.setLanguage(blogLanguage.getLanguage());
 		LocalDateTime date = LocalDateTime.of(year, month, 1, 0, 0, 0);
@@ -86,6 +88,7 @@ public class ArticleController {
 		model.addAttribute("articles", articles);
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(articles, servletRequest));
+		model.addAttribute("authorizedUser", authorizedUser);
 		return "article/index";
 	}
 
@@ -97,7 +100,7 @@ public class ArticleController {
 			@PageableDefault Pageable pageable,
 			BlogLanguage blogLanguage,
 			HttpServletRequest servletRequest,
-			Model model) {
+			Model model, AuthorizedUser authorizedUser) {
 		ArticleSearchForm form = new ArticleSearchForm() {};
 		form.setLanguage(blogLanguage.getLanguage());
 		form.setDateFrom(LocalDateTime.of(year, month, day, 0, 0, 0));
@@ -107,6 +110,7 @@ public class ArticleController {
 		model.addAttribute("articles", articles);
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(articles, servletRequest));
+		model.addAttribute("authorizedUser", authorizedUser);
 		return "article/index";
 	}
 
@@ -116,7 +120,7 @@ public class ArticleController {
 			@PageableDefault Pageable pageable,
 			BlogLanguage blogLanguage,
 			HttpServletRequest servletRequest,
-			Model model) {
+			Model model, AuthorizedUser authorizedUser) {
 		User author = userService.getUserByLoginId(loginId);
 		if (author == null) {
 			throw new HttpNotFoundException();
@@ -131,6 +135,7 @@ public class ArticleController {
 		model.addAttribute("articles", articles);
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(articles, servletRequest));
+		model.addAttribute("authorizedUser", authorizedUser);
 		return "article/author";
 	}
 

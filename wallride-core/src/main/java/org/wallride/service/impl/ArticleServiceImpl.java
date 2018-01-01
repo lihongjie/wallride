@@ -628,6 +628,11 @@ public class ArticleServiceImpl implements ArticleService {
         return articleRepository.articleArchive(article.getAuthor().getId());
     }
 
+    @Override
+    public List<Tag> tagsArchive(Long id) {
+        return tagRepository.findAll();
+    }
+
     private Article publishArticle(Article article) {
         Article deleteTarget = getDraftById(article.getId());
         if (deleteTarget != null) {

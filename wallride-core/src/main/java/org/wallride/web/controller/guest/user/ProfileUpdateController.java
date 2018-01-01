@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.guest.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,8 +32,6 @@ import org.wallride.model.ProfileUpdateRequest;
 import org.wallride.service.UserService;
 import org.wallride.support.AuthorizedUser;
 
-import javax.inject.Inject;
-
 @Controller
 @RequestMapping("/settings/profile")
 public class ProfileUpdateController {
@@ -40,7 +39,7 @@ public class ProfileUpdateController {
 	public static final String FORM_MODEL_KEY = "form";
 	public static final String ERRORS_MODEL_KEY = BindingResult.MODEL_KEY_PREFIX + FORM_MODEL_KEY;
 
-	@Inject
+	@Autowired
 	private UserService userService;
 
 	@ModelAttribute(FORM_MODEL_KEY)
@@ -49,9 +48,7 @@ public class ProfileUpdateController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String init(
-			AuthorizedUser authorizedUser,
-			Model model) {
+	public String init(AuthorizedUser authorizedUser, Model model) {
 		User user = userService.getUserById(authorizedUser.getId());
 
 		ProfileUpdateForm form = new ProfileUpdateForm();

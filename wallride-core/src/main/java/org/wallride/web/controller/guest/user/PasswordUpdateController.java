@@ -16,6 +16,7 @@
 
 package org.wallride.web.controller.guest.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -32,8 +33,6 @@ import org.wallride.model.PasswordUpdateRequest;
 import org.wallride.service.UserService;
 import org.wallride.support.AuthorizedUser;
 
-import javax.inject.Inject;
-
 @Controller
 @RequestMapping("/settings/password")
 public class PasswordUpdateController {
@@ -41,13 +40,8 @@ public class PasswordUpdateController {
 	public static final String FORM_MODEL_KEY = "form";
 	public static final String ERRORS_MODEL_KEY = BindingResult.MODEL_KEY_PREFIX + FORM_MODEL_KEY;
 
-	@Inject
+	@Autowired
 	private UserService userService;
-
-	@ModelAttribute(FORM_MODEL_KEY)
-	public PasswordUpdateForm setupPasswordUpdateForm() {
-		return new PasswordUpdateForm();
-	}
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String init(Model model) {

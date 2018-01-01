@@ -29,6 +29,7 @@ import org.wallride.repository.UserInvitationRepository;
 import org.wallride.repository.UserRepository;
 import org.wallride.service.SignupService;
 import org.wallride.support.AuthorizedUser;
+import org.wallride.web.controller.guest.user.SignupCheckRequest;
 import org.wallride.web.support.HttpForbiddenException;
 
 import java.time.LocalDateTime;
@@ -113,5 +114,23 @@ public class SignupServiceImpl implements SignupService {
 //		SecurityContextHolder.getContext().setAuthentication(auth);
 
 		return authorizedUser;
+	}
+
+	@Override
+	public User signupCheckUsername(SignupCheckRequest checkRequest) {
+		User user = userRepository.findOneByLoginId(checkRequest.getValue());
+		if (user == null) {
+			throw new DuplicateLoginIdException("");
+		}
+		return user;
+	}
+
+	@Override
+	public User signupCheckEmail(SignupCheckRequest checkRequest) {
+		User user = userRepository.findOneByEmail(checkRequest.getValue());
+		if (user == null) {
+			throw new DuplicateEmailException("");
+		}
+		return user;
 	}
 }

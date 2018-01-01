@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.wallride.domain.Article;
 import org.wallride.domain.Post;
+import org.wallride.domain.Tag;
 import org.wallride.model.*;
 import org.wallride.support.AuthorizedUser;
 
@@ -83,4 +84,5 @@ public interface ArticleService {
 
 	List<ArticleArchiveResponse> articleArchive(Long id);
 
+	List<Tag> tagsArchive(Long id);
 }
