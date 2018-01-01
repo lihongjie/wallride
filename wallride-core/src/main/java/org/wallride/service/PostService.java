@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.wallride.domain.BlogLanguage;
 import org.wallride.domain.PopularPost;
 import org.wallride.domain.Post;
+import org.wallride.domain.Tag;
 import org.wallride.model.PostSearchRequest;
 
 import java.util.List;
@@ -41,4 +42,6 @@ public interface PostService {
 	SortedSet<PopularPost> getPopularPosts(String language, PopularPost.Type type);
 
 	Post getPostById(long id, String language);
+
+	Page<Post> getPostsByTag(Tag tag, Pageable pageable);
 }

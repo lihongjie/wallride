@@ -11,14 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.wallride.domain.BlogLanguage;
 import org.wallride.domain.Post;
 import org.wallride.domain.Tag;
-import org.wallride.model.PostSearchRequest;
 import org.wallride.model.TagSearchRequest;
 import org.wallride.service.PostService;
 import org.wallride.service.TagService;
 import org.wallride.web.support.HttpNotFoundException;
 import org.wallride.web.support.Pagination;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
@@ -32,7 +30,13 @@ public class TagController {
 	private PostService postService;
 
 	@RequestMapping
-	public String index(
+	public String index() {
+
+		return "tag/index";
+	}
+
+	@RequestMapping(value = "/data")
+	public String guestTags(
 			@PageableDefault Pageable pageable,
 			Model model,
 			HttpServletRequest servletRequest) {
@@ -40,10 +44,17 @@ public class TagController {
 		model.addAttribute("tags", tags);
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(tags, servletRequest));
-		return "tag/index";
+		return "tag/tags";
 	}
 
 	@RequestMapping("/{name}")
+	public String post(@PathVariable String name, Model model) {
+
+		model.addAttribute("tagName", name);
+		return "tag/post";
+	}
+
+	@RequestMapping("/{name}/data")
 	public String post(
 			@PathVariable String name,
 			@PageableDefault Pageable pageable,
@@ -57,15 +68,11 @@ public class TagController {
 		if (tag == null) {
 			throw new HttpNotFoundException();
 		}
-
-		PostSearchRequest request = new PostSearchRequest(tag.getLanguage());
-		request.withTagNames(name);
-
-		Page<Post> posts = postService.getPosts(request, pageable);
+		Page<Post> posts = postService.getPostsByTag(tag, pageable);
 		model.addAttribute("tag", tag);
 		model.addAttribute("posts", posts);
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(posts, servletRequest));
-		return "tag/post";
+		return "tag/tag-of-posts";
 	}
 }

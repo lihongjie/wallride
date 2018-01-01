@@ -318,4 +318,9 @@ public class PostServiceImpl implements PostService {
 	public Post getPostById(long id, String language) {
 		return postRepository.findOneByIdAndLanguage(id, language);
 	}
+
+	@Override
+	public Page<Post> getPostsByTag(Tag tag, Pageable pageable) {
+		return postRepository.findByTags(tag, pageable);
+	}
 }

@@ -1,0 +1,25 @@
+<div xmlns:th="http://www.w3.org/1999/xhtml">
+<tag>
+    <ul>
+        <li th:each="tag : ${tags}"><a th:href="@{/tag/{name}(name=${tag.name})}" th:text="${tag.name}">Tag</a></li>
+    </ul>
+    <hr>
+</tag>
+<div class="pagination-group pull-right">
+
+        <div class="pull-right">
+            <ul class="pagination paginateon-sm">
+                <li th:classappend="${pagination.hasPreviousPage() ? '' : 'disabled'}">
+                    <a th:href="@{${pagination.url}(page=${pagination.previousPageNumber})}"
+                       th:data-page="${pagination.previousPageNumber}" th:text="#{Prev}" class="pagination-a">Prev</a></li>
+                <li th:each="p : ${pagination.getPageables(pageable)}"
+                    th:classappend="${p.pageNumber eq pagination.currentPageNumber ? 'active' : ''}">
+                    <a th:href="@{${pagination.url}(page=${p.pageNumber})}" th:data-page="${p.pageNumber}"
+                       th:text="${p.pageNumber + 1}" class="pagination-a"></a></li>
+                <li th:classappend="${pagination.hasNextPage() ? '' : 'disabled'}">
+                    <a th:href="@{${pagination.url}(page=${pagination.nextPageNumber})}"
+                       th:data-page="${pagination.nextPageNumber}" th:text="#{Next}" class="pagination-a">Next</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

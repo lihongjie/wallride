@@ -1,0 +1,48 @@
+<div xmlns:th="http://www.w3.org/1999/xhtml">
+<tag>
+    <div class="container">
+        <div class="alert alert-warning" th:if="${tag.language ne #locale.language}">
+            <span class="glyphicon glyphicon-warning-sign"></span> <span th:text="#{LanguageNotSupported(${#messages.msg('Language.' + tag.language)})}">Please note that this page is available only in English.</span>
+        </div>
+        <div class="page-header">
+            <h1 th:text="${tag.name}"></h1>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <post th:each="post : ${posts}" class="wr-post-summary row">
+                    <div class="col-sm-2">
+                        <img th:if="${post.cover ne null}" th:src="@{${#medias.link(post.cover)}(w=120,h=120,m=1)}" class="wr-post-cover" />
+                        <img th:unless="${post.cover ne null}" th:src="@{/resources/img/noimage.png}" style="width: 120px; height: 120px;" />
+                    </div>
+                    <div class="col-sm-10">
+                        <h2 class="wr-post-title"><a th:href="@{${#posts.path(post)}}" th:text="${post.title}?:'No Titled'" href="#"></a></h2>
+                        <p th:text="${#posts.summary(post, 45)}"></p>
+                        <p style="margin-bottom:5px"><time th:text="${#temporals.format(post.date, 'yyyy/MM/dd HH:mm')}"></time>&nbsp;&nbsp;&nbsp;
+                            <a th:if="${post.author ne null}" th:href="@{${#users.path(post.author)}}" class="wr-author"><span class="glyphicon glyphicon-user"></span> <span th:text="${post.author}"></span></a></p>
+                        <span th:unless="${#lists.isEmpty(post.tags)}">
+									<a th:each="tag : ${post.tags}" th:href="@{/tag/__${tag}__}" class="wr-tag"><span class="label label-default"><span class="glyphicon glyphicon-tag"></span> <span th:text="${tag.name}">Link</span></span></a>&nbsp;&nbsp;
+								</span>&nbsp;&nbsp;
+                    </div>
+                </post>
+            </div>
+        </div>
+    </div>
+</tag>
+<div class="pagination-group pull-right">
+
+        <div class="pull-right">
+            <ul class="pagination paginateon-sm">
+                <li th:classappend="${pagination.hasPreviousPage() ? '' : 'disabled'}">
+                    <a th:href="@{${pagination.url}(page=${pagination.previousPageNumber})}"
+                       th:data-page="${pagination.previousPageNumber}" th:text="#{Prev}" class="pagination-a">Prev</a></li>
+                <li th:each="p : ${pagination.getPageables(pageable)}"
+                    th:classappend="${p.pageNumber eq pagination.currentPageNumber ? 'active' : ''}">
+                    <a th:href="@{${pagination.url}(page=${p.pageNumber})}" th:data-page="${p.pageNumber}"
+                       th:text="${p.pageNumber + 1}" class="pagination-a"></a></li>
+                <li th:classappend="${pagination.hasNextPage() ? '' : 'disabled'}">
+                    <a th:href="@{${pagination.url}(page=${pagination.nextPageNumber})}"
+                       th:data-page="${pagination.nextPageNumber}" th:text="#{Next}" class="pagination-a">Next</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

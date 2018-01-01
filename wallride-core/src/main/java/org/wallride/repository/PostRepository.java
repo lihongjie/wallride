@@ -16,6 +16,8 @@
 
 package org.wallride.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,6 +25,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.wallride.domain.Post;
+import org.wallride.domain.Tag;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,4 +48,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
 
 	@Query("select count(post.id) from Post post where post.status = :status and post.language = :language ")
 	long countByStatus(@Param("status") Post.Status status, @Param("language") String language);
+
+	Page<Post> findByTags(Tag tag, Pageable pageable);
 }
