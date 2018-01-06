@@ -291,9 +291,9 @@
 		<div th:fragment="blog-sidebar-popular-post">
 			<h3>Popular Articles</h3>
 			<ul class="list-group">
-				<li th:each="popularPost : ${popularPosts}" th:class="list-group-item">
-					<a th:href="@{/category/__${popularPost.post.name}__}" th:text="${popularPost.post.name}">Java</a>
-					<span th:text="'(' + ${popularPost.views} + ')'">10</span>
+				<li  th:each="popularPost : ${popularPosts}" th:class="list-group-item">
+			<!--		<a th:href="@{/category/__${popularPost.post.name}__}" th:text="${popularPost.post.name}">Java</a>
+					<span th:text="'(' + ${popularPost.views} + ')'">10</span>-->
 				</li>
 			</ul>
 		</div>

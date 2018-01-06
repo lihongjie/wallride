@@ -8,7 +8,7 @@ function fetchDataList(param, target, checkboxTarget) {
         type: 'GET',
         async: false,
         success: function (result) {
-            debugger;
+
             $(target).empty().append(result);
             enablePagination(target);
             enableCheckbox(checkboxTarget);
@@ -61,10 +61,68 @@ function formatRelativeTime(time) {
     return moment(time, "YYYY-MM-DD HH:mm:ss").fromNow();
 }
 
-function eableFormatTime($element) {
+function enableFormatTime($element) {
     $element.each(function(index, value) {
         var time = $(value).text();
         var formatedString = formatRelativeTime(time);
         $(value).html(formatedString);
     })
+}
+
+function enableGetUnReadNotifications() {
+    $.ajax({
+        url: "../../notifications/unread",
+        type: 'GET',
+        async: false,
+        success: function (result) {
+
+            $(".dropdown-notification .dropdown-menu").empty().append(result);
+            enableFormatTime($(".dropdown-notification .time"));
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            alert("status:" + XMLHttpRequest.status + ",readyState:" + XMLHttpRequest.readyState + ",textStatus:" + textStatus);
+
+        }
+    });
+}
+
+
+function enableNotificationBar() {
+
+    $("#header_notification_bar").on("click", function() {
+        enableGetUnReadNotifications();
+        $(".dropdown-notification").addClass("dropdown-hoverable");
+
+        $(".notification-badge").empty();
+    });
+}
+
+function enableGetUnReadMessages() {
+    $.ajax({
+        url: "../../messages/unread",
+        type: 'GET',
+        async: false,
+        success: function (result) {
+
+            $(".dropdown-inbox .dropdown-menu").empty().append(result);
+            $(".dropdown-inbox").addClass("open");
+            enableFormatTime($(".dropdown-inbox .time"));
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            alert("status:" + XMLHttpRequest.status + ",readyState:" + XMLHttpRequest.readyState + ",textStatus:" + textStatus);
+
+        }
+    });
+}
+
+
+function enableMessageBar() {
+
+    $("#header_inbox_bar").on("click", function() {
+        enableGetUnReadMessages();
+        $(".dropdown-inbox").addClass("dropdown-hoverable");
+        $(".inbox-badge").empty();
+    });
 }

@@ -50,8 +50,9 @@ public class CategoryController {
 
 
 	@GetMapping(value = "/index")
-	public String index() {
+	public String index(AuthorizedUser authorizedUser, Model model) {
 
+		model.addAttribute("author", authorizedUser);
 		return "category/index";
 	}
 

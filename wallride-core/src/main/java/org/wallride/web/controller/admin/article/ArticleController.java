@@ -25,26 +25,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 import org.wallride.domain.Article;
 import org.wallride.domain.Post;
 import org.wallride.service.ArticleService;
+import org.wallride.support.AuthorizedUser;
 import org.wallride.web.support.ControllerUtils;
 import org.wallride.web.support.Pagination;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/{language}/articles")
@@ -88,8 +81,9 @@ public class ArticleController {
 
     @GetMapping(value = "/index")
     @Transactional
-    public String index() {
+    public String index(AuthorizedUser authorizedUser, Model model) {
 
+        model.addAttribute("author", authorizedUser);
         return "article/index";
     }
 

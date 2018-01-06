@@ -1,0 +1,22 @@
+<li class="external" xmlns:th="http://www.w3.org/1999/xhtml">
+    <h3>
+    <span class="bold" th:text="${count} + ' pending'">12 pending</span> notifications</h3>
+    <a href="#">view all</a>
+</li>
+<li xmlns:th="http://www.w3.org/1999/xhtml">
+    <ul class="dropdown-menu-list scroller" style="height: 250px;" data-handle-color="#637283">
+        <li th:each="notification : ${notifications}">
+            <a href="javascript:;">
+                <span class="time" th:text="${notification.date}">just now</span>
+                <span class="details">
+                    <span class="label label-sm label-icon label-success">
+                        <i class="fa fa-plus"></i>
+                    </span>
+                    <i th:text="${notification.content}">
+                        New user registered.
+                    </i>
+                </span>
+            </a>
+        </li>
+    </ul>
+</li>

@@ -315,7 +315,7 @@ function enableSearchArticle(param) {
         type: 'GET',
         async: false,
         success: function (result) {
-            debugger;
+
             $("#article-list-wrapper").empty().append(result);
             enablePagination();
             eableFormatTime($(".article-created-time"));

@@ -26,7 +26,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.wallride.domain.Post;
 import org.wallride.domain.Tag;
 import org.wallride.service.ArticleService;
 import org.wallride.service.TagService;
@@ -35,7 +34,6 @@ import org.wallride.web.support.Pagination;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/{language}/tags")
@@ -54,7 +52,9 @@ public class TagController {
 //    }
 
     @GetMapping(value = "/index")
-    public String index() {
+    public String index(AuthorizedUser authorizedUser, Model model) {
+
+        model.addAttribute("author", authorizedUser);
         return "tag/index";
     }
 

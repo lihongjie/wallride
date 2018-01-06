@@ -1,0 +1,20 @@
+<li class="external" xmlns:th="http://www.w3.org/1999/xhtml">
+        <h3>You have
+            <span class="bold" th:text="${count} + ' New'">7 New</span> Messages</h3>
+        <a href="app_inbox.html">view all</a>
+    </li>
+    <li>
+        <ul class="dropdown-menu-list scroller" style="height: 275px;" data-handle-color="#637283" xmlns:th="http://www.w3.org/1999/xhtml">
+            <li th:each="message : ${messages}">
+                <a href="#">
+                    <span class="photo">
+                        <img th:src="${message.sendUser.getGravatarUrl(100)}" class="img-circle" alt=""> </span>
+                    <span class="subject">
+                        <span class="from" th:text="${message.sendUser.name}"> Lisa Wong </span>
+                        <span class="time" th:text="${message.sendDate}"> Just Now </span>
+                    </span>
+                    <span class="message" th:text="${message.content}"> Vivamus sed auctor nibh congue nibh. auctor nibh auctor nibh... </span>
+                </a>
+            </li>
+        </ul>
+    </li>

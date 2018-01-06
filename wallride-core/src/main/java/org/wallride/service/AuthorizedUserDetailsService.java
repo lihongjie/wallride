@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.wallride.domain.User;
 import org.wallride.repository.UserRepository;
@@ -43,6 +44,7 @@ public class AuthorizedUserDetailsService extends SavedRequestAwareAuthenticatio
 	private UserRepository userRepository;
 
 	@Override
+	@Transactional
 	public UserDetails loadUserByUsername(final String username) {
 		if (!StringUtils.hasText(username)) {
 			throw new UsernameNotFoundException("Username is empty");
