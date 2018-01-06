@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.wallride.domain.Category;
 import org.wallride.domain.Category_;
+import org.wallride.domain.User;
 import org.wallride.model.CategoryCreateRequest;
 import org.wallride.model.CategoryResponse;
 import org.wallride.model.CategorySearchRequest;
@@ -189,5 +190,11 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public List<CategoryResponse> categoryGroup() {
 		return categoryRepository.findAllGroupByCateogry();
+	}
+
+	@Override
+	public long countByUser(User user) {
+
+		return categoryRepository.countByUser(user);
 	}
 }

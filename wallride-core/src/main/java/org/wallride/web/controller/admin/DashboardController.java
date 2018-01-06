@@ -28,6 +28,7 @@ import org.wallride.domain.Blog;
 import org.wallride.domain.PopularPost;
 import org.wallride.domain.Post;
 import org.wallride.service.*;
+import org.wallride.support.AuthorizedUser;
 import org.wallride.web.controller.admin.article.ArticleSearchForm;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public class DashboardController {
 	@Autowired
 	private CategoryService categoryService;
 	
-	@RequestMapping({"/","/dashboard"})
+	@RequestMapping(value = "/")
 	public String dashboard(RedirectAttributes redirectAttributes) {
 		Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
 		String defaultLanguage = blog.getDefaultLanguage();
@@ -61,19 +62,15 @@ public class DashboardController {
 
 
 	@RequestMapping("/{language}/")
-	public String dashboard(@PathVariable String language, Model model) {
+	public String dashboard(@PathVariable String language, Model model, AuthorizedUser authorizedUser) {
 		long articleCount = articleService.countArticlesByStatus(Post.Status.PUBLISHED, language);
-		long pageCount = pageService.countPagesByStatus(Post.Status.PUBLISHED, language);
-//		long categoryCount = categoryService.getCategories(language).size();
-		long categoryCount = 0;
-
+		long categoryCount = categoryService.countByUser(authorizedUser);
+		model.addAttribute("author", authorizedUser);
 		model.addAttribute("articleCount", articleCount);
-		model.addAttribute("pageCount", pageCount);
 		model.addAttribute("categoryCount", categoryCount);
 		model.addAttribute("popularPosts", popularPosts(language));
 		model.addAttribute("recentPublishedArticles", recentPublishedArticles(language));
 		model.addAttribute("recentDraftArticles", recentDraftArticles(language));
-
 		return "dashboard";
 	}
 

@@ -26,6 +26,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.wallride.domain.Category;
+import org.wallride.domain.User;
 import org.wallride.model.CategoryResponse;
 
 import java.util.List;
@@ -79,4 +80,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
 
 //	@Query(value = "select new com.xxx.xxx.class.SureveyQueryAnalytics(s.answer, count(sv)) from Survey s group by s.answer")
 //	List<SureveyQueryAnalytics> calculateSurveyCount();
+
+	long countByUser(User user);
 }

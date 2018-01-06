@@ -19,6 +19,7 @@ package org.wallride.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.wallride.domain.Category;
+import org.wallride.domain.User;
 import org.wallride.model.CategoryCreateRequest;
 import org.wallride.model.CategoryResponse;
 import org.wallride.model.CategorySearchRequest;
@@ -49,4 +50,6 @@ public interface CategoryService {
 	Page<Category> getCategories(CategorySearchRequest request, Pageable pageable);
 
 	List<CategoryResponse> categoryGroup();
+
+	long countByUser(User user);
 }

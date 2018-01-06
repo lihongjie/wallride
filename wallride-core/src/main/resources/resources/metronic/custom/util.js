@@ -69,6 +69,14 @@ function enableFormatTime($element) {
     })
 }
 
+function enableFormatRealTime() {
+    $(".real-time").each(function(index, value) {
+        var time = $(value).text();
+        var formatedString = formatRelativeTime(time);
+        $(value).html(formatedString);
+    })
+}
+
 function enableGetUnReadNotifications() {
     $.ajax({
         url: "../../notifications/unread",

@@ -48,6 +48,9 @@ public class Category extends DomainObject<Long> implements Comparable<Category>
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@ManyToOne
+	private User user;
+
 	@Column(length = 200, nullable = false)
 	private String code;
 
@@ -172,6 +175,14 @@ public class Category extends DomainObject<Long> implements Comparable<Category>
 //	public int getArticleCount() {
 //		return articleCount;
 //	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 
 	@Override
 	public String print() {
