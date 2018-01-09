@@ -18,6 +18,11 @@ package org.wallride.domain;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
@@ -28,15 +33,19 @@ import java.time.LocalDateTime;
 public abstract class DomainObject<ID extends Serializable> implements Serializable {
 
 	@Column(nullable = false)
+	@CreatedDate
 	private LocalDateTime createdAt = LocalDateTime.now();
 
 	@Column(length = 100)
+	@CreatedBy
 	private String createdBy;
 
 	@Column(nullable = false)
+	@LastModifiedDate
 	private LocalDateTime updatedAt = LocalDateTime.now();
 
 	@Column(length = 100)
+	@LastModifiedBy
 	private String updatedBy;
 
 	public abstract ID getId();

@@ -20,11 +20,16 @@ import org.wallride.web.controller.admin.article.CustomFieldValueEditForm;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public class ArticleUpdateRequest implements Serializable {
+/**
+ * ArticleRequest model for creating and updating article
+ */
+public class ArticleRequest implements Serializable {
 
-	private Long id;
 	private String code;
 	private String coverId;
 	private String title;
@@ -39,10 +44,6 @@ public class ArticleUpdateRequest implements Serializable {
 	private String seoKeywords;
 	private List<CustomFieldValueEditForm> customFieldValues = new ArrayList<>();
 	private String language;
-
-	public Long getId() {
-		return id;
-	}
 
 	public String getCode() {
 		return code;
@@ -102,7 +103,6 @@ public class ArticleUpdateRequest implements Serializable {
 
 	public static class Builder  {
 
-		private Long id;
 		private String code;
 		private String coverId;
 		private String title;
@@ -119,11 +119,6 @@ public class ArticleUpdateRequest implements Serializable {
 		private String language;
 
 		public Builder() {
-		}
-
-		public Builder id(Long id) {
-			this.id = id;
-			return this;
 		}
 
 		public Builder code(String code) {
@@ -196,9 +191,8 @@ public class ArticleUpdateRequest implements Serializable {
 			return this;
 		}
 
-		public ArticleUpdateRequest build() {
-			ArticleUpdateRequest request = new ArticleUpdateRequest();
-			request.id = id;
+		public ArticleRequest build() {
+			ArticleRequest request = new ArticleRequest();
 			request.code = code;
 			request.coverId = coverId;
 			request.title = title;

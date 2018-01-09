@@ -17,27 +17,29 @@
 package org.wallride.web.controller.admin.article;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponents;
 import org.wallride.domain.Article;
+import org.wallride.domain.Category;
 import org.wallride.domain.Post;
+import org.wallride.model.*;
 import org.wallride.service.ArticleService;
 import org.wallride.support.AuthorizedUser;
-import org.wallride.web.support.ControllerUtils;
+import org.wallride.support.CategoryUtils;
 import org.wallride.web.support.Pagination;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import javax.validation.Valid;
+import java.text.ParseException;
+import java.util.List;
 
 @Controller
 @RequestMapping("/{language}/articles")
@@ -47,7 +49,7 @@ public class ArticleController {
     private ArticleService articleService;
 
     @Autowired
-    private ConversionService conversionService;
+    private CategoryUtils categoryUtils;
 
     @ModelAttribute("countAll")
     public long countAll(@PathVariable String language) {
@@ -69,16 +71,6 @@ public class ArticleController {
         return articleService.countArticlesByStatus(Post.Status.PUBLISHED, language);
     }
 
-    @ModelAttribute("form")
-    public ArticleSearchForm setupArticleSearchForm() {
-        return new ArticleSearchForm();
-    }
-
-    @ModelAttribute("query")
-    public String query(@RequestParam(required = false) String query) {
-        return query;
-    }
-
     @GetMapping(value = "/index")
     @Transactional
     public String index(AuthorizedUser authorizedUser, Model model) {
@@ -88,43 +80,130 @@ public class ArticleController {
     }
 
     @GetMapping
-    @Transactional
     public String search(
             @PathVariable String language,
             ArticleSearchForm form,
             @PageableDefault Pageable pageable,
             Model model,
-            HttpServletRequest servletRequest) throws UnsupportedEncodingException {
+            HttpServletRequest servletRequest) {
+
         Page<Article> articles = articleService.getArticles(form.toArticleSearchRequest(), pageable);
 
         model.addAttribute("articles", articles);
         model.addAttribute("pageable", pageable);
         model.addAttribute("pagination", new Pagination<>(articles, servletRequest));
-
-        UriComponents uriComponents = ServletUriComponentsBuilder
-                .fromRequest(servletRequest)
-                .queryParams(ControllerUtils.convertBeanForQueryParams(form, conversionService))
-                .build();
-        if (!StringUtils.isEmpty(uriComponents.getQuery())) {
-            model.addAttribute("query", URLDecoder.decode(uriComponents.getQuery(), "UTF-8"));
-        }
-
         return "article/articles";
     }
 
+    @GetMapping(value = "/create")
+    public String create(AuthorizedUser authorizedUser, Model model) {
 
-    @RequestMapping(method = RequestMethod.GET, params = "part=bulk-delete-form")
-    public String partBulkDeleteForm(@PathVariable String language) {
-        return "article/index::bulk-delete-form";
+        model.addAttribute("author", authorizedUser);
+        return "article/create";
     }
 
-    @RequestMapping(method = RequestMethod.GET, params = "part=bulk-publish-form")
-    public String partBulkPublishForm(@PathVariable String language) {
-        return "article/index::bulk-publish-form";
+
+    @ModelAttribute("categoryNodes")
+    public List<TreeNode<Category>> setupCategoryNodes(@PathVariable String language) {
+        return categoryUtils.getNodes(true);
     }
 
-    @RequestMapping(method = RequestMethod.GET, params = "part=bulk-unpublish-form")
-    public String partBulkUnpublishForm(@PathVariable String language) {
-        return "article/index::bulk-unpublish-form";
+    @PostMapping(params="draft")
+    public ResponseEntity saveAsDraft(
+            @PathVariable String language,
+            ArticleRequest articleRequest,
+            AuthorizedUser authorizedUser) {
+
+        articleService.saveArticleAsDraft(articleRequest, authorizedUser);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
     }
+
+    @PostMapping(params="publish")
+    public ResponseEntity saveAsPublished(
+            @PathVariable String language,
+            ArticleRequest articleRequest,
+            AuthorizedUser authorizedUser) throws ParseException {
+
+        articleService.saveArticleAsPublished(articleRequest, authorizedUser);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @GetMapping(value = "/{id}")
+    public String edit(
+            @PathVariable String language,
+            @RequestParam Long id,
+            Model model) {
+
+        Article article = articleService.getArticleById(id, language);
+        model.addAttribute("article", article);
+
+        return "article/edit";
+    }
+
+    @PutMapping(value = "/{id}", params="draft")
+    public ResponseEntity updateAsDraft(
+            @PathVariable String language,
+            @PathVariable Long id,
+            ArticleRequest articleRequest,
+            AuthorizedUser authorizedUser) {
+
+        articleService.updateArticleAsDraft(articleRequest, authorizedUser, id);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @PutMapping(value = "/{id}", params="publish")
+    public ResponseEntity updateAsPublished(
+            @PathVariable String language,
+            @PathVariable Long id,
+            ArticleRequest articleRequest,
+            AuthorizedUser authorizedUser) throws ParseException {
+
+        articleService.updateArticleAsPublished(articleRequest, authorizedUser, id);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @PostMapping(value = "/bulk-publish")
+    public ResponseEntity bulkPublish(
+            @Valid ArticleBulkPublishRequest articleRequest,
+            BindingResult bindingResult,
+            AuthorizedUser authorizedUser) {
+
+        articleService.bulkPublishArticle(articleRequest, authorizedUser);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @PostMapping(value = "/bulk-unpublish")
+    public ResponseEntity unpublish(
+            @Valid ArticleBulkUnpublishRequest articleRequest, BindingResult bindingResult,
+            AuthorizedUser authorizedUser) {
+
+        articleService.bulkUnpublishArticle(articleRequest, authorizedUser);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @DeleteMapping
+    public ResponseEntity delete(ArticleBulkDeleteRequest articleRequest) {
+
+        articleService.deleteArticle(articleRequest);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
+
 }

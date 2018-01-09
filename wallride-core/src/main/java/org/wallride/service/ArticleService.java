@@ -24,7 +24,6 @@ import org.wallride.domain.Tag;
 import org.wallride.model.*;
 import org.wallride.support.AuthorizedUser;
 
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -32,15 +31,17 @@ import java.util.SortedSet;
 
 public interface ArticleService {
 
-	Article createArticle(ArticleCreateRequest request, Post.Status status, AuthorizedUser authorizedUser) throws ParseException;
+//	Article createArticle(ArticleRequest request, Post.Status status, AuthorizedUser authorizedUser) throws ParseException;
 
-	Article saveArticleAsDraft(ArticleUpdateRequest request, AuthorizedUser authorizedUser) throws ParseException;
+	Article saveArticleAsDraft(ArticleRequest request, AuthorizedUser authorizedUser);
 
-	Article saveArticleAsPublished(ArticleUpdateRequest request, AuthorizedUser authorizedUser);
+	Article saveArticleAsPublished(ArticleRequest request, AuthorizedUser authorizedUser);
 
-	Article saveArticleAsUnpublished(ArticleUpdateRequest request, AuthorizedUser authorizedUser);
+	Article updateArticleAsDraft(ArticleRequest request, AuthorizedUser authorizedUser, Long id);
 
-	Article saveArticle(ArticleUpdateRequest request, AuthorizedUser authorizedUser);
+	Article updateArticleAsPublished(ArticleRequest request, AuthorizedUser authorizedUser, Long id);
+
+//	Article updateArticle(ArticleUpdateRequest request, AuthorizedUser authorizedUser);
 
 	void deleteArticle(ArticleBulkDeleteRequest request);
 
@@ -65,8 +66,6 @@ public interface ArticleService {
 	Article getArticleById(Long id, String language);
 
 	Article getArticleByCode(String code, String language);
-
-	Article getDraftById(Long id);
 
 	Long countArticles(String language);
 

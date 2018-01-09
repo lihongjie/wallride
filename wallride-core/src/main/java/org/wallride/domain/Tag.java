@@ -34,7 +34,6 @@ public class Tag extends DomainObject<Long> implements Comparable<Tag> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-
 	private long id;
 
 	@Column(length = 200, nullable = false)

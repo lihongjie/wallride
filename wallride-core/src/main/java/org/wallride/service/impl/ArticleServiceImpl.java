@@ -16,35 +16,24 @@
 
 package org.wallride.service.impl;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.wallride.autoconfigure.WallRideProperties;
 import org.wallride.domain.*;
-import org.wallride.exception.DuplicateCodeException;
-import org.wallride.exception.EmptyCodeException;
-import org.wallride.exception.ServiceException;
 import org.wallride.model.*;
 import org.wallride.repository.*;
 import org.wallride.service.ArticleService;
 import org.wallride.support.AuthorizedUser;
-import org.wallride.support.CodeFormatter;
-import org.wallride.web.controller.admin.article.CustomFieldValueEditForm;
 
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
@@ -72,356 +61,224 @@ public class ArticleServiceImpl implements ArticleService {
     @Autowired
     private CustomFieldRepository customFieldRepository;
 
+
+    private Article saveArticle(ArticleRequest articleRequest, Article article) {
+
+        article.setCode(articleRequest.getCode());
+        article.setDraftedCode(null);
+        Media cover = mediaRepository.findOne(articleRequest.getCoverId());
+        article.setCover(cover);
+        article.setTitle(articleRequest.getTitle());
+        article.setBody(articleRequest.getBody());
+        article.setLanguage(articleRequest.getLanguage());
+        article.getCategories().clear();
+        List<Category> categories = categoryRepository.findAll(articleRequest.getCategoryIds());
+        article.getCategories().addAll(categories);
+        article.getTags().clear();
+        Set<String> tagNames = StringUtils.commaDelimitedListToSet(articleRequest.getTags());
+        // if not exist, save new tag
+        for (String tagName : tagNames) {
+            Tag tag = tagRepository.findOneForUpdateByNameAndLanguage(tagName, articleRequest.getLanguage());
+            if (tag == null) {
+                tag = new Tag();
+                tag.setName(tagName);
+                tag.setLanguage(articleRequest.getLanguage());
+                tag = tagRepository.save(tag);
+            }
+            article.getTags().add(tag);
+        }
+        article.getRelatedPosts().clear();
+        List<Post>  postList = postRepository.findAll(articleRequest.getRelatedPostIds());
+        article.setRelatedToPosts(new HashSet<>(postList));
+        Seo seo = new Seo();
+        seo.setTitle(articleRequest.getSeoTitle());
+        seo.setDescription(articleRequest.getSeoDescription());
+        seo.setKeywords(articleRequest.getSeoKeywords());
+        article.setSeo(seo);
+
+        return articleRepository.save(article);
+
+    }
+
     @Override
-    public Article createArticle(ArticleCreateRequest request, Post.Status status, AuthorizedUser authorizedUser) throws ParseException {
-        LocalDateTime now = LocalDateTime.now();
-
-        String code = request.getCode();
-        if (code == null) {
-
-            code = new CodeFormatter().parse(request.getTitle(), LocaleContextHolder.getLocale());
-
-        }
-        if (!StringUtils.hasText(code)) {
-            if (!status.equals(Post.Status.DRAFT)) {
-                throw new EmptyCodeException();
-            }
-        }
-
-        if (!status.equals(Post.Status.DRAFT)) {
-            Post duplicate = postRepository.findOneByCodeAndLanguage(code, request.getLanguage());
-            if (duplicate != null) {
-                throw new DuplicateCodeException(code);
-            }
-        }
+    public Article saveArticleAsDraft(ArticleRequest articleRequest, AuthorizedUser authorizedUser) {
 
         Article article = new Article();
-
-        if (!status.equals(Post.Status.DRAFT)) {
-            article.setCode(code);
-            article.setDraftedCode(null);
-        } else {
-            article.setCode(null);
-            article.setDraftedCode(code);
-        }
-
-        Media cover = null;
-        if (request.getCoverId() != null) {
-            cover = mediaRepository.findOne(request.getCoverId());
-        }
-        article.setCover(cover);
-        article.setTitle(request.getTitle());
-        article.setBody(request.getBody());
-        article.setAuthor(authorizedUser);
-
-        LocalDateTime date = request.getDate();
-        if (Post.Status.PUBLISHED.equals(status)) {
-            if (date == null) {
-                date = now;
-            }
-        }
-        article.setDate(date);
-        article.setStatus(status);
-        article.setLanguage(request.getLanguage());
-
-        article.getCategories().clear();
-        for (long categoryId : request.getCategoryIds()) {
-            article.getCategories().add(categoryRepository.findOne(categoryId));
-        }
-        article.getTags().clear();
-        Set<String> tagNames = StringUtils.commaDelimitedListToSet(request.getTags());
-        if (!CollectionUtils.isEmpty(tagNames)) {
-            for (String tagName : tagNames) {
-                Tag tag = tagRepository.findOneForUpdateByNameAndLanguage(tagName, request.getLanguage());
-                if (tag == null) {
-                    tag = new Tag();
-                    tag.setName(tagName);
-                    tag.setLanguage(request.getLanguage());
-                    article.setCreatedAt(now);
-                    article.setCreatedBy(authorizedUser.toString());
-                    article.setUpdatedAt(now);
-                    article.setUpdatedBy(authorizedUser.toString());
-                    tag = tagRepository.saveAndFlush(tag);
-                }
-                article.getTags().add(tag);
-            }
-        }
-
-        article.getRelatedPosts().clear();
-        Set<Post> relatedPosts = new HashSet<>();
-        for (long relatedId : request.getRelatedPostIds()) {
-            relatedPosts.add(postRepository.findOne(relatedId));
-        }
-        article.setRelatedToPosts(relatedPosts);
-
-        Seo seo = new Seo();
-        seo.setTitle(request.getSeoTitle());
-        seo.setDescription(request.getSeoDescription());
-        seo.setKeywords(request.getSeoKeywords());
-        article.setSeo(seo);
-
-        List<Media> medias = new ArrayList<>();
-        if (StringUtils.hasText(request.getBody())) {
-            String mediaUrlPrefix = wallRideProperties.getMediaUrlPrefix();
-            Pattern mediaUrlPattern = Pattern.compile(String.format("%s([0-9a-zA-Z\\-]+)", mediaUrlPrefix));
-            Matcher mediaUrlMatcher = mediaUrlPattern.matcher(request.getBody());
-            while (mediaUrlMatcher.find()) {
-                Media media = mediaRepository.findOneById(mediaUrlMatcher.group(1));
-                medias.add(media);
-            }
-        }
-        article.setMedias(medias);
-
-        article.setCreatedAt(now);
-        article.setCreatedBy(authorizedUser.toString());
-        article.setUpdatedAt(now);
-        article.setUpdatedBy(authorizedUser.toString());
-
-        article.getCustomFieldValues().clear();
-        if (!CollectionUtils.isEmpty(request.getCustomFieldValues())) {
-            for (CustomFieldValueEditForm valueForm : request.getCustomFieldValues()) {
-                CustomFieldValue value = new CustomFieldValue();
-                value.setCustomField(customFieldRepository.findOne(valueForm.getCustomFieldId()));
-                value.setPost(article);
-                if (valueForm.getFieldType().equals(CustomField.FieldType.CHECKBOX)) {
-                    if (!ArrayUtils.isEmpty(valueForm.getTextValues())) {
-                        value.setTextValue(String.join(",", valueForm.getTextValues()));
-                    } else {
-                        value.setTextValue(null);
-                    }
-                } else {
-                    value.setTextValue(valueForm.getTextValue());
-                }
-                value.setStringValue(valueForm.getStringValue());
-                value.setNumberValue(valueForm.getNumberValue());
-                value.setDateValue(valueForm.getDateValue());
-                value.setDatetimeValue(valueForm.getDatetimeValue());
-                if (!value.isEmpty()) {
-                    article.getCustomFieldValues().add(value);
-                }
-            }
-        }
-        return articleRepository.save(article);
-    }
-
-    @Override
-    public Article saveArticleAsDraft(ArticleUpdateRequest request, AuthorizedUser authorizedUser) throws ParseException {
-        Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
-        if (!article.getStatus().equals(Post.Status.DRAFT)) {
-            Article draft = articleRepository.findOne(ArticleSpecifications.draft(article));
-            if (draft == null) {
-                ArticleCreateRequest createRequest = new ArticleCreateRequest.Builder()
-                        .code(request.getCode())
-                        .coverId(request.getCoverId())
-                        .title(request.getTitle())
-                        .body(request.getBody())
-                        .authorId(request.getAuthorId())
-                        .date(request.getDate())
-                        .categoryIds(request.getCategoryIds())
-                        .tags(request.getTags())
-                        .seoTitle(request.getSeoTitle())
-                        .seoDescription(request.getSeoDescription())
-                        .seoKeywords(request.getSeoKeywords())
-                        .customFieldValues(new ArrayList<>(request.getCustomFieldValues()))
-                        .language(request.getLanguage())
-                        .build();
-                draft = createArticle(createRequest, Post.Status.DRAFT, authorizedUser);
-                draft.setDrafted(article);
-                return articleRepository.save(draft);
-            } else {
-                ArticleUpdateRequest updateRequest = new ArticleUpdateRequest.Builder()
-                        .id(draft.getId())
-                        .code(request.getCode())
-                        .coverId(request.getCoverId())
-                        .title(request.getTitle())
-                        .body(request.getBody())
-                        .authorId(request.getAuthorId())
-                        .date(request.getDate())
-                        .categoryIds(request.getCategoryIds())
-                        .tags(request.getTags())
-                        .seoTitle(request.getSeoTitle())
-                        .seoDescription(request.getSeoDescription())
-                        .seoKeywords(request.getSeoKeywords())
-                        .customFieldValues(request.getCustomFieldValues())
-                        .language(request.getLanguage())
-                        .build();
-                return saveArticle(updateRequest, authorizedUser);
-            }
-        } else {
-            return saveArticle(request, authorizedUser);
-        }
-    }
-
-    @Override
-    public Article saveArticleAsPublished(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
-
-        Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
-        publishArticle(article);
-        return saveArticle(request, authorizedUser);
-    }
-
-    @Override
-    public Article saveArticleAsUnpublished(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
-        Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
-        unpublishArticle(article);
-        return saveArticle(request, authorizedUser);
-    }
-
-    private Article unpublishArticle(Article article) {
-        Article deleteTarget = getDraftById(article.getId());
-        if (deleteTarget != null) {
-            articleRepository.delete(deleteTarget);
-        }
-        article.setDrafted(null);
         article.setStatus(Post.Status.DRAFT);
-        Article unpublished = articleRepository.save(article);
-        return unpublished;
+        article.setAuthor(authorizedUser);
+        return saveArticle(articleRequest, article);
     }
 
     @Override
-    public Article saveArticle(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
-        Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
-        LocalDateTime now = LocalDateTime.now();
+    public Article saveArticleAsPublished(ArticleRequest articleRequest, AuthorizedUser authorizedUser) {
 
-        String code = request.getCode();
-        if (code == null) {
-            try {
-                code = new CodeFormatter().parse(request.getTitle(), LocaleContextHolder.getLocale());
-            } catch (ParseException e) {
-                throw new ServiceException(e);
-            }
-        }
-        if (!StringUtils.hasText(code)) {
-            if (!article.getStatus().equals(Post.Status.DRAFT)) {
-                throw new EmptyCodeException();
-            }
-        }
-        if (!article.getStatus().equals(Post.Status.DRAFT)) {
-            Post duplicate = postRepository.findOneByCodeAndLanguage(code, request.getLanguage());
-            if (duplicate != null && !duplicate.equals(article)) {
-                throw new DuplicateCodeException(code);
-            }
-        }
-
-        if (!article.getStatus().equals(Post.Status.DRAFT)) {
-            article.setCode(code);
-            article.setDraftedCode(null);
-        } else {
-            article.setCode(null);
-            article.setDraftedCode(code);
-        }
-
-        Media cover = null;
-        if (request.getCoverId() != null) {
-            cover = mediaRepository.findOne(request.getCoverId());
-        }
-        article.setCover(cover);
-        article.setTitle(request.getTitle());
-        article.setBody(request.getBody());
-        LocalDateTime date = request.getDate();
-        if (!Post.Status.DRAFT.equals(article.getStatus())) {
-            if (date == null) {
-                date = now;
-            } else if (date.isAfter(now)) {
-                article.setStatus(Post.Status.SCHEDULED);
-            } else {
-                article.setStatus(Post.Status.PUBLISHED);
-            }
-        }
-        article.setDate(date);
-        article.setLanguage(request.getLanguage());
-
-        article.getCategories().clear();
-        for (long categoryId : request.getCategoryIds()) {
-            Category category = categoryRepository.findOne(categoryId);
-            article.getCategories().add(category);
-        }
-
-        article.getTags().clear();
-        Set<String> tagNames = StringUtils.commaDelimitedListToSet(request.getTags());
-        if (!CollectionUtils.isEmpty(tagNames)) {
-            for (String tagName : tagNames) {
-                Tag tag = tagRepository.findOneForUpdateByNameAndLanguage(tagName, request.getLanguage());
-                if (tag == null) {
-                    tag = new Tag();
-                    tag.setName(tagName);
-                    tag.setLanguage(request.getLanguage());
-                    article.setCreatedAt(now);
-                    article.setCreatedBy(authorizedUser.toString());
-                    article.setUpdatedAt(now);
-                    article.setUpdatedBy(authorizedUser.toString());
-                    tag = tagRepository.saveAndFlush(tag);
-                }
-                article.getTags().add(tag);
-            }
-        }
-
-        article.getRelatedPosts().clear();
-        Set<Post> relatedPosts = new HashSet<>();
-        for (long relatedId : request.getRelatedPostIds()) {
-            Post post = postRepository.findOne(relatedId);
-            relatedPosts.add(post);
-        }
-        article.setRelatedToPosts(relatedPosts);
-
-        Seo seo = new Seo();
-        seo.setTitle(request.getSeoTitle());
-        seo.setDescription(request.getSeoDescription());
-        seo.setKeywords(request.getSeoKeywords());
-        article.setSeo(seo);
-
-        List<Media> medias = new ArrayList<>();
-        if (StringUtils.hasText(request.getBody())) {
-//			Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
-            String mediaUrlPrefix = wallRideProperties.getMediaUrlPrefix();
-            Pattern mediaUrlPattern = Pattern.compile(String.format("%s([0-9a-zA-Z\\-]+)", mediaUrlPrefix));
-            Matcher mediaUrlMatcher = mediaUrlPattern.matcher(request.getBody());
-            while (mediaUrlMatcher.find()) {
-                Media media = mediaRepository.findOneById(mediaUrlMatcher.group(1));
-                medias.add(media);
-            }
-        }
-        article.setMedias(medias);
-
-        article.setUpdatedAt(now);
-        article.setUpdatedBy(authorizedUser.toString());
-
-        Map<CustomField, CustomFieldValue> valueMap = new LinkedHashMap<>();
-        for (CustomFieldValue value : article.getCustomFieldValues()) {
-            valueMap.put(value.getCustomField(), value);
-        }
-
-        article.getCustomFieldValues().clear();
-        if (!CollectionUtils.isEmpty(request.getCustomFieldValues())) {
-            for (CustomFieldValueEditForm valueForm : request.getCustomFieldValues()) {
-                CustomField customField = customFieldRepository.findOne(valueForm.getCustomFieldId());
-                CustomFieldValue value = valueMap.get(customField);
-                if (value == null) {
-                    value = new CustomFieldValue();
-                }
-                value.setCustomField(customField);
-                value.setPost(article);
-                if (valueForm.getFieldType().equals(CustomField.FieldType.CHECKBOX)) {
-                    if (!ArrayUtils.isEmpty(valueForm.getTextValues())) {
-                        value.setTextValue(String.join(",", valueForm.getTextValues()));
-                    } else {
-                        value.setTextValue(null);
-                    }
-                } else {
-                    value.setTextValue(valueForm.getTextValue());
-                }
-                value.setStringValue(valueForm.getStringValue());
-                value.setNumberValue(valueForm.getNumberValue());
-                value.setDateValue(valueForm.getDateValue());
-                value.setDatetimeValue(valueForm.getDatetimeValue());
-                if (!value.isEmpty()) {
-                    article.getCustomFieldValues().add(value);
-                }
-            }
-        }
-
-        return articleRepository.save(article);
+        Article article = new Article();
+        article.setStatus(Post.Status.PUBLISHED);
+        article.setAuthor(authorizedUser);
+        return saveArticle(articleRequest, article);
     }
+
+    @Override
+    public Article updateArticleAsDraft(ArticleRequest articleRequest, AuthorizedUser authorizedUser, Long id) {
+        Article article = articleRepository.findOne(id);
+        article.setStatus(Post.Status.DRAFT);
+        article.setAuthor(authorizedUser);
+        return saveArticle(articleRequest, article);
+    }
+
+    @Override
+    public Article updateArticleAsPublished(ArticleRequest articleRequest, AuthorizedUser authorizedUser, Long id) {
+
+        Article article = articleRepository.findOne(id);
+        article.setStatus(Post.Status.PUBLISHED);
+        article.setAuthor(authorizedUser);
+        return saveArticle(articleRequest, article);
+    }
+
+//    @Override
+//    public Article updateArticle(ArticleUpdateRequest request, AuthorizedUser authorizedUser) {
+//        Article article = articleRepository.findOneByIdAndLanguage(request.getId(), request.getLanguage());
+//        LocalDateTime now = LocalDateTime.now();
+//
+//        String code = request.getCode();
+//        if (code == null) {
+//            try {
+//                code = new CodeFormatter().parse(request.getTitle(), LocaleContextHolder.getLocale());
+//            } catch (ParseException e) {
+//                throw new ServiceException(e);
+//            }
+//        }
+//        if (!StringUtils.hasText(code)) {
+//            if (!article.getStatus().equals(Post.Status.DRAFT)) {
+//                throw new EmptyCodeException();
+//            }
+//        }
+//        if (!article.getStatus().equals(Post.Status.DRAFT)) {
+//            Post duplicate = postRepository.findOneByCodeAndLanguage(code, request.getLanguage());
+//            if (duplicate != null && !duplicate.equals(article)) {
+//                throw new DuplicateCodeException(code);
+//            }
+//        }
+//
+//        if (!article.getStatus().equals(Post.Status.DRAFT)) {
+//            article.setCode(code);
+//            article.setDraftedCode(null);
+//        } else {
+//            article.setCode(null);
+//            article.setDraftedCode(code);
+//        }
+//
+//        Media cover = null;
+//        if (request.getCoverId() != null) {
+//            cover = mediaRepository.findOne(request.getCoverId());
+//        }
+//        article.setCover(cover);
+//        article.setTitle(request.getTitle());
+//        article.setBody(request.getBody());
+//        LocalDateTime date = request.getDate();
+//        if (!Post.Status.DRAFT.equals(article.getStatus())) {
+//            if (date == null) {
+//                date = now;
+//            } else if (date.isAfter(now)) {
+//                article.setStatus(Post.Status.SCHEDULED);
+//            } else {
+//                article.setStatus(Post.Status.PUBLISHED);
+//            }
+//        }
+//        article.setDate(date);
+//        article.setLanguage(request.getLanguage());
+//
+//        article.getCategories().clear();
+//        for (long categoryId : request.getCategoryIds()) {
+//            Category category = categoryRepository.findOne(categoryId);
+//            article.getCategories().add(category);
+//        }
+//
+//        article.getTags().clear();
+//        Set<String> tagNames = StringUtils.commaDelimitedListToSet(request.getTags());
+//        if (!CollectionUtils.isEmpty(tagNames)) {
+//            for (String tagName : tagNames) {
+//                Tag tag = tagRepository.findOneForUpdateByNameAndLanguage(tagName, request.getLanguage());
+//                if (tag == null) {
+//                    tag = new Tag();
+//                    tag.setName(tagName);
+//                    tag.setLanguage(request.getLanguage());
+//                    article.setCreatedAt(now);
+//                    article.setCreatedBy(authorizedUser.toString());
+//                    article.setUpdatedAt(now);
+//                    article.setUpdatedBy(authorizedUser.toString());
+//                    tag = tagRepository.saveAndFlush(tag);
+//                }
+//                article.getTags().add(tag);
+//            }
+//        }
+//
+//        article.getRelatedPosts().clear();
+//        Set<Post> relatedPosts = new HashSet<>();
+//        for (long relatedId : request.getRelatedPostIds()) {
+//            Post post = postRepository.findOne(relatedId);
+//            relatedPosts.add(post);
+//        }
+//        article.setRelatedToPosts(relatedPosts);
+//
+//        Seo seo = new Seo();
+//        seo.setTitle(request.getSeoTitle());
+//        seo.setDescription(request.getSeoDescription());
+//        seo.setKeywords(request.getSeoKeywords());
+//        article.setSeo(seo);
+//
+//        List<Media> medias = new ArrayList<>();
+//        if (StringUtils.hasText(request.getBody())) {
+////			Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
+//            String mediaUrlPrefix = wallRideProperties.getMediaUrlPrefix();
+//            Pattern mediaUrlPattern = Pattern.compile(String.format("%s([0-9a-zA-Z\\-]+)", mediaUrlPrefix));
+//            Matcher mediaUrlMatcher = mediaUrlPattern.matcher(request.getBody());
+//            while (mediaUrlMatcher.find()) {
+//                Media media = mediaRepository.findOneById(mediaUrlMatcher.group(1));
+//                medias.add(media);
+//            }
+//        }
+//        article.setMedias(medias);
+//
+//        article.setUpdatedAt(now);
+//        article.setUpdatedBy(authorizedUser.toString());
+//
+//        Map<CustomField, CustomFieldValue> valueMap = new LinkedHashMap<>();
+//        for (CustomFieldValue value : article.getCustomFieldValues()) {
+//            valueMap.put(value.getCustomField(), value);
+//        }
+//
+//        article.getCustomFieldValues().clear();
+//        if (!CollectionUtils.isEmpty(request.getCustomFieldValues())) {
+//            for (CustomFieldValueEditForm valueForm : request.getCustomFieldValues()) {
+//                CustomField customField = customFieldRepository.findOne(valueForm.getCustomFieldId());
+//                CustomFieldValue value = valueMap.get(customField);
+//                if (value == null) {
+//                    value = new CustomFieldValue();
+//                }
+//                value.setCustomField(customField);
+//                value.setPost(article);
+//                if (valueForm.getFieldType().equals(CustomField.FieldType.CHECKBOX)) {
+//                    if (!ArrayUtils.isEmpty(valueForm.getTextValues())) {
+//                        value.setTextValue(String.join(",", valueForm.getTextValues()));
+//                    } else {
+//                        value.setTextValue(null);
+//                    }
+//                } else {
+//                    value.setTextValue(valueForm.getTextValue());
+//                }
+//                value.setStringValue(valueForm.getStringValue());
+//                value.setNumberValue(valueForm.getNumberValue());
+//                value.setDateValue(valueForm.getDateValue());
+//                value.setDatetimeValue(valueForm.getDatetimeValue());
+//                if (!value.isEmpty()) {
+//                    article.getCustomFieldValues().add(value);
+//                }
+//            }
+//        }
+//
+//        return articleRepository.save(article);
+//    }
 
     @Override
     public void deleteArticle(ArticleBulkDeleteRequest request) {
@@ -477,6 +334,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @Transactional
     public List<Article> bulkUnpublishArticle(ArticleBulkUnpublishRequest request, AuthorizedUser authorizedUser) {
         List<Long> ids = request.getIds();
         List<Article> selectedArticles = articleRepository.findAll(ids);
@@ -560,15 +418,11 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @Transactional
     public Article getArticleByCode(String code, String language) {
         Article article = articleRepository.findOneByCodeAndLanguage(code, language);
-        int size = article.getComments().size();
+//        int size = article.getComments().size();
         return article;
-    }
-
-    @Override
-    public Article getDraftById(Long id) {
-        return null;
     }
 
     @Override
@@ -631,17 +485,6 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<Tag> tagsArchive(Long id) {
         return tagRepository.findAll();
-    }
-
-    private Article publishArticle(Article article) {
-        Article deleteTarget = getDraftById(article.getId());
-        if (deleteTarget != null) {
-            articleRepository.delete(deleteTarget);
-        }
-        article.setDrafted(null);
-        article.setStatus(Post.Status.PUBLISHED);
-        Article published = articleRepository.save(article);
-        return published;
     }
 
 }

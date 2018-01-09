@@ -72,7 +72,8 @@ public class Post extends DomainObject<Long> {
 	@Embedded
 	private Seo seo = new Seo();
 
-	private LocalDateTime date;
+	@Column(nullable = false)
+	private LocalDateTime date = LocalDateTime.now();
 
 	@ManyToOne
 	private User author;
@@ -98,7 +99,7 @@ public class Post extends DomainObject<Long> {
 	@SortNatural
 	private SortedSet<Category> categories = new TreeSet<>();
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany
 	@JoinTable(
 			name = "post_tag",
 			joinColumns = {@JoinColumn(name = "post_id")},
