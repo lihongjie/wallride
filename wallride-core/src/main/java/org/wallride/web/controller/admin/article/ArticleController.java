@@ -32,6 +32,7 @@ import org.wallride.domain.Category;
 import org.wallride.domain.Post;
 import org.wallride.model.*;
 import org.wallride.service.ArticleService;
+import org.wallride.service.CategoryService;
 import org.wallride.support.AuthorizedUser;
 import org.wallride.support.CategoryUtils;
 import org.wallride.web.support.Pagination;
@@ -47,6 +48,9 @@ public class ArticleController {
 
     @Autowired
     private ArticleService articleService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Autowired
     private CategoryUtils categoryUtils;
@@ -98,20 +102,17 @@ public class ArticleController {
     @GetMapping(value = "/create")
     public String create(AuthorizedUser authorizedUser, Model model) {
 
+        List<TreeNode<Category>> categories = categoryUtils.getNodes(true);
+        List<Category> categoryList = categoryService.getCategories(authorizedUser);
         model.addAttribute("author", authorizedUser);
+        model.addAttribute("categoryNodes", categories);
         return "article/create";
     }
 
-
-    @ModelAttribute("categoryNodes")
-    public List<TreeNode<Category>> setupCategoryNodes(@PathVariable String language) {
-        return categoryUtils.getNodes(true);
-    }
-
-    @PostMapping(params="draft")
+    @PostMapping(params="status=draft")
     public ResponseEntity saveAsDraft(
             @PathVariable String language,
-            ArticleRequest articleRequest,
+            @Valid ArticleRequest articleRequest,
             AuthorizedUser authorizedUser) {
 
         articleService.saveArticleAsDraft(articleRequest, authorizedUser);
@@ -120,11 +121,11 @@ public class ArticleController {
                 .build();
     }
 
-    @PostMapping(params="publish")
+    @PostMapping(params="status=publish")
     public ResponseEntity saveAsPublished(
             @PathVariable String language,
-            ArticleRequest articleRequest,
-            AuthorizedUser authorizedUser) throws ParseException {
+            @Valid ArticleRequest articleRequest,
+            AuthorizedUser authorizedUser) {
 
         articleService.saveArticleAsPublished(articleRequest, authorizedUser);
         return ResponseEntity

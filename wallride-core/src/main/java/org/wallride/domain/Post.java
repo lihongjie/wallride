@@ -83,7 +83,7 @@ public class Post extends DomainObject<Long> {
 	private Status status;
 
 	@Column(nullable = false)
-	private Long views;
+	private long views;
 
 	@ManyToOne
 	private Post drafted;
@@ -219,6 +219,10 @@ public class Post extends DomainObject<Long> {
 
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public long getViews() {

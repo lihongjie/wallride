@@ -134,3 +134,19 @@ function enableMessageBar() {
         $(".inbox-badge").empty();
     });
 }
+
+function deleteFile(id) {
+    debugger;
+    $.ajax({
+        url: "/_admin/en/media/" + id,
+        type: 'DELETE',
+        success: function (result) {
+
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            alert("status:" + XMLHttpRequest.status + ",readyState:" + XMLHttpRequest.readyState + ",textStatus:" + textStatus);
+
+        }
+    });
+}

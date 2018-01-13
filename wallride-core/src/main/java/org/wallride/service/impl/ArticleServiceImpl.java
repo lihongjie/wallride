@@ -24,7 +24,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.wallride.autoconfigure.WallRideProperties;
 import org.wallride.domain.*;
 import org.wallride.model.*;
@@ -75,7 +74,7 @@ public class ArticleServiceImpl implements ArticleService {
         List<Category> categories = categoryRepository.findAll(articleRequest.getCategoryIds());
         article.getCategories().addAll(categories);
         article.getTags().clear();
-        Set<String> tagNames = StringUtils.commaDelimitedListToSet(articleRequest.getTags());
+        Set<String> tagNames = articleRequest.getTags();
         // if not exist, save new tag
         for (String tagName : tagNames) {
             Tag tag = tagRepository.findOneForUpdateByNameAndLanguage(tagName, articleRequest.getLanguage());
@@ -355,7 +354,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-//	@Transactional
+	@Transactional
     public Page<Article> getArticles(ArticleSearchRequest request, Pageable pageable) {
 //		return articleRepository.search(request, pageable);
         Page<Article> articles = articleRepository.findAll(pageable);

@@ -29,4 +29,6 @@ public interface MediaService {
 	List<Media> getAllMedias();
 
 	Media getMedia(String id);
+
+	void deleteMedia(String id);
 }

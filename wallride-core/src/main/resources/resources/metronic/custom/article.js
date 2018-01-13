@@ -57,7 +57,7 @@
         $('input[name="date"]').trigger("change");
     });*/
 
-function removePostCover() {
+function enableRemovePostCover() {
     $('#post-cover-dropzone').on('click', ' .remove', function(e) {
         $('#post-cover-dropzone :input[name="coverId"]').val('');
         $('#post-cover-dropzone .image-wrap').addClass('hide');
@@ -199,7 +199,6 @@ function tagsFieldSet() {
     });
 }
 
-
 function enableSaveCategory() {
     $("#category-create-modal").on('click', '#save-category', function(e) {
         e.preventDefault();
@@ -247,63 +246,72 @@ function enableSaveCategory() {
         })
     });
 }
-    function saveDraft() {
-        $('#save-draft-button').on('click', function() {
-            saveArticle('draft');
-        });
-    }
 
-    function savePublish() {
-        $('#save-publish-button').on('click', function() {
-            saveArticle('publish');
-        });
-    }
+function saveDraft() {
+    $('#save-draft-button').on('click', function(e) {
+        e.prevent
+        saveArticle('draft');
+    });
+}
 
-    function saveArticle(status) {
-        var coverId = $("#coverId").val();
-        var title = $("#form-title").val();
-        var code = $("#form-code").val();
-        var body = $('#wr-page-content :input[name="body"]').froalaEditor('html.get');
-        var date = $("#form-date").val();
-        var tags = $("#tags-field").val();
-        var relatedPostIds = $("#related-posts-fieldset").val();
-        var seoTitle = $("#form-seo-title").val();
-        var seoDescription = $("#form-seo-description").text();
-        var seoKeywords = $("#form-seo-keywords").text();
-        var data = {
-            coverId: coverId,
-            title: title,
-            code: code,
-            body: body,
-            date: date,
-            tags: tags,
-            relatedPostIds: relatedPostIds,
-            seoTitle: seoTitle,
-            seoDescription: seoDescription,
-            seoKeywords: seoKeywords
-        };
-        data.push({name: status, value: 1});
-        $.ajax({
-            type: "POST",
-            url: '/_admin/en/articles/create',
-            data: data,
-            success: function(data) {
+function savePublish() {
+    $('#save-publish-button').on('click', function() {
+        saveArticle('publish');
+    });
+}
 
-                new PNotify({
-                    icon: false,
-                    title: 'Saved as draft',
-                    type: 'success',
-                    delay: 3000,
-                    buttons: {
-                        sticker: false
-                    }
-                });
-            },
-            complete: function() {
+function saveArticle(status) {
+    var coverId = $("#coverId").val();
+    var title = $("#form-title").val();
+    var code = $("#form-code").val();
+    var body = $('#wr-page-content :input[name="body"]').froalaEditor('html.get');
+    var date = $("#form-date").val();
+    var seoTitle = $("#form-seo-title").val();
+    var seoDescription = $("#form-seo-description").val();
+    var seoKeywords = $("#form-seo-keywords").val();
 
-            }
-        });
-    }
+    var categoryIds = new Array();
+    // categoryIds[0]=1;
+    $(".category-fieldset input:checkbox:checked").each(function () {
+       categoryIds.push($(this).val());
+    });
+    var tags = $("#tags-field").val();
+    var relatedPostIds = $("#related-posts-fieldset").val();
+    var data = {
+        coverId: coverId,
+        title: title,
+        code: code,
+        body: body,
+        date: date,
+        seoTitle: seoTitle,
+        seoDescription: seoDescription,
+        seoKeywords: seoKeywords,
+        categoryIds : categoryIds.toString(),
+        tags: tags,
+        relatedPostIds: relatedPostIds
+    };
+    var url = $("#wr-post-form").attr("action");
+    $.ajax({
+        type: "POST",
+        url: url + '?status=' + status,
+        data: data,
+        success: function(data) {
+
+            new PNotify({
+                icon: false,
+                title: 'Saved as draft',
+                type: 'success',
+                delay: 3000,
+                buttons: {
+                    sticker: false
+                }
+            });
+        },
+        complete: function() {
+
+        }
+    });
+}
 
 function enableSearchArticle(param) {
 
@@ -318,7 +326,7 @@ function enableSearchArticle(param) {
 
             $("#article-list-wrapper").empty().append(result);
             enablePagination();
-            eableFormatTime($(".article-created-time"));
+            enableFormatTime($(".article-created-time"));
 
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {

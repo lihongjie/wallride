@@ -47,7 +47,7 @@ public class MediaServiceImpl implements MediaService {
 		Media media = new Media();
 		media.setMimeType(file.getContentType());
 		media.setOriginalName(file.getOriginalFilename());
-		media = mediaRepository.saveAndFlush(media);
+		media = mediaRepository.save(media);
 
 //		Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
 		try {
@@ -69,5 +69,11 @@ public class MediaServiceImpl implements MediaService {
 	@Override
 	public Media getMedia(String id) {
 		return mediaRepository.findOneById(id);
+	}
+
+	@Override
+	public void deleteMedia(String id) {
+
+		mediaRepository.delete(id);
 	}
 }

@@ -52,4 +52,6 @@ public interface CategoryService {
 	List<CategoryResponse> categoryGroup();
 
 	long countByUser(User user);
+
+	List<Category> getCategories(User user);
 }

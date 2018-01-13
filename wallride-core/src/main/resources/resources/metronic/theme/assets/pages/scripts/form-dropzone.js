@@ -11,7 +11,6 @@ var FormDropzone = function () {
                     this.on("addedfile", function(file) {
                         // Create the remove button
                         var removeButton = Dropzone.createElement("<a href='javascript:;'' class='btn red btn-sm btn-block'>Remove</a>");
-                        
                         // Capture the Dropzone instance as closure.
                         var _this = this;
 
@@ -25,11 +24,18 @@ var FormDropzone = function () {
                           _this.removeFile(file);
                           // If you want to the delete the file on the server as well,
                           // you can do the AJAX request here.
+                            var cover = $("#coverId");
+                            deleteFile(cover.val());
+                            cover.val("");
                         });
 
                         // Add the button to the file preview element.
                         file.previewElement.appendChild(removeButton);
                     });
+                    this.on("success", function (file, result) {
+
+                        $("#coverId").val(result.id);
+                    })
                 }            
             }
         }

@@ -16,6 +16,7 @@
 
 package org.wallride.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.wallride.web.controller.admin.article.CustomFieldValueEditForm;
 
 import java.io.Serializable;
@@ -30,184 +31,148 @@ import java.util.Set;
  */
 public class ArticleRequest implements Serializable {
 
-	private String code;
-	private String coverId;
-	private String title;
-	private String body;
-	private Long authorId;
-	private LocalDateTime date;
-	private Set<Long> categoryIds = new HashSet<>();
-	private String tags;
-	private Set<Long> relatedPostIds = new HashSet<>();
-	private String seoTitle;
-	private String seoDescription;
-	private String seoKeywords;
-	private List<CustomFieldValueEditForm> customFieldValues = new ArrayList<>();
 	private String language;
+
+//	@NotBlank
+	private String code;
+
+//	@NotBlank
+	private String coverId;
+
+//	@NotBlank
+	private String title;
+
+//	@NotBlank
+	private String body;
+
+	private Long authorId;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+	private LocalDateTime date;
+
+	private Set<Long> categoryIds = new HashSet<>();
+
+	private Set<String> tags = new HashSet<>();
+
+	private Set<Long> relatedPostIds = new HashSet<>();
+
+	private String seoTitle;
+
+	private String seoDescription;
+
+	private String seoKeywords;
+
+	private List<CustomFieldValueEditForm> customFieldValues = new ArrayList<>();
 
 	public String getCode() {
 		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getCoverId() {
 		return coverId;
 	}
 
+	public void setCoverId(String coverId) {
+		this.coverId = coverId;
+	}
+
 	public String getTitle() {
 		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getBody() {
 		return body;
 	}
 
+	public void setBody(String body) {
+		this.body = body;
+	}
+
 	public Long getAuthorId() {
 		return authorId;
+	}
+
+	public void setAuthorId(Long authorId) {
+		this.authorId = authorId;
 	}
 
 	public LocalDateTime getDate() {
 		return date;
 	}
 
+	public void setDate(LocalDateTime date) {
+		this.date = date;
+	}
+
 	public Set<Long> getCategoryIds() {
 		return categoryIds;
 	}
 
-	public String getTags() {
+	public void setCategoryIds(Set<Long> categoryIds) {
+		this.categoryIds = categoryIds;
+	}
+
+	public Set<String> getTags() {
 		return tags;
+	}
+
+	public void setTags(Set<String> tags) {
+		this.tags = tags;
 	}
 
 	public Set<Long> getRelatedPostIds() {
 		return relatedPostIds;
 	}
 
+	public void setRelatedPostIds(Set<Long> relatedPostIds) {
+		this.relatedPostIds = relatedPostIds;
+	}
+
 	public String getSeoTitle() {
 		return seoTitle;
+	}
+
+	public void setSeoTitle(String seoTitle) {
+		this.seoTitle = seoTitle;
 	}
 
 	public String getSeoDescription() {
 		return seoDescription;
 	}
 
+	public void setSeoDescription(String seoDescription) {
+		this.seoDescription = seoDescription;
+	}
+
 	public String getSeoKeywords() {
 		return seoKeywords;
+	}
+
+	public void setSeoKeywords(String seoKeywords) {
+		this.seoKeywords = seoKeywords;
 	}
 
 	public List<CustomFieldValueEditForm> getCustomFieldValues() {
 		return customFieldValues;
 	}
 
+	public void setCustomFieldValues(List<CustomFieldValueEditForm> customFieldValues) {
+		this.customFieldValues = customFieldValues;
+	}
+
 	public String getLanguage() {
 		return language;
 	}
 
-	public static class Builder  {
-
-		private String code;
-		private String coverId;
-		private String title;
-		private String body;
-		private Long authorId;
-		private LocalDateTime date;
-		private Set<Long> categoryIds = new HashSet<>();
-		private String tags;
-		private Set<Long> relatedPostIds = new HashSet<>();
-		private String seoTitle;
-		private String seoDescription;
-		private String seoKeywords;
-		private List<CustomFieldValueEditForm> customFieldValues = new ArrayList<>();
-		private String language;
-
-		public Builder() {
-		}
-
-		public Builder code(String code) {
-			this.code = code;
-			return this;
-		}
-
-		public Builder coverId(String coverId) {
-			this.coverId = coverId;
-			return this;
-		}
-
-		public Builder title(String title) {
-			this.title = title;
-			return this;
-		}
-
-		public Builder body(String body) {
-			this.body = body;
-			return this;
-		}
-
-		public Builder authorId(Long authorId) {
-			this.authorId = authorId;
-			return this;
-		}
-
-		public Builder date(LocalDateTime date) {
-			this.date = date;
-			return this;
-		}
-
-		public Builder categoryIds(Set<Long> categoryIds) {
-			this.categoryIds = categoryIds;
-			return this;
-		}
-
-		public Builder tags(String tags) {
-			this.tags = tags;
-			return this;
-		}
-
-		public Builder relatedPostIds(Set<Long> relatedPostIds) {
-			this.relatedPostIds = relatedPostIds;
-			return this;
-		}
-
-		public Builder seoTitle(String seoTitle) {
-			this.seoTitle = seoTitle;
-			return this;
-		}
-
-		public Builder seoDescription(String seoDescription) {
-			this.seoDescription = seoDescription;
-			return this;
-		}
-
-		public Builder seoKeywords(String seoKeywords) {
-			this.seoKeywords = seoKeywords;
-			return this;
-		}
-
-		public Builder customFieldValues(List<CustomFieldValueEditForm> customFieldValues) {
-			this.customFieldValues = customFieldValues;
-			return this;
-		}
-
-		public Builder language(String language) {
-			this.language = language;
-			return this;
-		}
-
-		public ArticleRequest build() {
-			ArticleRequest request = new ArticleRequest();
-			request.code = code;
-			request.coverId = coverId;
-			request.title = title;
-			request.body = body;
-			request.authorId = authorId;
-			request.date = date;
-			request.categoryIds = categoryIds;
-			request.tags = tags;
-			request.relatedPostIds = relatedPostIds;
-			request.seoTitle = seoTitle;
-			request.seoDescription = seoDescription;
-			request.seoKeywords = seoKeywords;
-			request.customFieldValues = customFieldValues;
-			request.language = language;
-			return request;
-		}
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 }

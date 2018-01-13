@@ -197,4 +197,10 @@ public class CategoryServiceImpl implements CategoryService {
 
 		return categoryRepository.countByUser(user);
 	}
+
+	@Override
+	public List<Category> getCategories(User user) {
+
+		return categoryRepository.getCategoriesByUser(user);
+	}
 }

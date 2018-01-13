@@ -82,4 +82,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Categ
 //	List<SureveyQueryAnalytics> calculateSurveyCount();
 
 	long countByUser(User user);
+
+	List<Category> getCategoriesByUser(User user);
 }

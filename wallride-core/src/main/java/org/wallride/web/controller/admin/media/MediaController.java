@@ -17,6 +17,8 @@
 package org.wallride.web.controller.admin.media;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,21 +38,32 @@ public class MediaController {
 	@Autowired
 	private WallRideProperties wallRideProperties;
 
-	@PostMapping
-	@ResponseBody
-	public MediaCreatedModel create(@RequestParam MultipartFile file) {
+	@PostMapping(value = "/create.json")
+	public ResponseEntity create(@RequestParam MultipartFile file) {
+
 		Media media = mediaService.createMedia(file);
-		return new MediaCreatedModel(media, wallRideProperties);
+
+		return ResponseEntity
+				.ok(new MediaCreatedModel(media, wallRideProperties));
+
 	}
 
 	@GetMapping(value = "/index")
-	@ResponseBody
-	public MediaIndexModel[] index() {
+	public ResponseEntity index() {
 		List<Media> medias = mediaService.getAllMedias();
 		MediaIndexModel[] models = new MediaIndexModel[medias.size()];
 		for (int i = 0; i < medias.size(); i++) {
 			models[i] = new MediaIndexModel(medias.get(i), wallRideProperties);
 		}
-		return models;
+		return ResponseEntity.ok(models);
+	}
+
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity delete(@PathVariable String id) {
+
+		mediaService.deleteMedia(id);
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.build();
 	}
 }
