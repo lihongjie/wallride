@@ -1,0 +1,64 @@
+pagehelper:
+  dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+
+mybatis:
+  check-config-location: true
+  #config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath:/org/wallride/mapper/*.xml
+  type-aliases-package: com.github.lihongjie.account.domain
+  type-handlers-package:
+  executor-type: simple
+  configuration-properties:
+  configuration:
+    default-fetch-size: 100
+    default-statement-timeout: 30
+
+
+
+spring:
+  datasource:
+    druid:
+      #JDBC配置
+      url: jdbc:mysql://192.168.199.118:3306/wallride?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&createDatabaseIfNotExist=true
+      username: root
+      password: 123456
+      driver-class-name: com.mysql.jdbc.Driver
+      #连接池配置
+      initial-size: 10
+      max-active: 50
+      min-idle: 1
+      max-wait: 60000
+      pool-prepared-statements:
+      max-pool-prepared-statement-per-connection-size:
+      validation-query: select 'x'
+      validation-query-timeout:
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis:
+      max-evictable-idle-time-millis:
+      filters: config #配置多个英文逗号分隔
+      #监控配置
+      web-stat-filter.enabled:
+      web-stat-filter.url-pattern:
+      web-stat-filter.exclusions:
+      web-stat-filter.session-stat-enable:
+      web-stat-filter.session-stat-max-count:
+      web-stat-filter.principal-session-name:
+      web-stat-filter.principal-cookie-name:
+      web-stat-filter.profile-enable:
+      #StatViewServlet配置
+      stat-view-servlet.enabled:
+      stat-view-servlet.url-pattern:
+      stat-view-servlet.reset-enable:
+      stat-view-servlet.login-username:
+      stat-view-servlet.login-password:
+      stat-view-servlet.allow:
+      stat-view-servlet.deny:
+      # Spring监控配置
+      aop-patterns:          # Spring监控AOP切入点，如x.y.z.service.*,配置多个英文逗号分隔

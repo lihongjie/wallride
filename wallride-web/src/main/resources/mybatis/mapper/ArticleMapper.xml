@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.wallride.mapper.ArticleMapper" >
+
+    <resultMap id="BaseResultMap" type="org.wallride.domain.Article" >
+        <id column="id" property="ID" jdbcType="VARCHAR" />
+        <result column="code" property="CODE" jdbcType="VARCHAR" />
+        <result column="language" property="LANGUAGE" jdbcType="VARCHAR" />
+        <result column="title" property="TITLE" jdbcType="VARCHAR" />
+        <result column="coverId" property="COVER_ID" jdbcType="VARCHAR" />
+        <result column="body" property="BODY" jdbcType="VARCHAR" />
+        <result column="date" property="DATE" jdbcType="VARCHAR" />
+        <result column="authorId" property="AUTHOR_ID" jdbcType="VARCHAR" />
+        <result column="authorName" property="AUTHOR_NAME" jdbcType="VARCHAR" />
+        <result column="status" property="STATUS" jdbcType="VARCHAR" />
+        <result column="views" property="VIEWS" jdbcType="BIGINT" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        ID,CODE,LANGUAGE,STATUS,DATE,TITLE,BODY,COVER_ID,AUTHOR_ID,AUTHOR_NAME,VIEWS
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="String" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ARTICLE
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.wallride.model.ArticleExample" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ARTICLE a
+        WHERE a.LANGUAGE = #{language,jdbcType=VARCHAR}
+        <if test="code != null">
+            AND a.CODE LIKE CONCAT('%', #{code,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="title != null">
+            AND a.TITLE LIKE CONCAT('%', #{title,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="status != null">
+            AND a.STATUS = #{status,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="String" >
+        DELETE FROM ARTICLE
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="org.wallride.domain.Article" >
+        INSERT INTO ARTICLE (ID, CODE, LANGUAGE,TITLE,COVER_ID,BODY,DATE,AUTHOR_ID,AUTHOR_NAME,STATUS,VIEWS )
+        VALUES (#{id,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR},
+        #{title,jdbcType=VARCHAR}, #{coverId,jdbcType=VARCHAR}, #{body,jdbcType=VARCHAR}, #{date,jdbcType=VARCHAR},
+        #{authorId,jdbcType=VARCHAR}, #{authorName,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{views,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <insert id="insertSelective" parameterType="org.wallride.domain.Article" >
+
+        INSERT INTO ARTICLE
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                ID,
+            </if>
+            <if test="code != null" >
+                CODE,
+            </if>
+            <if test="language != null" >
+                LANGUAGE,
+            </if>
+            <if test="title != null" >
+                TITLE,
+            </if>
+            <if test="coverId != null" >
+                COVER_ID,
+            </if>
+            <if test="body != null" >
+                BODY,
+            </if>
+            <if test="date != null" >
+                DATE,
+            </if>
+            <if test="authorId != null" >
+                AUTHOR_ID,
+            </if>
+            <if test="authorName != null" >
+                AUTHOR_NAME,
+            </if>
+            <if test="STATUS != null" >
+                STATUS,
+            </if>
+            <if test="VIEWS != null" >
+                VIEWS
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="code != null" >
+                #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="language != null" >
+                #{language,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null" >
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="coverId != null" >
+                #{coverId,jdbcType=VARCHAR},
+            </if>
+            <if test="body != null" >
+                #{body,jdbcType=VARCHAR},
+            </if>
+            <if test="date != null" >
+                #{date,jdbcType=TIMESTAMP},
+            </if>
+            <if test="authorId != null" >
+                #{authorId,jdbcType=VARCHAR},
+            </if>
+            <if test="authorName != null" >
+                #{authorName,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="views != null" >
+                #{views,jdbcType=BIGINT}
+            </if>
+        </trim>
+    </insert>
+
+    <select id="findTopByIdIsAfterOrderByIdAsc" resultMap="BaseResultMap" parameterType="map" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ARTICLE a
+        <where>
+            <if test="id != null">
+                 a.id =  #{code,jdbcType=VARCHAR}
+            </if>
+            <if test="language != null">
+                AND a.language = #{title,jdbcType=VARCHAR}
+            </if>
+        </where>
+        LIMIT 1 ORDER BY ID ASC
+    </select>
+
+    <select id="findTopByIdIsBeforeOrderByIdDesc" resultMap="BaseResultMap" parameterType="map" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ARTICLE a
+        <where>
+            <if test="id != null">
+                a.id =  #{code,jdbcType=VARCHAR}
+            </if>
+            <if test="language != null">
+                AND a.language = #{title,jdbcType=VARCHAR}
+            </if>
+        </where>
+        LIMIT 1 ORDER BY ID DESC
+    </select>
+</mapper>

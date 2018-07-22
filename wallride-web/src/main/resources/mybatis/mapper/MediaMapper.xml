@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.wallride.mapper.MediaMapper" >
+
+    <resultMap id="BaseResultMap" type="org.wallride.domain.Media" >
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="MIME_TYPE" property="mimeType" jdbcType="VARCHAR" />
+        <result column="ORIGINAL_NAME" property="originalName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        ID,MIME_TYPE,ORIGINAL_NAME
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="String" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM MEDIA
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.wallride.model.MediaExample" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM MEDIA l
+        <where>
+            <if test="mimeType != null">
+                    l.MIME_TYPE LIKE CONCAT('%', #{mimeType,jdbcType=VARCHAR}, '%')
+            </if>
+            <if test="originalName != null">
+                AND l.ORIGINAL_NAME LIKE CONCAT('%', #{originalName,jdbcType=VARCHAR}, '%')
+            </if>
+        </where>
+
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="String" >
+        DELETE FROM MEDIA
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insertSelective" parameterType="org.wallride.domain.Media" >
+
+        INSERT INTO MEDIA
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                ID,
+            </if>
+            <if test="mimeType != null" >
+                MIME_TYPE,
+            </if>
+            <if test="originalName != null" >
+                ORIGINAL_NAME
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="mimeType != null" >
+                #{mimeType,jdbcType=VARCHAR},
+            </if>
+            <if test="originalName != null" >
+                #{originalName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="org.wallride.domain.Media" >
+        UPDATE MEDIA
+        <set >
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="mimeType != null" >
+                #{mimeType,jdbcType=VARCHAR},
+            </if>
+            <if test="originalName != null" >
+                #{originalName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM MEDIA
+    </select>
+
+</mapper>

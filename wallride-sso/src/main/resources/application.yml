@@ -1,0 +1,6 @@
+security:
+  cas:
+    server:
+      base-url: http://xx/cas
+    service:
+      base-url: http://localhost:8080

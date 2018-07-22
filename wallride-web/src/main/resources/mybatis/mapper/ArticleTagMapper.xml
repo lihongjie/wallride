@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.wallride.mapper.ArticleTagMapper" >
+
+    <resultMap id="BaseResultMap" type="org.wallride.domain.ArticleTag" >
+        <id column="ID" property="ID" jdbcType="VARCHAR" />
+        <result column="ARTICLE_ID" property="articleId" jdbcType="VARCHAR" />
+        <result column="TAG_ID" property="tagId" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        ID,ARTICLE_ID,TAG_ID
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="String" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ARTICLE_TAG
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.wallride.model.ArticleTagExample" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ARTICLE_TAG l
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="String" >
+        DELETE FROM ARTICLE_TAG
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insertSelective" parameterType="org.wallride.domain.ArticleTag" >
+
+        INSERT INTO ARTICLE_TAG
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                ID,
+            </if>
+            <if test="articleId != null" >
+                ARTICLE_ID,
+            </if>
+            <if test="tagId != null" >
+                TAG_ID
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="articleId != null" >
+                #{articleId,jdbcType=VARCHAR},
+            </if>
+            <if test="tagId != null" >
+                #{tagId,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="org.wallride.domain.ArticleTag" >
+        UPDATE ARTICLE_TAG
+        <set >
+            <if test="articleId != null" >
+                ARTICLE_ID = #{articleId,jdbcType=VARCHAR},
+            </if>
+            <if test="tagId != null" >
+                TAG_ID = #{tagId,jdbcType=INTEGER},
+            </if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ARTICLE_TAG
+    </select>
+
+</mapper>

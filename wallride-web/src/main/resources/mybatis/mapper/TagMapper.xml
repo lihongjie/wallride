@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.wallride.mapper.LanguageMapper" >
+
+    <resultMap id="BaseResultMap" type="org.wallride.domain.Language" >
+        <id column="id" property="ID" jdbcType="VARCHAR" />
+        <result column="languageCode" property="LANGUAGE_CODE" jdbcType="VARCHAR" />
+        <result column="name" property="NAME" jdbcType="VARCHAR" />
+        <result column="description" property="DESCRIPTION" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        ID,LANGUAGE_CODE,NAME,DESCRIPTION
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="String" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM LANGUAGE
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.wallride.model.LanguageExample" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM LANGUAGE l
+        <where>
+            <if test="code != null">
+                    l.CODE LIKE CONCAT('%', #{code,jdbcType=VARCHAR}, '%')
+            </if>
+            <if test="name != null">
+                AND l.CODE LIKE CONCAT('%', #{name,jdbcType=VARCHAR}, '%')
+            </if>
+        </where>
+
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="String" >
+        DELETE FROM LANGUAGE
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insertSelective" parameterType="org.wallride.domain.Language" >
+
+        INSERT INTO LANGUAGE
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                ID,
+            </if>
+            <if test="languageCode != null" >
+                LANGUAGE_CODE,
+            </if>
+            <if test="name != null" >
+                NAME,
+            </if>
+            <if test="description != null" >
+                DESCRIPTION
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="languageCode != null" >
+                #{age,jdbcType=INTEGER},
+            </if>
+            <if test="name != null" >
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null" >
+                #{description,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="org.wallride.domain.Language" >
+        UPDATE LANGUAGE
+        <set >
+            <if test="languageCode != null" >
+                LANGUAGE_CODE = #{languageCode,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null" >
+                NAME = #{name,jdbcType=INTEGER},
+            </if>
+            <if test="description != null" >
+                DESCRIPTION = #{description,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM LANGUAGE
+    </select>
+
+</mapper>

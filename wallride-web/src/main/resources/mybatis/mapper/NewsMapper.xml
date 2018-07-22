@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.wallride.mapper.LanguageMapper" >
+
+    <resultMap id="BaseResultMap" type="org.wallride.domain.News" >
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="TITLE" property="title" jdbcType="VARCHAR" />
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+        <result column="AUTHOR_ID" property="authorId" jdbcType="VARCHAR" />
+        <result column="AUTHOR_NAME" property="authorName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        ID,TITLE,DESCRIPTION,AUTHOR_ID,AUTHOR_NAME
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="String" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM NEWS
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.wallride.model.NewsExample" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM NEWS l
+        <where>
+            <if test="title != null">
+                    l.TITLE LIKE CONCAT('%', #{title,jdbcType=VARCHAR}, '%')
+            </if>
+        </where>
+
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="String" >
+        DELETE FROM NEWS
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insertSelective" parameterType="org.wallride.domain.News" >
+
+        INSERT INTO NEWS
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                ID,
+            </if>
+            <if test="title != null" >
+                TITLE,
+            </if>
+            <if test="description != null" >
+                DESCRIPTION,
+            </if>
+            <if test="authorId != null" >
+                AUTHOR_ID,
+            </if>
+            <if test="authorName != null" >
+                AUTHOR_NAME
+        </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null" >
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null" >
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="authorId != null" >
+                #{authorId,jdbcType=VARCHAR},
+            </if>
+            <if test="authorName != null" >
+                #{authorName,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="org.wallride.domain.News" >
+        UPDATE NEWS
+        <set >
+            <if test="title != null" >
+                TITLE = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null" >
+                DESCRIPTION = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="authorId != null" >
+                AUTHOR_ID = #{authorId,jdbcType=VARCHAR},
+            </if>
+            <if test="authorName != null" >
+                AUTHOR_NAME = #{authorName,jdbcType=VARCHAR}
+            </if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM NEWS
+    </select>
+
+</mapper>

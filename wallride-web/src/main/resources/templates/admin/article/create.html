@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<!--
+Template Name: Metronic - Responsive Admin Dashboard Template build with Twitter Bootstrap 3.3.7
+Version: 4.7.5
+Author: KeenThemes
+Website: http://www.keenthemes.com/
+Contact: support@keenthemes.com
+Follow: www.twitter.com/keenthemes
+Dribbble: www.dribbble.com/keenthemes
+Like: www.facebook.com/keenthemes
+Purchase: http://themeforest.net/item/metronic-responsive-admin-dashboard-template/4021469?ref=keenthemes
+Renew Support: http://themeforest.net/item/metronic-responsive-admin-dashboard-template/4021469?ref=keenthemes
+License: You must have a valid license purchased only from themeforest(the above link) in order to legally use the theme for your project.
+-->
+<!--[if IE 8]>
+<html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]>
+<html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+
+<head>
+	<meta charset="utf-8"/>
+	<title>Articles | WallRide</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1" name="viewport"/>
+	<meta content="Preview page of Metronic Admin Theme #1 for main support page" name="description"/>
+	<meta content="" name="author"/>
+	<!-- BEGIN GLOBAL MANDATORY STYLES -->
+	<link href="/resources/metronic/theme/assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+		  type="text/css"/>
+	<link href="/resources/metronic/theme/assets/global/plugins/simple-line-icons/simple-line-icons.min.css"
+		  rel="stylesheet" type="text/css"/>
+	<link href="/resources/metronic/theme/assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet"
+		  type="text/css"/>
+	<link href="/resources/metronic/theme/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css"
+		  rel="stylesheet" type="text/css"/>
+	<!-- END GLOBAL MANDATORY STYLES -->
+	<!-- BEGIN PAGE LEVEL PLUGINS -->
+	<link href="/resources/metronic/theme/assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css"
+		  rel="stylesheet" type="text/css"/>
+	<link href="/resources/metronic/theme/assets/global/plugins/datatables/datatables.min.css" rel="stylesheet"
+		  type="text/css"/>
+	<link href="/resources/metronic/theme/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css"
+		  rel="stylesheet" type="text/css"/>
+	<!-- END PAGE LEVEL PLUGINS -->
+	<!-- BEGIN THEME GLOBAL STYLES -->
+	<link href="/resources/metronic/theme/assets/global/css/components.min.css" rel="stylesheet" id="style_components"
+		  type="text/css"/>
+	<link href="/resources/metronic/theme/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css"/>
+	<!-- END THEME GLOBAL STYLES -->
+	<!-- BEGIN PAGE LEVEL STYLES -->
+	<link href="/resources/metronic/theme/assets/pages/css/profile.min.css" rel="stylesheet" type="text/css"/>
+	<link href="/resources/metronic/theme/assets/apps/css/ticket.min.css" rel="stylesheet" type="text/css"/>
+	<!-- END PAGE LEVEL STYLES -->
+	<!-- BEGIN THEME LAYOUT STYLES -->
+	<link href="/resources/metronic/theme/assets/layouts/layout/css/layout.min.css" rel="stylesheet" type="text/css"/>
+	<link href="/resources/metronic/theme/assets/layouts/layout/css/themes/darkblue.min.css" rel="stylesheet"
+		  type="text/css" id="style_color"/>
+	<link href="/resources/metronic/theme/assets/layouts/layout/css/custom.min.css" rel="stylesheet" type="text/css"/>
+	<!-- END THEME LAYOUT STYLES -->
+
+	<!-- select2 -->
+	<link href="/resources/metronic/theme/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+	<link href="/resources/metronic/theme/assets/global/plugins/select2/css/select2.css" rel="stylesheet" type="text/css"/>
+
+	<!-- datetimepicker -->
+	<link href="/resources/metronic/theme/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css"/>
+	<!-- Dropzone -->
+	<link href="/resources/metronic/theme/assets/global/plugins/dropzone/dropzone.min.css" rel="stylesheet" type="text/css"/>
+	<link href="/resources/metronic/theme/assets/global/plugins/dropzone/css/dropzone.css" rel="stylesheet" type="text/css"/>
+
+	<link href="/resources/metronic/theme/assets/global/plugins/jquery-file-upload/css/jquery.fileupload.css" rel="stylesheet" type="text/css"/>
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/css/wallride.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/css/wallride.custom.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/font/flaticon.css}" />
+
+	<!-- Include Editor style. -->
+	<link th:href="@{/_admin/resources/admin/lib/froala/css/froala_editor.min.css}" rel="stylesheet" type="text/css" />
+	<link th:href="@{/_admin/resources/admin/lib/froala/css/froala_style.min.css}" rel="stylesheet" type="text/css" />
+
+
+
+	<!-- Include Editor Plugins style. -->
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/char_counter.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/code_view.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/colors.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/draggable.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/emoticons.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/file.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/fullscreen.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/image.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/image_manager.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/line_breaker.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/quick_insert.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/table.css}" />
+	<link rel="stylesheet" th:href="@{/_admin/resources/admin/lib/froala/css/plugins/video.css}" />
+
+	<script th:src="@{/_admin/resources/admin/lib/froala/js/froala_editor.min.js}"></script>
+
+	<!--[if lt IE 9]>
+	<script src="/resources/metronic/theme/assets/global/plugins/respond.min.js"></script>
+	<script src="/resources/metronic/theme/assets/global/plugins/excanvas.min.js"></script>
+	<script src="/resources/metronic/theme/assets/global/plugins/ie8.fix.min.js"></script>
+	<![endif]-->
+	<!-- BEGIN CORE PLUGINS -->
+	<script src="/resources/metronic/theme/assets/global/plugins/jquery-2.1.3.min.js" type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/global/plugins/bootstrap/js/bootstrap.min.js"
+			type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/global/plugins/js.cookie.min.js" type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js"
+			type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js"
+			type="text/javascript"></script>
+	<!-- END CORE PLUGINS -->
+	<!-- BEGIN PAGE LEVEL PLUGINS -->
+	<script src="/resources/metronic/theme/assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"
+			type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/global/plugins/jquery.sparkline.min.js" type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/global/scripts/datatable.js" type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/global/plugins/datatables/datatables.min.js"
+			type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js"
+			type="text/javascript"></script>
+	<!-- END PAGE LEVEL PLUGINS -->
+
+	<!-- select2.js -->
+	<script src="/resources/metronic/theme/assets/global/plugins/select2/js/select2.full.js" type="text/javascript"></script>
+	<!-- datetimepicker.js -->
+	<script src="/resources/metronic/theme/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js" type="text/javascript"></script>
+	<!-- Dropzone.js-->
+	<script src="/resources/metronic/theme/assets/global/plugins/dropzone/dropzone.min.js" type="text/javascript"></script>
+
+
+
+	<!-- BEGIN THEME GLOBAL SCRIPTS -->
+	<script src="/resources/metronic/theme/assets/global/scripts/app.js" type="text/javascript"></script>
+	<!-- END THEME GLOBAL SCRIPTS -->
+	<!-- BEGIN PAGE LEVEL SCRIPTS -->
+	<script src="/resources/metronic/theme/assets/pages/scripts/profile.js" type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/pages/scripts/table-datatables-managed.js"
+			type="text/javascript"></script>
+	<!-- END PAGE LEVEL SCRIPTS -->
+	<!-- BEGIN THEME LAYOUT SCRIPTS -->
+	<script src="/resources/metronic/theme/assets/layouts/layout/scripts/layout.min.js" type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/layouts/layout/scripts/demo.min.js" type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/layouts/global/scripts/quick-sidebar.min.js"
+			type="text/javascript"></script>
+	<script src="/resources/metronic/theme/assets/layouts/global/scripts/quick-nav.min.js" type="text/javascript"></script>
+	<!-- END THEME LAYOUT SCRIPTS -->
+
+	<script src="/resources/metronic/custom/util.js" type="text/javascript"></script>
+	<script src="/resources/metronic/custom/article.js" type="text/javascript"></script>
+
+	<script src="/resources/admin/lib/moment-with-locales.js" type="text/javascript"></script>
+
+	<script type="text/javascript">
+        $(document).ready(function() {
+
+            tagsFieldSet();
+            relatedPostFieldSet();
+            $(':input[name="date"]').datetimepicker({});
+//            postCoverDropzone();
+//            enableRemovePostCover();
+            enableSaveCategory();
+            saveDraft();
+            savePublish();
+        });
+	</script>
+
+
+	<link rel="shortcut icon" href="favicon.ico"/>
+</head>
+<!-- END HEAD -->
+
+<body class="page-header-fixed page-sidebar-closed-hide-logo page-content-white">
+
+<div class="page-wrapper">
+	<!-- BEGIN HEADER -->
+	<header th:replace="layout::header"></header>
+	<!-- END HEADER -->
+	<!-- BEGIN HEADER & CONTENT DIVIDER -->
+	<div class="clearfix"></div>
+	<!-- END HEADER & CONTENT DIVIDER -->
+	<!-- BEGIN CONTAINER -->
+	<div class="page-container">
+		<!-- BEGIN SIDEBAR -->
+		<div class="page-sidebar-wrapper">
+			<!-- BEGIN SIDEBAR -->
+			<!-- DOC: Set data-auto-scroll="false" to disable the sidebar from auto scrolling/focusing -->
+			<!-- DOC: Change data-auto-speed="200" to adjust the sub menu slide up/down speed -->
+			<div th:replace="layout::page-sidebar"></div>
+			<!-- END SIDEBAR -->
+		</div>
+		<!-- END SIDEBAR -->
+		<!-- BEGIN CONTENT -->
+		<div class="page-content-wrapper">
+			<!-- BEGIN CONTENT BODY -->
+			<div class="page-content">
+				<!-- BEGIN PAGE HEADER-->
+				<!-- BEGIN THEME PANEL -->
+				<div th:replace="layout::theme-panel"></div>
+				<!-- END THEME PANEL -->
+				<!-- BEGIN PAGE BAR -->
+				<div class="page-bar">
+					<ul class="page-breadcrumb">
+						<li>
+							<a href="/_admin/">Home</a>
+							<i class="fa fa-circle"></i>
+						</li>
+						<li>
+							<span>Apps</span>
+						</li>
+					</ul>
+					<div class="page-toolbar">
+						<div class="btn-group pull-right">
+							<button type="button" class="btn green btn-sm btn-outline dropdown-toggle"
+									data-toggle="dropdown"> Actions
+								<i class="fa fa-angle-down"></i>
+							</button>
+							<ul class="dropdown-menu pull-right" role="menu">
+								<li>
+									<a href="#">
+										<i class="icon-bell"></i> Action</a>
+								</li>
+								<li>
+									<a href="#">
+										<i class="icon-shield"></i> Another action</a>
+								</li>
+								<li>
+									<a href="#">
+										<i class="icon-user"></i> Something else here</a>
+								</li>
+								<li class="divider"></li>
+								<li>
+									<a href="#">
+										<i class="icon-bag"></i> Separated link</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<!-- END PAGE BAR -->
+				<!-- BEGIN PAGE TITLE-->
+				<h1 class="page-title">
+					<span class="caption-subject font-blue-madison bold uppercase">Create Article</span>
+				</h1>
+				<!-- END PAGE TITLE-->
+				<!-- END PAGE HEADER-->
+				<div class="row">
+					<div>
+						<div id="wr-post-form" th:action="@{__${ADMIN_PATH}__/articles}" action="#">
+
+							<div id="wr-page-header">
+								<div class="page-header container-fluid">
+									<div class="pull-left back">
+										<a class="btn btn-sm btn-default"
+										   th:href="${article} ? @{__${ADMIN_PATH}__/articles/describe(id=${article.id},query=${query})} : @{__${ADMIN_PATH}__/articles/index(query=${query})}"><span
+												class="glyphicon glyphicon-arrow-left"></span></a>
+									</div>
+									<div class="tools clearfix">
+										<div class="pull-right">
+											<div class="btn-group">
+												<a id="article-preview" class="btn btn-default" href="#"><span
+														th:text="#{Preview}">Preview</span></a>
+											</div>
+											<div class="btn-group">
+												<button id="save-draft-button" name="draft" class="btn btn-default"
+														data-loading-text="Saving..." th:text="#{SaveDraft}">Save Draft
+												</button>
+											</div>
+
+											<div class="btn-group">
+												<button id="save-publish-button" name="publish" class="btn btn-primary" th:text="#{Publish}">
+													Publish
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div id="wr-page-content">
+								<div class="container-fluid">
+									<div class="row">
+										<div class="col-sm-9 wr-post-main">
+											<fieldset>
+												<p><span class="label label-danger">NOTE: </span>This plugins works only on Latest Chrome, Firefox, Safari, Opera &amp; Internet Explorer 10.</p>
+												<div id="post-cover-dropzone" class="form-group">
+													<input type="hidden" id="coverId" value="">
+													<div action="/_admin/en/media/create.json" class="dropzone dz-clickable" id="my-dropzone">
+														<div class="dz-default dz-message">
+															<span>Drop files here to upload</span>
+														</div>
+													</div>
+												</div>
+											</fieldset>
+											<fieldset>
+												<div class="form-group" >
+													<input type="text"  class="form-control" id="form-title"
+														   th:attr="placeholder=#{EnterTitle}"
+														   placeholder="Enter title here"/>
+												</div>
+											</fieldset>
+											<fieldset>
+												<div class="form-group">
+													<span class="url-path" th:text="${WEBSITE_LINK} + '/'"></span>
+													<input type="text"  name="path" class="form-control input-sm wr-code" id="form-code"
+														   th:attr="placeholder=#{URLPath}" placeholder="URL繝代せ" />
+												</div>
+											</fieldset>
+											<script th:inline="javascript">
+                                                $(function() {
+                                                    var websiteLink = [[${WEBSITE_LINK} + '/']];
+                                                    var today = moment().format('YYYY/MM/DD/');
+                                                    var $formDate = $("#form-date");
+                                                    var $urlPath = $(".url-path");
+                                                    $formDate.on('change', function() {
+                                                        var inputDate = $(this).val();
+                                                        if (inputDate !== "") {
+                                                            var urlPath = moment(inputDate, 'YYYY/MM/DD hh:mm').format('YYYY/MM/DD/');
+                                                            $urlPath.text(websiteLink + urlPath);
+                                                        } else {
+                                                            $urlPath.text(websiteLink + today);
+                                                        }
+                                                    });
+                                                    $urlPath.text(websiteLink + today);
+                                                });
+											</script>
+											<fieldset>
+												<div class="form-group">
+                                                    <textarea  class="form-control" name="body"
+															  th:attr="placeholder=#{EnterBody}"
+															  placeholder="Enter body here"></textarea>
+
+													<script th:inline="javascript" th:replace="froala::setting(selector='#wr-page-content :input[name=body]')"></script>
+												</div>
+											</fieldset>
+										</div>
+										<div class="col-sm-3 wr-tool-panel">
+											<fieldset>
+												<legend th:text="#{Date}">Date</legend>
+												<div class="form-group row">
+													<div class="col-sm-12">
+														<input type="text" name="date" id="form-date"
+															   th:value="*{date ne null ? #temporals.format(date, 'yyyy/MM/dd HH:mm') : ''}"
+															   class="form-control" placeholder="YYYY/MM/DD HH:mm"/>
+													</div>
+
+
+												</div>
+											</fieldset>
+											<fieldset id="category-fieldset" class="category-fieldset">
+												<legend th:text="#{Categories}">Categories</legend>
+												<section>
+													<ul>
+														<li th:each="node : ${categoryNodes}" class="checkbox">
+															<label><input type="checkbox" name="categoryIds"
+																		  th:value="${node.object.id}"
+																		  th:text="${node.object.name}"/></label>
+															<ul th:unless="${#lists.isEmpty(node.children)}"
+																class="list-unstyled"></ul>
+														</li>
+													</ul>
+													<a data-toggle="modal" data-target="#category-create-modal"><span
+															class="glyphicon glyphicon-plus"></span> <span
+															th:text="#{AddNewCategory}">Add New Category</span></a>
+												</section>
+											</fieldset>
+											<fieldset>
+												<legend th:text="#{Tags}">Tags</legend>
+												<div class="form-group row">
+													<div class="col-sm-12">
+														<input id="tags-field" type="text"
+															   style="width: 100%" placeholder=""/>
+													</div>
+
+												</div>
+											</fieldset>
+											<!--<script th:inline="javascript">
+                                                $(function() {
+                                                    $('#tags-field').select2({
+                                                        minimumInputLength: 1,
+                                                        multiple: true,
+                                                        createSearchChoice:function(term, data) {
+                                                            if ($(data).filter(function() {
+                                                                    return this.text.localeCompare(term)===0;
+                                                                }).length===0) {
+                                                                return {id: term, text:term};
+                                                            }
+                                                        },
+                                                        ajax: {
+                                                            url:  /*[[@{__${ADMIN_PATH}__/tags/select}]]*/ '#',
+                                                            dataType: 'json',
+                                                            data: function (term, page) {
+                                                                return {
+                                                                    keyword: term
+                                                                };
+                                                            },
+                                                            results: function (data, page) {
+                                                                var results = [];
+                                                                $.each(data, function() {
+                                                                    results.push({id: this.text, text: this.text});
+                                                                });
+                                                                return {results: results};
+                                                            }
+                                                        },
+                                                        initSelection: function(element, callback) {
+                                                            var data = [];
+                                                            $(element.val().split(',')).each(function() {
+                                                                var id = this;
+                                                                if (id !== "") {
+                                                                    data.push({id: id, text: id});
+                                                                }
+                                                            });
+                                                            element.val('');
+                                                            callback(data);
+                                                        }
+                                                    });
+                                                });
+
+											</script>-->
+											<fieldset>
+												<legend th:text="#{RelatedPosts}">Related Posts</legend>
+												<div class="form-group row">
+													<div class="col-sm-12">
+														<input id="related-posts-fieldset" type="text"
+															    style="width: 100%"
+															   placeholder=""/>
+													</div>
+												</div>
+											</fieldset>
+
+											<fieldset id="seo-fieldset">
+												<legend th:text="#{Seo}">SEO</legend>
+												<div class="form-group">
+													<input type="text" class="form-control" id="form-seo-title"
+														   th:placeholder="#{SeoTitle}"/>
+
+												</div>
+												<div class="form-group">
+                                                    <textarea  class="form-control" id="form-seo-description"
+															  th:placeholder="#{SeoDescription}"
+															  style="min-height: 100px"></textarea>
+												</div>
+												<div class="form-group">
+                                                    <textarea class="form-control" id="form-seo-keywords"
+															  th:placeholder="#{SeoKeywords}"></textarea>
+
+												</div>
+											</fieldset>
+											<fieldset th:each="field, stat : *{customFieldValues}">
+<!--												<legend th:text="${field.name}"></legend>
+												<div class="form-group"
+													 th:switch="${#strings.toString(field.fieldType)}">
+													<div th:case="'TEXT'" class="form-group row"
+														 th:classappend="${#fields.hasErrors('customFieldValues[__${stat.index}__].stringValue')}? has-error">
+														<div class="col-sm-12">
+															<input type="text" class="form-control"
+																   th:field="*{customFieldValues[__${stat.index}__].stringValue}"
+																   style="width: 100%" placeholder=""/>
+														</div>
+														<span class="help-block"
+															  th:each="err : ${#fields.errors('customFieldValues[__${stat.index}__].stringValue')}"
+															  th:text="${err}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].id}"
+															   th:value="${field.id}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].customFieldId}"
+															   th:value="${field.customFieldId}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].name}"
+															   th:value="${field.name}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].fieldType}"
+															   th:value="${field.fieldType}"/>
+													</div>
+													<div th:case="'TEXTAREA'" class="form-group row"
+														 th:classappend="${#fields.hasErrors('customFieldValues[__${stat.index}__].textValue')}? has-error">
+														<div class="col-sm-12">
+                                                            <textarea type="text"
+																	  th:field="*{customFieldValues[__${stat.index}__].textValue}"
+																	  class="form-control"
+																	  style="min-height: 100px"></textarea>
+														</div>
+														<span class="help-block"
+															  th:each="err : ${#fields.errors('customFieldValues[__${stat.index}__].textValue')}"
+															  th:text="${err}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].id}"
+															   th:value="${field.id}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].customFieldId}"
+															   th:value="${field.customFieldId}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].name}"
+															   th:value="${field.name}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].fieldType}"
+															   th:value="${field.fieldType}"/>
+													</div>
+													<div th:case="'HTML'" class="form-group row"
+														 th:classappend="${#fields.hasErrors('customFieldValues[__${stat.index}__].textValue')}? has-error">
+														<div class="col-sm-12">
+                                                            <textarea type="text"
+																	  th:field="*{customFieldValues[__${stat.index}__].textValue}"
+																	  class="form-control"
+																	  th:classappend="'customFieldValues__${stat.index}__-textValue'"
+																	  style="min-height: 150px"></textarea>
+														</div>
+														<span class="help-block"
+															  th:each="err : ${#fields.errors('customFieldValues[__${stat.index}__].textValue')}"
+															  th:text="${err}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].id}"
+															   th:value="${field.id}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].customFieldId}"
+															   th:value="${field.customFieldId}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].name}"
+															   th:value="${field.name}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].fieldType}"
+															   th:value="${field.fieldType}"/>
+														<script th:inline="javascript"
+																th:replace="froala::setting(selector='.customFieldValues__${stat.index}__-textValue')"></script>
+													</div>
+													<div th:case="'NUMBER'" class="form-group row"
+														 th:classappend="${#fields.hasErrors('customFieldValues[__${stat.index}__].numberValue')}? has-error">
+														<div class="col-sm-12">
+															<input type="text" class="form-control"
+																   th:field="*{customFieldValues[__${stat.index}__].numberValue}"
+																   style="width: 100%" placeholder=""/>
+														</div>
+														<span class="help-block"
+															  th:each="err : ${#fields.errors('customFieldValues[__${stat.index}__].numberValue')}"
+															  th:text="${err}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].id}"
+															   th:value="${field.id}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].customFieldId}"
+															   th:value="${field.customFieldId}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].name}"
+															   th:value="${field.name}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].fieldType}"
+															   th:value="${field.fieldType}"/>
+													</div>
+													<div th:case="'DATE'" class="form-group row"
+														 th:classappend="${#fields.hasErrors('customFieldValues[__${stat.index}__].dateValue')}? has-error">
+														<div class="col-sm-12">
+															<input type="text" class="form-control"
+																   th:field="*{customFieldValues[__${stat.index}__].dateValue}"
+																   style="width: 100%" placeholder="YYYY/MM/dd"/>
+														</div>
+														<span class="help-block"
+															  th:each="err : ${#fields.errors('customFieldValues[__${stat.index}__].dateValue')}"
+															  th:text="${err}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].id}"
+															   th:value="${field.id}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].customFieldId}"
+															   th:value="${field.customFieldId}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].name}"
+															   th:value="${field.name}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].fieldType}"
+															   th:value="${field.fieldType}"/>
+
+													</div>
+													<div th:case="'DATETIME'" class="form-group row"
+														 th:classappend="${#fields.hasErrors('customFieldValues[__${stat.index}__].datetimeValue')}? has-error">
+														<div class="col-sm-12">
+															<input type="text" class="form-control"
+																   th:field="*{customFieldValues[__${stat.index}__].datetimeValue}"
+																   style="width: 100%" placeholder=""/>
+														</div>
+														<span class="help-block"
+															  th:each="err : ${#fields.errors('customFieldValues[__${stat.index}__].datetimeValue')}"
+															  th:text="${err}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].id}"
+															   th:value="${field.id}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].customFieldId}"
+															   th:value="${field.customFieldId}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].name}"
+															   th:value="${field.name}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].fieldType}"
+															   th:value="${field.fieldType}"/>
+
+													</div>
+													<div th:case="'SELECTBOX'" class="form-group row"
+														 th:classappend="${#fields.hasErrors('customFieldValues[__${stat.index}__].stringValue')}? has-error">
+														<div class="col-sm-12">
+															<select type="text"
+																	th:field="*{customFieldValues[__${stat.index}__].stringValue}"
+																	class="form-control">
+																<option value=""></option>
+																<option th:each="option : ${field.options}"
+																		th:value="${option}" th:text="${option}">
+																	wrtwetwet
+																</option>
+															</select>
+														</div>
+														<span class="help-block"
+															  th:each="err : ${#fields.errors('customFieldValues[__${stat.index}__].stringValue')}"
+															  th:text="${err}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].id}"
+															   th:value="${field.id}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].customFieldId}"
+															   th:value="${field.customFieldId}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].name}"
+															   th:value="${field.name}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].fieldType}"
+															   th:value="${field.fieldType}"/>
+													</div>
+													<div th:case="'CHECKBOX'" class="form-group row checkbox"
+														 th:classappend="${#fields.hasErrors('customFieldValues[__${stat.index}__]textValues')}? has-error">
+														<div class="col-sm-12">
+															<label th:each="option : ${field.options}"><input
+																	type="checkbox"
+																	th:field="*{customFieldValues[__${stat.index}__].textValues}"
+																	th:value="${option}" th:text="${option}"/></label>
+														</div>
+														<span class="help-block"
+															  th:each="err : ${#fields.errors('customFieldValues[__${stat.index}__].textValues')}"
+															  th:text="${err}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].id}"
+															   th:value="${field.id}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].customFieldId}"
+															   th:value="${field.customFieldId}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].name}"
+															   th:value="${field.name}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].fieldType}"
+															   th:value="${field.fieldType}"/>
+													</div>
+													<div th:case="'RADIO'" class="form-group row checkbox"
+														 th:classappend="${#fields.hasErrors('customFieldValues[__${stat.index}__].stringValue')}? has-error">
+														<div class="col-sm-12">
+															<label th:each="option : ${field.options}"><input
+																	type="radio"
+																	th:field="*{customFieldValues[__${stat.index}__].stringValue}"
+																	th:value="${option}" th:text="${option}"/></label>
+														</div>
+														<span class="help-block"
+															  th:each="err : ${#fields.errors('customFieldValues[__${stat.index}__].stringValue')}"
+															  th:text="${err}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].id}"
+															   th:value="${field.id}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].customFieldId}"
+															   th:value="${field.customFieldId}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].name}"
+															   th:value="${field.name}"/>
+														<input type="hidden"
+															   th:field="*{customFieldValues[__${stat.index}__].fieldType}"
+															   th:value="${field.fieldType}"/>
+													</div>
+												</div>-->
+											</fieldset>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END CONTENT BODY -->
+		</div>
+		<!-- END CONTENT -->
+		<!-- BEGIN QUICK SIDEBAR -->
+		<div th:replace="layout::page-quick-sidebar"></div>
+		<!-- END QUICK SIDEBAR -->
+	</div>
+	<!-- END CONTAINER -->
+	<!-- BEGIN FOOTER -->
+	<div th:replace="layout::copyright"></div>
+	<!-- END FOOTER -->
+</div>
+<!-- BEGIN QUICK NAV -->
+
+<div class="quick-nav-overlay"></div>
+<!-- END QUICK NAV -->
+<!-- Bootstrap modal -->
+<div id="category-create-modal" th:fragment="category-create-modal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content"></div>
+	</div>
+</div>
+<!-- init dropzone -->
+<script src="/resources/metronic/theme/assets/pages/scripts/form-dropzone.js" type="text/javascript"></script>
+</body>
+
+</html>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.wallride.mapper.CommentMapper" >
+
+    <resultMap id="BaseResultMap" type="org.wallride.domain.Comment" >
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="PARENT_ID" property="parentId" jdbcType="VARCHAR" />
+        <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+        <result column="NEWS_ID" property="newsId" jdbcType="VARCHAR" />
+        <result column="ARTICLE_ID" property="articleId" jdbcType="VARCHAR" />
+        <result column="AUTHOR_ID" property="authorId" jdbcType="VARCHAR" />
+        <result column="APPROVED" property="approved" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        ID,PARENT_ID,CONTENT,NEWS_ID,ARTICLE_ID,AUTHOR_ID,APPROVED
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="String" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM COMMENT
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.wallride.model.CommentExample" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM COMMENT c
+        <where>
+            <if test="content != null">
+                c.content LIKE CONCAT('%', #{content,jdbcType=VARCHAR}, '%')
+            </if>
+        </where>
+
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="String" >
+        DELETE FROM COMMENT
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insertSelective" parameterType="org.wallride.domain.Comment" >
+
+        INSERT INTO COMMENT
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                ID,
+            </if>
+            <if test="parentId != null" >
+                PARENT_ID,
+            </if>
+            <if test="content != null" >
+                CONTENT,
+            </if>
+            <if test="newsId != null" >
+                NEWS_ID,
+            </if>
+            <if test="articleId != null" >
+                ARTICLE_ID,
+            </if>
+            <if test="authorId != null" >
+                AUTHOR_ID,
+            </if>
+            <if test="AUHTOR_NAME != null" >
+                AUTHOR_NAME,
+            </if>
+            <if test="APPROVED != null" >
+                APPROVED
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null" >
+                #{parentId,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null" >
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="newsId != null" >
+                #{newsId,jdbcType=VARCHAR},
+            </if>
+            <if test="articleId != null" >
+                #{articleId,jdbcType=VARCHAR},
+            </if>
+            <if test="authorId != null" >
+                #{authorId,jdbcType=VARCHAR},
+            </if>
+            <if test="authorName != null" >
+                #{authorName,jdbcType=VARCHAR},
+            </if>
+            <if test="approved != null" >
+                #{approved,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="org.wallride.domain.Comment" >
+        UPDATE COMMENT
+        <set>
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null" >
+                #{parentId,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null" >
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="newsId != null" >
+                #{newsId,jdbcType=VARCHAR},
+            </if>
+            <if test="articleId != null" >
+                #{articleId,jdbcType=VARCHAR},
+            </if>
+            <if test="authorId != null" >
+                #{authorId,jdbcType=VARCHAR},
+            </if>
+            <if test="authorName != null" >
+                #{authorName,jdbcType=VARCHAR},
+            </if>
+            <if test="approved != null" >
+                #{approved,jdbcType=VARCHAR}
+            </if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM COMMENT
+    </select>
+
+</mapper>
