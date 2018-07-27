@@ -40,6 +40,10 @@
         WHERE ID = #{id,jdbcType=VARCHAR}
     </delete>
 
+    <delete id="deleteInBatch" parameterType="">
+        DELETE FROM COMMENT
+    </delete>
+
     <insert id="insertSelective" parameterType="org.wallride.domain.Comment" >
 
         INSERT INTO COMMENT
@@ -95,6 +99,10 @@
                 #{approved,jdbcType=VARCHAR}
             </if>
         </trim>
+    </insert>
+
+    <insert id="insertInBatch" parameterType="">
+        INSERT INTO COMMENT
     </insert>
 
     <update id="updateByPrimaryKey" parameterType="org.wallride.domain.Comment" >

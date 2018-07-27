@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface NewsMapper extends BaseMapper<News, String>{
 
-    List<News> selectByExample(NewsExample example);
 }

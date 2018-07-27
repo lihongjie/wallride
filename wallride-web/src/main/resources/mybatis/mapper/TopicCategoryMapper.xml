@@ -38,9 +38,17 @@
         WHERE ID = #{id,jdbcType=VARCHAR}
     </delete>
 
+    <delete id="deleteInBatch" parameterType="">
+        DELETE FROM TOPIC_CATEGORY
+    </delete>
+
+    <insert id="insertInBatch" parameterType="">
+        INSERT INTO TOPIC_CATEGORY
+    </insert>
+
     <insert id="insertSelective" parameterType="org.wallride.domain.TopicCategory" >
 
-        INSERT INTO TOPIC
+        INSERT INTO TOPIC_CATEGORY
         <trim prefix="(" suffix=")" suffixOverrides="," >
             <if test="id != null" >
                 ID,
@@ -78,7 +86,7 @@
     </insert>
 
     <update id="updateByPrimaryKey" parameterType="org.wallride.domain.TopicCategory" >
-        UPDATE TOPIC
+        UPDATE TOPIC_CATEGORY
         <set >
             <if test="language != null" >
                 LANGUAGE = #{language,jdbcType=VARCHAR},
@@ -96,10 +104,47 @@
         WHERE ID = #{id,jdbcType=VARCHAR}
     </update>
 
-    <select id="findAll" resultMap="BaseResultMap">
+    <select id="findTopicCategoriesByParentId" resultMap="BaseResultMap" parameterType="string">
         SELECT
         <include refid="Base_Column_List" />
-        FROM TOPIC_CATEGORY
+        FROM TOPIC_CATEGORY tc
+        <where>
+            <if test="id != null">
+                tc.PARENT_ID = #{id, jdbcType=VARCHAR}
+            </if>
+        </where>
     </select>
 
+    <select id="findOne" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM TOPIC_CATEGORY tc
+        <where>
+            <if test="id != null">
+                tc.ID = #{id, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findOneByCode" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM TOPIC_CATEGORY tc
+        <where>
+            <if test="code != null">
+                tc.CODE = #{code, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findCategoriesByParentId" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM TOPIC_CATEGORY tc
+        <where>
+            <if test="parentId != null">
+                tc.PARENT_ID = #{parentId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
 </mapper>

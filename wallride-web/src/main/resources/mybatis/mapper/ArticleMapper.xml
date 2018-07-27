@@ -48,7 +48,11 @@
         WHERE ID = #{id,jdbcType=VARCHAR}
     </delete>
 
-    <insert id="insert" parameterType="org.wallride.domain.Article" >
+    <delete id="deleteInBatch" parameterType="">
+
+    </delete>
+
+    <insert id="insertInBatch" parameterType="org.wallride.domain.Article" >
         INSERT INTO ARTICLE (ID, CODE, LANGUAGE,TITLE,COVER_ID,BODY,DATE,AUTHOR_ID,AUTHOR_NAME,STATUS,VIEWS )
         VALUES (#{id,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR},
         #{title,jdbcType=VARCHAR}, #{coverId,jdbcType=VARCHAR}, #{body,jdbcType=VARCHAR}, #{date,jdbcType=VARCHAR},
@@ -131,6 +135,10 @@
         </trim>
     </insert>
 
+    <update id="updateByPrimaryKey" parameterType="map">
+        UPDATE ARTICLE SET
+    </update>
+
     <select id="findTopByIdIsAfterOrderByIdAsc" resultMap="BaseResultMap" parameterType="map" >
         SELECT
         <include refid="Base_Column_List" />
@@ -152,12 +160,60 @@
         FROM ARTICLE a
         <where>
             <if test="id != null">
-                a.id =  #{code,jdbcType=VARCHAR}
+                a.id =  #{ID,jdbcType=VARCHAR}
             </if>
             <if test="language != null">
-                AND a.language = #{title,jdbcType=VARCHAR}
+                AND a.language = #{LANGUAGE,jdbcType=VARCHAR}
             </if>
         </where>
         LIMIT 1 ORDER BY ID DESC
+    </select>
+
+    <select id="findOneByIdAndLanguage" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ARTICLE a
+        <where>
+            <if test="id != null">
+                a.id =  #{ID,jdbcType=VARCHAR}
+            </if>
+            <if test="language != null">
+                AND a.language = #{LANGUAGE ,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findOneByCodeAndLanguage" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ARTICLE a
+        <where>
+            <if test="code != null">
+                a.id =  #{CODE,jdbcType=VARCHAR}
+            </if>
+            <if test="language != null">
+                AND a.language = #{LANGUAGE ,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="archiveArticles" resultMap="" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ARTICLE a
+        <where>
+            <if test="code != null">
+                a.id =  #{CODE,jdbcType=VARCHAR}
+            </if>
+            <if test="language != null">
+                AND a.language = #{LANGUAGE ,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ARTICLE
     </select>
 </mapper>

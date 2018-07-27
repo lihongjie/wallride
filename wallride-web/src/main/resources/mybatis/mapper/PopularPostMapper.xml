@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.wallride.mapper.TagMapper" >
+<mapper namespace="org.wallride.mapper.PopularPostMapper" >
 
-    <resultMap id="BaseResultMap" type="org.wallride.domain.Tag" >
+    <resultMap id="BaseResultMap" type="org.wallride.domain.PopularPost" >
         <id column="ID" property="id" jdbcType="VARCHAR" />
         <result column="LANGUAGE" property="language" jdbcType="VARCHAR" />
-        <result column="NAME" property="name" jdbcType="VARCHAR" />
+        <result column="RANK" property="rank" jdbcType="INT" />
+        <result column="TYPE" property="type" jdbcType="VARCHAR" />
+        <result column="VIEWS" property="views" jdbcType="BIGINT" />
 
     </resultMap>
 
     <sql id="Base_Column_List" >
-        ID,LANGUAGE,NAME
+        ID,LANGUAGE,TYPE,RANK,VIEWS
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="String" >
         SELECT
         <include refid="Base_Column_List" />
-        FROM TAG
+        FROM POPULAR_POST
         WHERE ID = #{id,jdbcType=VARCHAR}
     </select>
 
-    <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.wallride.model.TagExample" >
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.wallride.model.PopularPostExample" >
         SELECT
         <include refid="Base_Column_List" />
-        FROM TAG l
+        FROM POPULAR_POST l
         <where>
             <if test="code != null">
                     l.CODE LIKE CONCAT('%', #{code,jdbcType=VARCHAR}, '%')
@@ -36,17 +38,17 @@
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="String" >
-        DELETE FROM TAG
+        DELETE FROM POPULAR_POST
         WHERE ID = #{id,jdbcType=VARCHAR}
     </delete>
 
     <delete id="deleteInBatch" parameterType="">
-        DELETE FROM TAG
+        DELETE FROM POPULAR_POST
     </delete>
 
     <insert id="insertSelective" parameterType="org.wallride.domain.Tag" >
 
-        INSERT INTO TAG
+        INSERT INTO POPULAR_POST
         <trim prefix="(" suffix=")" suffixOverrides="," >
             <if test="id != null" >
                 ID,
@@ -71,13 +73,21 @@
         </trim>
     </insert>
 
-    <insert id="insertInBatch" parameterType="">
-        INSERT INTO TAG
+    <insert id="insertInBatch" parameterType="java.util.List">
+        INSERT INTO POPULAR_POST () VALUES
+        <foreach collection ="list" item="reddemCode" index= "index" separator =",">
+            (
+            #{reddemCode.batchId}, #{reddemCode.code},
+            #{reddemCode.type},
+            #{reddemCode.facevalue},
+            #{reddemCode.createUser}, #{reddemCode.createTime}
+            )
+        </foreach >
     </insert>
 
     <update id="updateByPrimaryKey" parameterType="org.wallride.domain.Tag" >
-        UPDATE TAG
-        <set >
+        UPDATE POPULAR_POST
+        <trim prefix="SET" suffixOverrides=",">
             <if test="languageCode != null" >
                 LANGUAGE_CODE = #{languageCode,jdbcType=VARCHAR},
             </if>
@@ -87,58 +97,10 @@
             <if test="description != null" >
                 DESCRIPTION = #{description,jdbcType=VARCHAR},
             </if>
-        </set>
+        </trim>
         WHERE ID = #{id,jdbcType=VARCHAR}
     </update>
 
-    <select id="findOneByIdAndLanguage" resultMap="BaseResultMap" parameterType="map">
-        SELECT
-        <include refid="Base_Column_List" />
-        FROM TAG t
-        <where>
-            <if test="id != null">
-                t.ID = #{id,jdbcType=VARCHAR},
-            </if>
-            <if test="language != null">
-                t.LANGUAGE = #{language,jdbcType=VARCHAR}
-            </if>
-        </where>
-    </select>
 
-    <select id="findOneByNameAndLanguage" resultMap="BaseResultMap" parameterType="map">
-        SELECT
-        <include refid="Base_Column_List" />
-        FROM TAG t
-        <where>
-            <if test="name != null">
-                t.NAME = #{name,jdbcType=VARCHAR},
-            </if>
-            <if test="language != null">
-                t.LANGUAGE = #{language,jdbcType=VARCHAR}
-            </if>
-        </where>
-    </select>
 
-    <select id="findAllByLanguage" resultMap="BaseResultMap" parameterType="string">
-        SELECT
-        <include refid="Base_Column_List" />
-        FROM TAG t
-        <where>
-            <if test="language != null">
-                t.LANGUAGE = #{language,jdbcType=VARCHAR},
-            </if>
-        </where>
-    </select>
-
-    <select id="findTagsByArticleId" resultMap="BaseResultMap" parameterType="string">
-        SELECT
-        <include refid="Base_Column_List" />
-        FROM TAG t LEFT FROM ARTICLE_TAG a
-        ON t.ID = a.TAG_ID
-        <where>
-            <if test="id != null">
-                a.ARTICLE_ID = #{language,jdbcType=VARCHAR},
-            </if>
-        </where>
-    </select>
 </mapper>

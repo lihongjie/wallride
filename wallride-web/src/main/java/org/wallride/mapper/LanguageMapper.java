@@ -7,6 +7,4 @@ import java.util.List;
 
 public interface LanguageMapper extends BaseMapper<Language, String> {
 
-    List<Language> selectByExample(LanguageExample example);
-
 }

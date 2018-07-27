@@ -40,6 +40,10 @@
         WHERE ID = #{id,jdbcType=VARCHAR}
     </delete>
 
+    <delete id="deleteInBatch" parameterType="">
+        DELETE FROM LANGUAGE
+    </delete>
+
     <insert id="insertSelective" parameterType="org.wallride.domain.Language" >
 
         INSERT INTO LANGUAGE

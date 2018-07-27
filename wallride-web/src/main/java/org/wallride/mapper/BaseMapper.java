@@ -19,9 +19,6 @@ public interface BaseMapper<T, ID extends Serializable> {
 
     int updateByPrimaryKey(T record);
 
-    List<T> findAll();
-
     void deleteInBatch(Iterable<ID> ids);
 
-    void deleteAllInBatch();
 }

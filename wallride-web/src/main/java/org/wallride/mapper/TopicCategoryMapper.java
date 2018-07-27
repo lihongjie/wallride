@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface TopicCategoryMapper extends BaseMapper<TopicCategory, String> {
 
-    List<TopicCategory> findTopicCategoriesByParentId(String id);
+    List<TopicCategory> findTopicCategoriesByParentId(@Params("id") String id);
 
     void deleteTopicCategoryById(Map<String, Object> params);
 

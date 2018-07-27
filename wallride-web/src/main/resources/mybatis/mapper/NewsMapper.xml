@@ -38,6 +38,10 @@
         WHERE ID = #{id,jdbcType=VARCHAR}
     </delete>
 
+    <delete id="deleteInBatch" parameterType="">
+        DELETE FROM NEWS
+    </delete>
+
     <insert id="insertSelective" parameterType="org.wallride.domain.News" >
 
         INSERT INTO NEWS
@@ -75,6 +79,10 @@
                 #{authorName,jdbcType=VARCHAR}
             </if>
         </trim>
+    </insert>
+
+    <insert id="insertInBatch" parameterType="">
+        INSERT INTO NEWS
     </insert>
 
     <update id="updateByPrimaryKey" parameterType="org.wallride.domain.News" >

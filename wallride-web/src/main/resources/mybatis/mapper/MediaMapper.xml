@@ -39,6 +39,11 @@
         WHERE ID = #{id,jdbcType=VARCHAR}
     </delete>
 
+    <delete id="deleteInBatch" parameterType="String" >
+        DELETE FROM MEDIA
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
     <insert id="insertSelective" parameterType="org.wallride.domain.Media" >
 
         INSERT INTO MEDIA
@@ -81,11 +86,5 @@
         </set>
         WHERE ID = #{id,jdbcType=VARCHAR}
     </update>
-
-    <select id="findAll" resultMap="BaseResultMap">
-        SELECT
-        <include refid="Base_Column_List" />
-        FROM MEDIA
-    </select>
 
 </mapper>

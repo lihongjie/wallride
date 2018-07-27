@@ -30,6 +30,10 @@
         WHERE ID = #{id,jdbcType=VARCHAR}
     </delete>
 
+    <delete id="deleteInBatch" parameterType="">
+        DELETE FROM ARTICLE_TAG
+    </delete>
+
     <insert id="insertSelective" parameterType="org.wallride.domain.ArticleTag" >
 
         INSERT INTO ARTICLE_TAG
@@ -57,6 +61,9 @@
         </trim>
     </insert>
 
+    <insert id="insertInBatch" >
+
+    </insert>
     <update id="updateByPrimaryKey" parameterType="org.wallride.domain.ArticleTag" >
         UPDATE ARTICLE_TAG
         <set >
